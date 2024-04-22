@@ -1,0 +1,75 @@
+﻿<Page x:Class="GestionStockMySneakers.Pages.CrudF"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+  xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
+   mc:Ignorable="d"
+  Title="CrudF" Height="452" Width="803">
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Name="lblFamilles" Content="Familles (0)" FontSize="24" />
+
+            <Grid Grid.Row="1" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <!--Detail-->
+                <Grid Grid.Column="0" Margin="5 0 15 0">
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="50"/>
+
+
+                    </Grid.RowDefinitions>
+
+
+                    <Label Grid.Row="0" Name="LIB_ID" Content="ID :" Width="150" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="0" Name="txtId" Margin="120 2 2 0" VerticalContentAlignment="Center" />
+                    <!-- Nom de la famille -->
+                    <Label Grid.Row="1" Name="LIB_NomFamille" Content="Nom de la famille :" Width="150" HorizontalAlignment="Left"/>
+                    <TextBox Name="SAI_NomFamille"  Grid.Row="1" Margin="120 2 2 0" VerticalContentAlignment="Center"/>
+                    <!-- ID Parent -->
+                    <Label Grid.Row="2" Name="LIB_IdParent" Content="ID Parent :" Width="150" HorizontalAlignment="Left"/>
+                    <TextBox Name="SAI_IdParent"  Grid.Row="2" Margin="120 2 2 0" VerticalContentAlignment="Center"/>
+                    <!-- Timestamps -->
+
+
+                    <StackPanel Grid.Row="9" Margin="0 20 0 0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button  Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="100" ></Button>
+                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="100" Margin="10 0 10 0" ></Button>
+                        <Button  Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="100"></Button>
+
+                    </StackPanel>
+
+
+                </Grid>
+
+                <DataGrid Grid.Column="1" SelectionMode="Single" AutoGenerateColumns="False" Name="dgFamilles"  Margin="10 0 5 0" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding nom_famille}" Header="Nom de la famille" />
+                        <DataGridTextColumn Binding="{Binding id_parent}" Header="ID Parent" Width="100"/>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
+            <Label Grid.Row="2" Content="Footer" />
+        </Grid>
+    </Grid>
+</Page>
