@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GestionStockMySneakers
 {
@@ -44,21 +36,43 @@ namespace GestionStockMySneakers
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-       
+            // Créer une nouvelle instance de MainWindow
+            MainWindow mainWindow = new MainWindow();
+
+            // Rendre la nouvelle instance de MainWindow visible
+            mainWindow.Show();
+
+            // Fermer la fenêtre actuelle
+            this.Close();
         }
 
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        private void MenuItem_Click_A(object sender, RoutedEventArgs e)
         {
 
             MainFrame.NavigationService.Navigate(new Uri("Pages/CrudA.xaml", UriKind.Relative));
         }
+        private void MenuItem_Click_M(object sender, RoutedEventArgs e)
+        {
 
+            MainFrame.NavigationService.Navigate(new Uri("Pages/CrudM.xaml", UriKind.Relative));
+        }
+
+        private void MenuItem_Click_Consulter(object sender, RoutedEventArgs e)
+        {
+            MainFrame.NavigationService.Navigate(new Uri("Pages/consulter.xaml", UriKind.Relative));
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+           
+        }
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
             MainFrame.NavigationService.Navigate(new Uri("Pages/Stock.xaml", UriKind.Relative));
         }
+      
 
-        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        private void MenuItem_Click_Gerer(object sender, RoutedEventArgs e)
         {
             
         }
@@ -67,5 +81,12 @@ namespace GestionStockMySneakers
         {
            
         }
+
+        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+       
     }
 }

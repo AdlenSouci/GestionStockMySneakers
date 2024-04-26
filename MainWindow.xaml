@@ -83,7 +83,7 @@
                 <!--// Main Menu - Music //-->
 
                 <MenuItem Header="Crud"
-                          Template="{StaticResource Menu_SubMenu_Template}" Click="MenuItem_Click_1" RenderTransformOrigin="0.27,0.56">
+                          Template="{StaticResource Menu_SubMenu_Template}" RenderTransformOrigin="0.27,0.56">
 
                     <MenuItem.Icon>
 
@@ -92,25 +92,23 @@
 
                     </MenuItem.Icon>
 
-                    <!--// Music Submenu - All Songs //-->
 
                     <MenuItem Header="Crud Article"
-                              Template="{StaticResource Item_Template}">
+                              Template="{StaticResource Item_Template}"   Click="MenuItem_Click_A" >
 
 
 
                     </MenuItem>
 
-                    <!--// Music Submenu - Albums //-->
 
                     <MenuItem Header="Crud Marque"
-                              Template="{StaticResource Item_Template}">
+                              Template="{StaticResource Item_Template}" Click="MenuItem_Click_M">
 
 
 
                     </MenuItem>
 
-                    <!--// Music Submenu - Genres //-->
+                    
 
                     <MenuItem Header="Crud Famille"
                               Template="{StaticResource Item_Template}">
@@ -125,18 +123,41 @@
 
 
                 <MenuItem Header="Stock"
-                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_2">
+                    Template="{StaticResource Menu_SubMenu_Template}" RenderTransformOrigin="0.27,0.56">
 
                     <MenuItem.Icon>
 
                         <Image Source="Assets/img_folder.png"
-                               Stretch="None" />
+                            Stretch="None" />
 
                     </MenuItem.Icon>
 
+                  
+
+                    <MenuItem Header="Consulter"
+                        Template="{StaticResource Item_Template}"   Click="MenuItem_Click_Consulter" >
+
+
+
+                    </MenuItem>
+
+                 
+
+                    <MenuItem Header="Gerer"
+                        Template="{StaticResource Item_Template}" Click="MenuItem_Click_Gerer">
+
+
+
+                    </MenuItem>
+
+                 
+
+                    
+
+
                 </MenuItem>
 
-                <!--// Main Menu - History //-->
+              
 
                 <MenuItem Header="History"
                           Template="{StaticResource Menu_Template}">
@@ -209,7 +230,7 @@
                 <!--// Main Menu - Exit //-->
 
                 <MenuItem Header="Exit"
-                          Template="{StaticResource Menu_Template}">
+                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_4">
 
                     <MenuItem.Icon>
 

@@ -79,20 +79,19 @@
 
                 </Grid>
 
-                <DataGrid Grid.Column="1" SelectionMode="Single" AutoGenerateColumns="False" Name="dgArticles"  Margin="10,0,5,0" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged">
+                <DataGrid Grid.Column="1" SelectionMode="Single" AutoGenerateColumns="False" Name="dgArticles" Margin="10,0,5,0" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding marque}" Header="Marque" Width="100"/>
-                        <DataGridTextColumn Binding="{Binding nom_famille}" Header="Nom de la famille" />
-
-                        <DataGridTextColumn Binding="{Binding modele}" Header="Modèle" Width="100" />
-
-                        <DataGridTextColumn Binding="{Binding description}" Header="Description" Width="*"/>
-                        <DataGridTextColumn Binding="{Binding couleur}" Header="Couleur" Width="100" />
-                        <DataGridTextColumn Binding="{Binding prix_public}" Header="Prix public" Width="100" />
-                        <DataGridTextColumn Binding="{Binding prix_achat}" Header="Prix d'achat" Width="100" />
-                        <DataGridTextColumn Binding="{Binding img}" Header="Image" Width="100" />
+                        <DataGridTextColumn Binding="{Binding marque}" Header="Marque" Width="auto"/>
+                        <DataGridTextColumn Binding="{Binding nom_famille}" Header="Nom de la famille" Width="auto"/>
+                        <DataGridTextColumn Binding="{Binding modele}" Header="Modèle" Width="auto" />
+                        <DataGridTextColumn Binding="{Binding description}" Header="Description" Width="*" />
+                        <DataGridTextColumn Binding="{Binding couleur}" Header="Couleur" Width="auto" />
+                        <DataGridTextColumn Binding="{Binding prix_public}" Header="Prix public" Width="auto" />
+                        <DataGridTextColumn Binding="{Binding prix_achat}" Header="Prix d'achat" Width="auto" />
+                        <DataGridTextColumn Binding="{Binding img}" Header="Image" Width="auto" />
                     </DataGrid.Columns>
                 </DataGrid>
+
 
             </Grid>
             <Label Grid.Row="2" Content="Footer" />
