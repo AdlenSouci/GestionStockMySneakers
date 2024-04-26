@@ -1,84 +1,74 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Windows;
-using System.Windows.Controls; 
-using System.Windows.Media.Imaging;
+using System.Windows.Controls;
 
 namespace GestionStockMySneakers.Pages
 {
-
     public partial class consulter : Page
     {
         public consulter()
         {
             InitializeComponent();
-            ChargerImagesFTP();
+
+            List<string> files = GetFileList("ftp://ftp.kuph3194.odns.fr/resources/img/", "sneakers@ifcsio2022.fr", "5NRN7lbrz3Zt");
+            listBox.ItemsSource = files;
         }
 
-        private void ChargerImagesFTP()
+        public List<string> GetFileList(string server, string user, string password)
         {
-            string urlServeur = "ftp.kuph3194.odns.fr/resources/img/";
-            string nomUtilisateur = "sneakers@ifcsio2022.fr";
-            string motDePasse = "5NRN7lbrz3Zt";
-
+            List<string> files = new List<string>();
             try
             {
-                FtpWebRequest requeteFTP = (FtpWebRequest)WebRequest.Create(urlServeur);
-                requeteFTP.Method = WebRequestMethods.Ftp.ListDirectory;
-                requeteFTP.Credentials = new NetworkCredential(nomUtilisateur, motDePasse);
-                requeteFTP.EnableSsl = true;
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(server);
+                request.Method = WebRequestMethods.Ftp.ListDirectory;
+                request.Credentials = new NetworkCredential(user, password);
 
-
-                using (FtpWebResponse reponseFTP = (FtpWebResponse)requeteFTP.GetResponse())
-                using (Stream flux = reponseFTP.GetResponseStream())
-                using (StreamReader lecteur = new StreamReader(flux))
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    string ligne;
-                    while ((ligne = lecteur.ReadLine()) != null)
+                    string line = reader.ReadLine();
+                    while (line != null)
                     {
-                        // Vérifier si le fichier est une image
-                        if (ligne.EndsWith(".jpg") || ligne.EndsWith(".webp") || ligne.EndsWith(".jpeg") || ligne.EndsWith(".png") || ligne.EndsWith(".gif"))
-                        {
-                            string urlImage = urlServeur + ligne;
+                        // Download the file and save it locally
+                        string localFilePath = DownloadFile(server + "/" + line, user, password, line);
+                        files.Add(localFilePath);
 
-                            // Afficher l'image
-                            AfficherImage(urlImage);
-                        }
+                        line = reader.ReadLine();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Une erreur s'est produite : " + ex.Message);
+                Console.WriteLine(ex.Message);
             }
+
+            return files;
         }
 
-
-
-
-        private void AfficherImage(string urlImage)
+        public string DownloadFile(string serverFilePath, string user, string password, string fileName)
         {
             try
             {
-                if (urlImage != null)
+                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(serverFilePath);
+                request.Method = WebRequestMethods.Ftp.DownloadFile;
+                request.Credentials = new NetworkCredential(user, password);
+
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (FileStream writer = new FileStream(fileName, FileMode.Create))
                 {
-                    BitmapImage image = new BitmapImage();
-                    image.BeginInit();
-                    image.UriSource = new Uri(urlImage);
-                    image.EndInit();
-
-                    Image img = new Image();
-                    img.Source = image;
-
-                    // Ajoutez l'image à votre interface utilisateur
-                    // par exemple, si vous avez un conteneur nommé "grilleImages":
-                    grilleImages.Children.Add(img);
+                    responseStream.CopyTo(writer);
                 }
+
+                return Path.GetFullPath(fileName);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur lors du chargement de l'image : " + ex.Message);
+                Console.WriteLine(ex.Message);
+                return null;
             }
         }
 

@@ -9,8 +9,12 @@
       Title="consulter">
 
     <Grid>
-        <ScrollViewer>
-            <StackPanel Name="grilleImages"/>
-        </ScrollViewer>
+        <ListBox x:Name="listBox">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Image Source="{Binding}" Width="100" Height="100"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Page>

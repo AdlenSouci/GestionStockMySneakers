@@ -43,7 +43,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentFTP" Version="50.0.1" />
       <PackageReference Include="MySql.Data" Version="8.3.0" />
+      <PackageReference Include="System.Net.FtpClient" Version="1.0.5824.34026" />
     </ItemGroup>
 
     <ItemGroup>
