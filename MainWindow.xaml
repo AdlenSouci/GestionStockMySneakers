@@ -260,7 +260,7 @@
 
 
         <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>
-        <Image Margin="1003,597,18,36" Source="/Assets/logo.png" Stretch="Fill"/>
+        <Image Margin="984,532,38,100" Source="Assets/logo.png" Stretch="Fill"/>
 
         <!--<Frame x:Name="MainFrame1" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>-->
 
