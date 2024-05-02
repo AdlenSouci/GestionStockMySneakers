@@ -36,13 +36,12 @@ namespace GestionStockMySneakers
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // Créer une nouvelle instance de MainWindow
+            
             MainWindow mainWindow = new MainWindow();
 
-            // Rendre la nouvelle instance de MainWindow visible
+           
             mainWindow.Show();
 
-            // Fermer la fenêtre actuelle
             this.Close();
         }
 

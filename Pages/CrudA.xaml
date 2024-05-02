@@ -5,7 +5,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
   xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
    mc:Ignorable="d"
-  Title="CrudA" Height="452" Width="803">
+  Title="CrudA" Height="660" Width="803">
 
     <Grid>
         <Grid>
@@ -16,7 +16,7 @@
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Name="lblArticles" Content="Articles (0)" FontSize="24" />
 
-            <Grid Grid.Row="1" >
+            <Grid Grid.Row="1" Margin="0,0,0,10" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="2*"/>
@@ -79,7 +79,7 @@
 
                 </Grid>
 
-                <DataGrid Grid.Column="1" SelectionMode="Single" AutoGenerateColumns="False" Name="dgArticles" Margin="10,0,5,0" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged">
+                <DataGrid Grid.Column="1" SelectionMode="Single" AutoGenerateColumns="False" Name="dgArticles" Margin="10,0,5,290" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding marque}" Header="Marque" Width="auto"/>
                         <DataGridTextColumn Binding="{Binding nom_famille}" Header="Nom de la famille" Width="auto"/>
@@ -91,10 +91,30 @@
                         <DataGridTextColumn Binding="{Binding img}" Header="Image" Width="auto" />
                     </DataGrid.Columns>
                 </DataGrid>
+                <StackPanel Margin="12,319,7,-41" Grid.Column="1">
+                    <TextBlock FontWeight="Bold" Text="Détails de l'article sélectionné" Margin="0,0,0,5"/>
+                    <TextBlock Text="Marque: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.marque, ElementName=dgArticles}"/>
+                    <TextBlock Text="Nom de la famille: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.nom_famille, ElementName=dgArticles}"/>
+                    <TextBlock Text="Modèle: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.modele, ElementName=dgArticles}"/>
+                    <TextBlock Text="Description: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.description, ElementName=dgArticles}"/>
+                    <TextBlock Text="Couleur: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.couleur, ElementName=dgArticles}"/>
+                    <TextBlock Text="Prix public: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.prix_public, ElementName=dgArticles}"/>
+                    <TextBlock Text="Prix d'achat: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.prix_achat, ElementName=dgArticles}"/>
+                    <TextBlock Text="Image: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding SelectedItem.img, ElementName=dgArticles}"/>
+                </StackPanel>
+
+
 
 
             </Grid>
-            <Label Grid.Row="2" Content="Footer" />
         </Grid>
     </Grid>
 </Page>

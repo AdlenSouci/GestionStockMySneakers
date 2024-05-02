@@ -5,6 +5,9 @@ using System.Windows.Controls;
 using System.Configuration;
 using GestionStockMySneakers;
 using System;
+using System.Globalization;
+using System.Windows.Data;
+using System.Windows.Media.Imaging;
 
 
 namespace GestionStockMySneakers.Pages
@@ -17,7 +20,7 @@ namespace GestionStockMySneakers.Pages
         private MySqlCommand _command;
         private MySqlDataAdapter _adapter;
 
-        private DataTable _dt;  // Ne fait pas partie de MySql.Data (objet .NET)
+        private DataTable _dt;
         public CrudA()
         {
             InitializeComponent();
@@ -162,9 +165,9 @@ namespace GestionStockMySneakers.Pages
                 SAI_PrixPublic.Text = _drv.Row["prix_public"].ToString();
                 SAI_PrixAchat.Text = _drv.Row["prix_achat"].ToString();
                 SAI_Img.Text = _drv.Row["img"].ToString();
+
+               
             }
         }
-
-
     }
 }
