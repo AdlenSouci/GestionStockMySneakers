@@ -12,6 +12,7 @@
         WindowStartupLocation="CenterScreen">
     <Grid Background="#edd6ed">
 
+
         <TextBlock Text="GestionStockMySneakers"
                    
                    Foreground="Gray"
@@ -108,7 +109,7 @@
 
                     </MenuItem>
 
-                    
+
 
                     <MenuItem Header="Crud Famille"
                               Template="{StaticResource Item_Template}">
@@ -132,7 +133,7 @@
 
                     </MenuItem.Icon>
 
-                  
+
 
                     <MenuItem Header="Consulter"
                         Template="{StaticResource Item_Template}"   Click="MenuItem_Click_Consulter" >
@@ -141,7 +142,7 @@
 
                     </MenuItem>
 
-                 
+
 
                     <MenuItem Header="Gerer"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Gerer">
@@ -150,14 +151,14 @@
 
                     </MenuItem>
 
-                 
 
-                    
+
+
 
 
                 </MenuItem>
 
-              
+
 
                 <MenuItem Header="History"
                           Template="{StaticResource Menu_Template}">
@@ -260,10 +261,12 @@
 
 
         <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>
-        <Image Margin="984,532,38,100" Source="Assets/logo.png" Stretch="Fill"/>
 
         <!--<Frame x:Name="MainFrame1" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>-->
+        <Grid >
+            <Image HorizontalAlignment="Left" Height="239" Margin="483,241,0,0" VerticalAlignment="Top" Width="347" Source="Assets/logo.png"/>
 
+        </Grid>
 
 
     </Grid>
