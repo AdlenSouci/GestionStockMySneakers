@@ -4,27 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestionStockMySneakers"
-        mc:Ignorable="d"
         Height="750"
         Width="1150"
-        WindowStyle="None"
-        AllowsTransparency="True"
+        Title="Gestion Stock MySneakers"
         WindowStartupLocation="CenterScreen">
     <Grid Background="#edd6ed">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
 
-        <TextBlock Text="GestionStockMySneakers"
-                   
-                   Foreground="Gray"
-                   FontFamily="Fonts/#Orbitron Medium"
-                   FontSize="12"
-                   VerticalAlignment="Bottom"
-                   HorizontalAlignment="Right"
-                   Margin="0,0,12,10" Height="21" Width="180" />
 
         <!--// Menu Panel //-->
-
-        <StackPanel Background="#F8EEB7"
+        <StackPanel Grid.Column="0"
+                    Background="#F8EEB7"
                     Width="230"
                     Orientation="Vertical"
                     HorizontalAlignment="Left">
@@ -246,29 +240,19 @@
 
         </StackPanel>
 
-        <!--// Maximize / Minimize App //-->
 
-        <Button x:Name="MaxBtn"
-                Style="{StaticResource MaxBtnStyle}"
-                Click="MaxBtn_Click" />
-
-        <!--// Close App //-->
-
-        <Button x:Name="CloseBtn"
-                Style="{StaticResource CloseBtnStyle}"
-                Click="CloseBtn_Click" />
-
-
-
-        <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>
-
-        <!--<Frame x:Name="MainFrame1" Grid.Column="1" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="230,0,0,0"/>-->
-        <Grid >
-            <Image HorizontalAlignment="Left" Height="239" Margin="483,241,0,0" VerticalAlignment="Top" Width="347" Source="Assets/logo.png"/>
-
+        <Grid Grid.Column="1">
+            <Frame  Grid.Row="0" x:Name="MainFrame" NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated" Width="auto" Height="auto" Margin="0,0,0,0"/>
+            <TextBlock  Grid.Row="1" Text="GestionStockMySneakers"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Foreground="Gray"
+            FontFamily="Fonts/#Orbitron Medium"
+            FontSize="12"
+            Height="21" 
+            Width="180"
+            />
         </Grid>
-
-
     </Grid>
 
 </Window>

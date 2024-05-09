@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GestionStockMySneakers.Pages;
+using System;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -12,6 +13,7 @@ namespace GestionStockMySneakers
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(new Accueil());
         }
 
         private void MaxBtn_Click(object sender, RoutedEventArgs e)
@@ -36,10 +38,10 @@ namespace GestionStockMySneakers
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            
+
             MainWindow mainWindow = new MainWindow();
 
-           
+
             mainWindow.Show();
 
             this.Close();
@@ -48,12 +50,12 @@ namespace GestionStockMySneakers
         private void MenuItem_Click_A(object sender, RoutedEventArgs e)
         {
 
-            MainFrame.NavigationService.Navigate(new Uri("Pages/CrudA.xaml", UriKind.Relative));
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Articles.xaml", UriKind.Relative));
         }
         private void MenuItem_Click_M(object sender, RoutedEventArgs e)
         {
 
-            MainFrame.NavigationService.Navigate(new Uri("Pages/CrudM.xaml", UriKind.Relative));
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Marques.xaml", UriKind.Relative));
         }
 
         private void MenuItem_Click_Consulter(object sender, RoutedEventArgs e)
@@ -63,22 +65,22 @@ namespace GestionStockMySneakers
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-           
+
         }
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
         {
             MainFrame.NavigationService.Navigate(new Uri("Pages/Stock.xaml", UriKind.Relative));
         }
-      
+
 
         private void MenuItem_Click_Gerer(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
-           
+
         }
 
         private void MenuItem_Click_4(object sender, RoutedEventArgs e)
@@ -86,6 +88,6 @@ namespace GestionStockMySneakers
             Close();
         }
 
-       
+
     }
 }

@@ -16,13 +16,9 @@ namespace GestionStockMySneakers.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            const string expectedUsername = "username";
-            const string expectedPassword = "password";
+            GestionStockMySneakers.Login loginObj = new GestionStockMySneakers.Login();
 
-            string username = txtUsername.Text;
-            string password = passwordBox.Password;
-
-            if (username == expectedUsername && password == expectedPassword)
+            if (loginObj.logIn(txtUsername.Text, passwordBox.Password))
             {
                 MessageBox.Show("Login successful");
                 MainWindow mainWindow = new MainWindow();
@@ -33,6 +29,24 @@ namespace GestionStockMySneakers.Views
             {
                 MessageBox.Show("Login failed");
             }
+
+            //const string expectedUsername = "username";
+            //const string expectedPassword = "password";
+
+            //string username = txtUsername.Text;
+            //string password = passwordBox.Password;
+
+            //if (username == expectedUsername && password == expectedPassword)
+            //{
+            //    MessageBox.Show("Login successful");
+            //    MainWindow mainWindow = new MainWindow();
+            //    mainWindow.Show();
+            //    this.Close();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Login failed");
+            //}
         }
     }
 }

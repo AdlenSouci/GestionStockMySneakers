@@ -8,22 +8,21 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--// Menu with SubMenu Template //-->
-
     <ControlTemplate x:Key="Menu_SubMenu_Template"
-                     TargetType="{x:Type MenuItem}">
+                  TargetType="{x:Type MenuItem}">
 
         <Border x:Name="border"
-                Background="#F8EEB7"
-                BorderBrush="#F8EEB7"
-                BorderThickness="0"
-                Height="50"
-                Width="230">
+             Background="#F8EEB7"
+             BorderBrush="#F8EEB7"
+             BorderThickness="0"
+             Height="50"
+             Width="230">
 
             <Grid>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="22"
-                                      Width="Auto" />
+                                   Width="Auto" />
                     <ColumnDefinition Width="13" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="30" />
@@ -34,60 +33,60 @@
                 <!--// Icon //-->
 
                 <ContentPresenter x:Name="Icon"
-                                  ContentSource="Icon"
-                                  HorizontalAlignment="Left"
-                                  Height="35"
-                                  Width="35"
-                                  Margin="10,0,0,0"
-                                  VerticalAlignment="Center" />
+                               ContentSource="Icon"
+                               HorizontalAlignment="Left"
+                               Height="35"
+                               Width="35"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
 
                 <!--// Menu Text //-->
 
                 <ContentPresenter ContentSource="Header"
-                                  Grid.Column="2"
-                                  TextBlock.Foreground="Gray"
-                                  TextBlock.FontFamily="Fonts/#Roboto Light"
-                                  TextBlock.FontSize="20"
-                                  HorizontalAlignment="Left"
-                                  RecognizesAccessKey="True"
-                                  Margin="3,0,0,0"
-                                  VerticalAlignment="Center" />
+                               Grid.Column="2"
+                               TextBlock.Foreground="Gray"
+                               TextBlock.FontFamily="Fonts/#Roboto Light"
+                               TextBlock.FontSize="20"
+                               HorizontalAlignment="Left"
+                               RecognizesAccessKey="True"
+                               Margin="3,0,0,0"
+                               VerticalAlignment="Center" />
 
                 <!--// Right Arrow Icon //-->
 
                 <Image Source="Assets/img_arrow.png"
-                       Stretch="None"
-                       Grid.Column="4"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center" />
+                    Stretch="None"
+                    Grid.Column="4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center" />
 
                 <!--// Popup //-->
 
                 <Popup x:Name="PART_Popup"
-                       AllowsTransparency="true"
-                       Focusable="false"
-                       HorizontalOffset="-2"
-                       IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                       Placement="Right"
-                       PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
-                       VerticalOffset="0">
+                    AllowsTransparency="true"
+                    Focusable="false"
+                    HorizontalOffset="-2"
+                    IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                    Placement="Right"
+                    PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
+                    VerticalOffset="0">
 
                     <Border x:Name="SubMenuBorder"
-                            Background="#F8EEB7"
-                            BorderBrush="#F8EEB7">
+                         Background="#F8EEB7"
+                         BorderBrush="#F8EEB7">
 
                         <ScrollViewer x:Name="SubMenuScrollViewer"
-                                      Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                   Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
 
                             <Grid RenderOptions.ClearTypeHint="Enabled">
 
                                 <Canvas HorizontalAlignment="Left"
-                                        VerticalAlignment="Top" />
+                                     VerticalAlignment="Top" />
 
                                 <ItemsPresenter x:Name="ItemsPresenter"
-                                                KeyboardNavigation.DirectionalNavigation="Cycle"
-                                                Grid.IsSharedSizeScope="true"
-                                                KeyboardNavigation.TabNavigation="Cycle" />
+                                             KeyboardNavigation.DirectionalNavigation="Cycle"
+                                             Grid.IsSharedSizeScope="true"
+                                             KeyboardNavigation.TabNavigation="Cycle" />
                             </Grid>
                         </ScrollViewer>
                     </Border>
@@ -100,34 +99,34 @@
         <ControlTemplate.Triggers>
 
             <Trigger Property="IsSuspendingPopupAnimation"
-                     Value="true">
+                  Value="true">
                 <Setter Property="PopupAnimation"
-                        TargetName="PART_Popup"
-                        Value="None" />
+                     TargetName="PART_Popup"
+                     Value="None" />
             </Trigger>
 
             <Trigger Property="Icon"
-                     Value="{x:Null}">
+                  Value="{x:Null}">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsChecked"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsHighlighted"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Background"
-                        TargetName="border"
-                        Value="#F8EEB7" />
+                     TargetName="border"
+                     Value="#F8EEB7" />
                 <Setter Property="BorderBrush"
-                        TargetName="border"
-                        Value="#F8EEB7" />
+                     TargetName="border"
+                     Value="#F8EEB7" />
             </Trigger>
 
         </ControlTemplate.Triggers>
@@ -136,21 +135,21 @@
     <!--// Main Menu Template //-->
 
     <ControlTemplate x:Key="Menu_Template"
-                     TargetType="{x:Type MenuItem}">
+                  TargetType="{x:Type MenuItem}">
 
         <Border x:Name="border"
-                Background="#F8EEB7"
-                BorderBrush="#F8EEB7"
-                BorderThickness="0"
-                Height="50"
-                Width="230"
-                >
+             Background="#F8EEB7"
+             BorderBrush="#F8EEB7"
+             BorderThickness="0"
+             Height="50"
+             Width="230"
+             >
 
             <Grid>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="22"
-                                      Width="Auto" />
+                                   Width="Auto" />
                     <ColumnDefinition Width="13" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="30" />
@@ -161,24 +160,24 @@
                 <!--// Icon //-->
 
                 <ContentPresenter x:Name="Icon"
-                                  ContentSource="Icon"
-                                  HorizontalAlignment="Left"
-                                  Height="35"
-                                  Width="35"
-                                  Margin="10,0,0,0"
-                                  VerticalAlignment="Center" />
+                               ContentSource="Icon"
+                               HorizontalAlignment="Left"
+                               Height="35"
+                               Width="35"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
 
                 <!--// Menu Text //-->
 
                 <ContentPresenter ContentSource="Header"
-                                  Grid.Column="2"
-                                  TextBlock.Foreground="Gray"
-                                  TextBlock.FontFamily="Fonts/#Roboto Light"
-                                  TextBlock.FontSize="20"
-                                  HorizontalAlignment="Left"
-                                  RecognizesAccessKey="True"
-                                  Margin="3,0,0,0"
-                                  VerticalAlignment="Center" />
+                               Grid.Column="2"
+                               TextBlock.Foreground="Gray"
+                               TextBlock.FontFamily="Fonts/#Roboto Light"
+                               TextBlock.FontSize="20"
+                               HorizontalAlignment="Left"
+                               RecognizesAccessKey="True"
+                               Margin="3,0,0,0"
+                               VerticalAlignment="Center" />
 
             </Grid>
         </Border>
@@ -187,27 +186,27 @@
         <ControlTemplate.Triggers>
 
             <Trigger Property="Icon"
-                     Value="{x:Null}">
+                  Value="{x:Null}">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsChecked"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsHighlighted"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Background"
-                        TargetName="border"
-                        Value="#CF9FFF" />
+                     TargetName="border"
+                     Value="#CF9FFF" />
                 <Setter Property="BorderBrush"
-                        TargetName="border"
-                        Value="purple" />
+                     TargetName="border"
+                     Value="purple" />
             </Trigger>
 
 
@@ -217,21 +216,21 @@
     <!--// Menu Item Template //-->
 
     <ControlTemplate x:Key="Item_Template"
-                     TargetType="{x:Type MenuItem}">
+                  TargetType="{x:Type MenuItem}">
 
         <Border x:Name="border"
-                Background="#F8EEB7"
-                BorderBrush="#F8EEB7"
-                BorderThickness="{TemplateBinding BorderThickness}"
-                Height="50"
-                Width="230"
-               >
+             Background="#F8EEB7"
+             BorderBrush="#F8EEB7"
+             BorderThickness="{TemplateBinding BorderThickness}"
+             Height="50"
+             Width="230"
+            >
 
             <Grid>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="22"
-                                      Width="Auto" />
+                                   Width="Auto" />
                     <ColumnDefinition Width="13" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="30" />
@@ -242,24 +241,24 @@
                 <!--// Icon //-->
 
                 <ContentPresenter x:Name="Icon"
-                                  ContentSource="Icon"
-                                  HorizontalAlignment="Center"
-                                  Height="35"
-                                  Width="35"
-                                  Margin="10,0,0,0"
-                                  VerticalAlignment="Center" />
+                               ContentSource="Icon"
+                               HorizontalAlignment="Center"
+                               Height="35"
+                               Width="35"
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
 
                 <!--// Menu Text //-->
 
                 <ContentPresenter ContentSource="Header"
-                                  Grid.Column="2"
-                                  TextBlock.Foreground="Gray"
-                                  TextBlock.FontFamily="Fonts/#Roboto Light"
-                                  TextBlock.FontSize="20"
-                                  HorizontalAlignment="Left"
-                                  RecognizesAccessKey="True"
-                                  Margin="3,0,0,0"
-                                  VerticalAlignment="Center" />
+                               Grid.Column="2"
+                               TextBlock.Foreground="Gray"
+                               TextBlock.FontFamily="Fonts/#Roboto Light"
+                               TextBlock.FontSize="20"
+                               HorizontalAlignment="Left"
+                               RecognizesAccessKey="True"
+                               Margin="3,0,0,0"
+                               VerticalAlignment="Center" />
 
 
             </Grid>
@@ -269,163 +268,29 @@
         <ControlTemplate.Triggers>
 
             <Trigger Property="Icon"
-                     Value="{x:Null}">
+                  Value="{x:Null}">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsChecked"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Visibility"
-                        TargetName="Icon"
-                        Value="Visible" />
+                     TargetName="Icon"
+                     Value="Visible" />
             </Trigger>
 
             <Trigger Property="IsHighlighted"
-                     Value="True">
+                  Value="True">
                 <Setter Property="Background"
-                        TargetName="border"
-                        Value="#F8EEB7" />
+                     TargetName="border"
+                     Value="#F8EEB7" />
                 <Setter Property="BorderBrush"
-                        TargetName="border"
-                        Value="#F8EEB7" />
+                     TargetName="border"
+                     Value="#F8EEB7" />
             </Trigger>
 
         </ControlTemplate.Triggers>
     </ControlTemplate>
-
-
-    <!--// Maximize / Minimize App Button Style //-->
-
-    <ImageBrush x:Key="max_def"
-                ImageSource="Assets/max_def.png"
-                Stretch="None" />
-
-    <ImageBrush x:Key="max_mo"
-                ImageSource="Assets/max_mo.png"
-                Stretch="None" />
-
-    <Style x:Key="MaxBtnStyle"
-           TargetType="{x:Type Button}">
-
-        <Setter Property="Height"
-                Value="35" />
-        <Setter Property="Width"
-                Value="35" />
-        <Setter Property="HorizontalAlignment"
-                Value="Right" />
-        <Setter Property="VerticalAlignment"
-                Value="Top" />
-        <Setter Property="Margin"
-                Value="0,20,60,0" />
-
-        <Setter Property="Template">
-
-            <Setter.Value>
-
-                <ControlTemplate TargetType="{x:Type Button}">
-
-                    <Border x:Name="border"
-                            BorderThickness="0"
-                            Background="{StaticResource max_def}" />
-
-                    <ControlTemplate.Triggers>
-
-                        <Trigger Property="IsMouseOver"
-                                 Value="True">
-
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource max_mo}" />
-
-                        </Trigger>
-
-                        <Trigger Property="IsPressed"
-                                 Value="True">
-
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource max_mo}" />
-
-                        </Trigger>
-
-                    </ControlTemplate.Triggers>
-
-                </ControlTemplate>
-
-            </Setter.Value>
-
-        </Setter>
-
-
-    </Style>
-
-
-    <!--// Close App Button Style //-->
-
-    <ImageBrush x:Key="close_def"
-                ImageSource="Assets/shutdown_def.png"
-                Stretch="None" />
-
-    <ImageBrush x:Key="close_mo"
-                ImageSource="Assets/shutdown_mo.png"
-                Stretch="None" />
-
-    <Style x:Key="CloseBtnStyle"
-           TargetType="{x:Type Button}">
-
-        <Setter Property="Height"
-                Value="35" />
-        <Setter Property="Width"
-                Value="35" />
-        <Setter Property="HorizontalAlignment"
-                Value="Right" />
-        <Setter Property="VerticalAlignment"
-                Value="Top" />
-        <Setter Property="Margin"
-                Value="0,20,18,0" />
-
-        <Setter Property="Template">
-
-            <Setter.Value>
-
-                <ControlTemplate TargetType="{x:Type Button}">
-
-                    <Border x:Name="border"
-                            BorderThickness="0"
-                            Background="{StaticResource close_def}" />
-
-                    <ControlTemplate.Triggers>
-
-                        <Trigger Property="IsMouseOver"
-                                 Value="True">
-
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource close_mo}" />
-
-                        </Trigger>
-
-                        <Trigger Property="IsPressed"
-                                 Value="True">
-
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource close_mo}" />
-
-                        </Trigger>
-
-                    </ControlTemplate.Triggers>
-
-                </ControlTemplate>
-
-            </Setter.Value>
-
-        </Setter>
-
-
-    </Style>
-
-
 </ResourceDictionary>

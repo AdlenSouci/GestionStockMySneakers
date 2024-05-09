@@ -9,6 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Pages\consulter.xaml.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Remove="Assets\img_about.png" />
         <None Remove="Assets\img_crud.png" />
         <None Remove="Assets\img_acoustic.png" />
@@ -40,6 +44,10 @@
         <None Remove="Assets\shutdown_mo.png" />
         <None Remove="Fonts\Orbitron-Medium.ttf" />
         <None Remove="Fonts\Roboto-Light.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Remove="Pages\consulter.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -151,9 +159,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Pages\CrudF.xaml.cs">
+      <Compile Update="Pages\Famille.xaml.cs">
         <SubType>Code</SubType>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="img\" />
     </ItemGroup>
 
 </Project>

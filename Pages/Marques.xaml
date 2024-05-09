@@ -1,0 +1,77 @@
+﻿<Page x:Class="GestionStockMySneakers.Pages.Marques"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
+      mc:Ignorable="d"
+      Title="Marques" Height="600" Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--Titre-->
+        <Label Grid.Row="0" Name="lblMarques" Content="Marques (0)" FontSize="24" />
+
+        <!--Contenu-->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+
+            <!--Liste-->
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" Name="dgMarques" IsReadOnly="True" SelectionChanged="dgMarques_SelectionChanged" Margin="0,0,0,28">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding id}" Header="ID" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding nom}" Header="Nom" Width="auto"/>
+                  
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!--Detail-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="600*" />
+                    <ColumnDefinition Width="101*"/>
+                    <ColumnDefinition Width="99*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,-28,0,0" >
+
+
+                    <!--ID-->
+                    <StackPanel  Orientation="Horizontal">
+                        <Label Content="ID :" Width="150" />
+                        <Label Name="txtId" Width="450" />
+                    </StackPanel>
+
+                    <!-- Marque -->
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Nom :" Width="150"/>
+                        <TextBox Name="SAI_Nom" Width="450"/>
+                    </StackPanel>
+
+         
+                    
+                    <StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
+                        <Button  Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="65" Height="21" ></Button>
+                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="65" Margin="10 0 10 0" Height="21" ></Button>
+                        <Button  Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="66" Height="21"></Button>
+
+                    </StackPanel>
+
+
+                </StackPanel>
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+                    <Image Source="Assets/img_about.png" />
+                </StackPanel>
+
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Page>
