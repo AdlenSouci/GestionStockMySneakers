@@ -1,0 +1,34 @@
+﻿<Page x:Class="GestionStockMySneakers.Pages.Commande"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
+      mc:Ignorable="d" 
+      Title="CommandesEntetes" Height="600" Width="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--Titre-->
+        <Label Grid.Row="0" Name="lblCommandes" Content="Commandes" FontSize="24" />
+
+        <!--Contenu-->
+        <Grid Grid.Row="1">
+            <DataGrid SelectionMode="Single" AutoGenerateColumns="False" Name="dgCommandes" IsReadOnly="True" Margin="10">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding date}" Header="Date" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding id_user}" Header="Utilisateur" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding id_num_commande}" Header="Numéro de Commande" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding total_ht}" Header="Total HT" Width="auto" />
+                    <DataGridTextColumn Binding="{Binding total_ttc}" Header="Total TTC" Width="auto" />
+                    <DataGridTextColumn Binding="{Binding total_tva}" Header="Total TVA" Width="auto" />
+                    <DataGridTextColumn Binding="{Binding total_remise}" Header="Total Remise" Width="auto" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Page>

@@ -129,12 +129,7 @@
 
 
 
-                    <MenuItem Header="Consulter"
-                        Template="{StaticResource Item_Template}"   Click="MenuItem_Click_Consulter" >
-
-
-
-                    </MenuItem>
+                  
 
 
 
@@ -154,8 +149,9 @@
 
 
 
-                <MenuItem Header="History"
-                          Template="{StaticResource Menu_Template}">
+                <MenuItem Header="Commandes" 
+                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_C">
+                          
 
                     <MenuItem.Icon>
 
@@ -169,7 +165,7 @@
                 <!--// Main Menu - Settings //-->
 
                 <MenuItem Header="Settings"
-                          Template="{StaticResource Menu_SubMenu_Template}" Click="MenuItem_Click_1">
+                          Template="{StaticResource Menu_SubMenu_Template}" Click="MenuItem_Click_8">
 
                     <MenuItem.Icon>
 

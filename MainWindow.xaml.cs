@@ -67,16 +67,22 @@ namespace GestionStockMySneakers
         {
 
         }
-        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        private void MenuItem_Click_Gerer(object sender, RoutedEventArgs e)
         {
             MainFrame.NavigationService.Navigate(new Uri("Pages/Stock.xaml", UriKind.Relative));
         }
 
-
-        private void MenuItem_Click_Gerer(object sender, RoutedEventArgs e)
+        private void MenuItem_Click_C(object sender, RoutedEventArgs e)
         {
-
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Commande.xaml", UriKind.Relative));
         }
+
+
+        private void MenuItem_Click_8(object sender, RoutedEventArgs e)
+        {
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Commande.xaml", UriKind.Relative));
+        }
+
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {

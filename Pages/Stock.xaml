@@ -5,22 +5,73 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Stock">
+     Title="Stock" Height="600" Width="800">
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="40" />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <!-- En-tête -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <TextBlock Text="Gestionnaire de Stock" FontSize="20" FontWeight="Bold"/>
-        </StackPanel>
-        <Button Content="ajouter" HorizontalAlignment="Left" Margin="666,34,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click"/>
-        <Button Content="supprimer" HorizontalAlignment="Left" Margin="530,34,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <Button Content="consulter" HorizontalAlignment="Left" Margin="400,34,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click"/>
+        <!--Titre-->
+        <Label Grid.Row="0" Name="lbltailles_articles" Content="tailles_articles" FontSize="24" />
 
+        <!--Contenu-->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
 
+            <!--Liste-->
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" Name="dgTaillesArticles" IsReadOnly="True" SelectionChanged="dgTaillesArticles_SelectionChanged" Margin="0,0,0,28">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding article_id}" Header="Article ID" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding taille}" Header="Taille" Width="auto"/>
+                    <DataGridTextColumn Binding="{Binding stock}" Header="Stock" Width="auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!--Detail-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="600*" />
+                    <ColumnDefinition Width="101*"/>
+                    <ColumnDefinition Width="99*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,-28,0,0">
+
+                    <!--ID-->
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="ID :" Width="150" />
+                        <Label Name="txtId" Width="450" />
+                    </StackPanel>
+
+                    <!-- Article ID -->
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Article ID :" Width="150"/>
+                        <TextBox Name="SAI_ArticleId" Width="450"/>
+                    </StackPanel>
+
+                    <!-- Taille -->
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Taille :" Width="150" />
+                        <TextBox Name="SAI_Taille" Width="450"/>
+                    </StackPanel>
+
+                    <!-- Stock -->
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Stock :" Width="150" />
+                        <TextBox Name="SAI_Stock" Width="450"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
+                        <Button Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="65" Height="21" ></Button>
+                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="65" Margin="10 0 10 0" Height="21" ></Button>
+                        <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="66" Height="21"></Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>
