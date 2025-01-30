@@ -12,7 +12,7 @@ namespace GestionStockMySneakers.Pages
     public partial class Famille : Page
     {
         // Objets nécessaires pour SQL
-        const string _dsn = "server=localhost;port=3306;database=projet_sneakers;username=root;password=;";
+        const string _dsn = "Server=my-sneakers-shop.fr;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=wrJY?5o.KZrZ;SslMode=none;";
         private MySqlConnection _connexion = new MySqlConnection(_dsn);
         private MySqlCommand _command;
         private MySqlDataAdapter _adapter;

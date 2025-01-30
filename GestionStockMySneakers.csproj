@@ -38,6 +38,7 @@
         <None Remove="Assets\img_search.png" />
         <None Remove="Assets\img_setting.png" />
         <None Remove="Assets\img_songs.png" />
+        <None Remove="Assets\logo.png" />
         <None Remove="Assets\max_def.png" />
         <None Remove="Assets\max_mo.png" />
         <None Remove="Assets\shutdown_def.png" />
@@ -56,6 +57,7 @@
       <PackageReference Include="MaterialDesignThemes.Wpf" Version="1.0.1" />
       <PackageReference Include="MaterialSkin" Version="0.2.1" />
       <PackageReference Include="MySql.Data" Version="8.3.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="System.Net.FtpClient" Version="1.0.5824.34026" />
     </ItemGroup>
 
@@ -138,6 +140,7 @@
         <Resource Include="Assets\img_songs.png">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Resource>
+        <Resource Include="Assets\logo.png" />
         <Resource Include="Assets\max_def.png">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Resource>

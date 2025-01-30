@@ -3,38 +3,82 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:metro="http://metro.mahapps.com/winfx/2009"
-
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestionStockMySneakers.Views"
-        xmlns:uc="clr-namespace:GestionStockMySneakers.Views"
         mc:Ignorable="d"
         Title="Login"
         Height="750"
         Width="1150"
         WindowStyle="None"
         AllowsTransparency="True"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        MouseDown="Window_MouseDown">
 
-    <Grid Background="#edd6ed">
-
+    <Grid Background="LightYellow">
+        <!-- Définir les lignes de la grille -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <!-- Titre -->
+            <RowDefinition Height="Auto" />
+            <!-- Sous-titre -->
+            <RowDefinition Height="Auto" />
+            <!-- Image -->
+            <RowDefinition Height="*" />
+            <!-- Contenu principal -->
+            <RowDefinition Height="Auto" />
+            <!-- Bouton -->
         </Grid.RowDefinitions>
-        <StackPanel Margin="262,135,262,236"  Background="FloralWhite" >
-            <Label Content="Username : " />
-            <TextBox x:Name="txtUsername" />
-            <Label Content="Password : " Margin="0 10 0 0" />
-            <PasswordBox x:Name="passwordBox" />
-        </StackPanel>
-        <Button
-            Content="Login"
-            
-            Margin="0,315,0,409"
-            Width="52"
-            
-            HorizontalAlignment="Center"
-            Click="Button_Click"
-            />
+
+        <!-- Titre -->
+        <TextBlock Grid.Row="0" 
+                   Text="Gestion du site My Sneakers" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Foreground="DarkOrange" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,20,0,10" />
+
+        <!-- Sous-titre -->
+        <TextBlock Grid.Row="1" 
+                   Text="Veuillez vous connecter" 
+                   FontSize="16" 
+                   Foreground="DimGray" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,20" />
+
+        <!-- Image -->
+        <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Assurez-vous que l'image est dans le bon dossier et le bon chemin -->
+                <Image Source="/Assets/logo.png" Width="150" Height="150" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Contenu principal avec les champs Username et Password -->
+        <Border Grid.Row="3" 
+                Background="FloralWhite" 
+                Margin="262,59,262,136" 
+                Padding="20">
+            <StackPanel>
+                <Label Content="Username : " FontSize="14" FontWeight="SemiBold" />
+                <TextBox x:Name="txtUsername" Margin="0,5,0,15" />
+
+                <Label Content="Password : " FontSize="14" FontWeight="SemiBold" />
+                <PasswordBox x:Name="passwordBox" Margin="0,5,0,15" />
+            </StackPanel>
+        </Border>
+
+        <!-- Bouton Login -->
+        <Button Grid.Row="4"
+                Content="Login"
+                Margin="0,20,0,50"
+                Width="120"
+                Height="40"
+                HorizontalAlignment="Center"
+                Background="DarkOrange"
+                Foreground="LightYellow"
+                FontWeight="Bold"
+                Click="Button_Click" />
     </Grid>
 </Window>

@@ -3,9 +3,43 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d" 
       Title="CommandesEntetes" Height="600" Width="800">
+
+    <Page.Resources>
+        <!-- Style pour le DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#f2f2f2"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <!-- Style pour les colonnes -->
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#0078D7"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style pour l'en-tête -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="#0078D7"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -13,10 +47,10 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <!--Titre-->
-        <Label Grid.Row="0" Name="lblCommandes" Content="Commandes" FontSize="24" />
+        <!-- Titre -->
+        <Label Grid.Row="0" Name="lblCommandes" Content="Commandes" FontSize="24" FontWeight="Bold" Foreground="DarkMagenta" HorizontalAlignment="Center"/>
 
-        <!--Contenu-->
+        <!-- Contenu -->
         <Grid Grid.Row="1">
             <DataGrid SelectionMode="Single" AutoGenerateColumns="False" Name="dgCommandes" IsReadOnly="True" Margin="10">
                 <DataGrid.Columns>

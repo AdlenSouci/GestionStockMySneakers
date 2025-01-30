@@ -1,6 +1,7 @@
 ﻿using GestionStockMySneakers.Pages;
 using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Navigation;
 
 namespace GestionStockMySneakers
@@ -52,10 +53,17 @@ namespace GestionStockMySneakers
 
             MainFrame.NavigationService.Navigate(new Uri("Pages/Articles.xaml", UriKind.Relative));
         }
+      
         private void MenuItem_Click_M(object sender, RoutedEventArgs e)
         {
 
             MainFrame.NavigationService.Navigate(new Uri("Pages/Marques.xaml", UriKind.Relative));
+        }
+
+        private void MenuItem_Click_Avis(object sender, RoutedEventArgs e)
+        {
+
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Avis.xaml", UriKind.Relative));
         }
 
         private void MenuItem_Click_Consulter(object sender, RoutedEventArgs e)
@@ -92,6 +100,15 @@ namespace GestionStockMySneakers
         private void MenuItem_Click_4(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+      
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
         }
 
 

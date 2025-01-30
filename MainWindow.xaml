@@ -4,11 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestionStockMySneakers"
+        Title="Gestion Stock MySneakers"
         Height="750"
         Width="1150"
-        Title="Gestion Stock MySneakers"
-        WindowStartupLocation="CenterScreen">
-    <Grid Background="#edd6ed">
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="CanResize"
+        MouseDown="Window_MouseDown">
+
+
+    <Grid Background="Khaki">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="230"/>
             <ColumnDefinition Width="*"/>
@@ -105,14 +109,6 @@
 
 
 
-                    <MenuItem Header="Crud Famille"
-                              Template="{StaticResource Item_Template}">
-
-
-
-
-                    </MenuItem>
-
 
                 </MenuItem>
 
@@ -161,10 +157,23 @@
                     </MenuItem.Icon>
 
                 </MenuItem>
+                <MenuItem Header="Avis"
+                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Avis">
+
+
+                    <MenuItem.Icon>
+
+                        <Image Source="Assets/img_history.png"
+                               Stretch="None" />
+
+                    </MenuItem.Icon>
+
+                </MenuItem>
+                
 
                 <!--// Main Menu - Settings //-->
 
-                <MenuItem Header="Settings"
+                <MenuItem Header="Parametre"
                           Template="{StaticResource Menu_SubMenu_Template}" Click="MenuItem_Click_8">
 
                     <MenuItem.Icon>
@@ -206,7 +215,7 @@
 
                 <!--// Main Menu - About //-->
 
-                <MenuItem Header="About"
+                <MenuItem Header="A propos"
                           Template="{StaticResource Menu_Template}">
 
                     <MenuItem.Icon>

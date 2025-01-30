@@ -21,7 +21,7 @@ namespace GestionStockMySneakers.Pages
     public partial class consulter : Page
     {
         // Objets nécessaires pour SQL
-        const string _dsn = "server=localhost;port=3306;database=projet_sneakers;username=root;password=;";
+        const string _dsn = "server=localhost;port=3306;database=kuph3194_sneakers;username=kuph3194_adlen;password=5NRN7lbrz3Zt";
         private MySqlConnection _connexion = new MySqlConnection(_dsn);
         private MySqlCommand _command;
 

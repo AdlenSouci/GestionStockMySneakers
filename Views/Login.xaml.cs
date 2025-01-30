@@ -2,6 +2,8 @@
 using System.Windows;
 using System;
 
+using System.Windows.Input;
+
 namespace GestionStockMySneakers.Views
 {
     /// <summary>
@@ -30,23 +32,17 @@ namespace GestionStockMySneakers.Views
                 MessageBox.Show("Login failed");
             }
 
-            //const string expectedUsername = "username";
-            //const string expectedPassword = "password";
 
-            //string username = txtUsername.Text;
-            //string password = passwordBox.Password;
 
-            //if (username == expectedUsername && password == expectedPassword)
-            //{
-            //    MessageBox.Show("Login successful");
-            //    MainWindow mainWindow = new MainWindow();
-            //    mainWindow.Show();
-            //    this.Close();
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Login failed");
-            //}
+            
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
         }
     }
 }
