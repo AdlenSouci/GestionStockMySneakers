@@ -9,7 +9,7 @@ namespace GestionStockMySneakers.Pages
     public partial class Avis : Page
     {
         private int _selectedAvisId;
-        private string _dsn = "Server=my-sneakers-shop.fr;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=789-AA__s;SslMode=none;";
+        private string _dsn =  "Server=localhost;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=789-AA__s;SslMode=none;";
 
         public Avis()
         {
@@ -26,7 +26,8 @@ namespace GestionStockMySneakers.Pages
                 using (MySqlConnection connection = new MySqlConnection(_dsn))
                 {
                     connection.Open();
-                    string query = "SELECT id, contenu, reponse FROM avis";
+                    string query = "SELECT id, user_id, article_id, contenu, note, created_at, reponse FROM avis";
+
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
                         using (MySqlDataReader reader = command.ExecuteReader())

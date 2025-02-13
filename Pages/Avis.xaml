@@ -23,11 +23,11 @@
         <DataGrid SelectionMode="Single" AutoGenerateColumns="False" Name="dgAvis" IsReadOnly="True" Margin="10" Grid.Row="1"
                   SelectionChanged="dgAvis_SelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding user_id}" Header="Utilisateur" Width="auto"/>
-                <DataGridTextColumn Binding="{Binding article_id}" Header="Article" Width="auto"/>
-                <DataGridTextColumn Binding="{Binding contenu}" Header="Contenu" Width="auto"/>
-                <DataGridTextColumn Binding="{Binding note}" Header="Note" Width="auto"/>
-                <DataGridTextColumn Binding="{Binding created_at}" Header="Date" Width="auto"/>
+                <DataGridTextColumn Binding="{Binding UserId}" Header="Utilisateur" Width="auto"/>
+                <DataGridTextColumn Binding="{Binding ArticleId}" Header="Article" Width="auto"/>
+                <DataGridTextColumn Binding="{Binding Contenu}" Header="Contenu" Width="auto"/>
+                <DataGridTextColumn Binding="{Binding Note}" Header="Note" Width="auto"/>
+                <DataGridTextColumn Binding="{Binding CreatedAt}" Header="Date" Width="auto"/>
             </DataGrid.Columns>
         </DataGrid>
 
