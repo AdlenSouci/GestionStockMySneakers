@@ -1,60 +1,51 @@
 ﻿using System;
-using System.Data;
-using MySql.Data.MySqlClient;
-using System.Security.Cryptography;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Windows;
 
 namespace GestionStockMySneakers
 {
-    public class LoginService
+    public class Login
     {
-        private string connectionString = "Server=localhost;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=789-AA__s;SslMode=none;";
+        private static readonly HttpClient client = new HttpClient();
+        private const string apiUrl = "http://127.0.0.1:8000/api/login"; // Assurez-vous que c'est bien cette URL
 
-        public string HashPassword(string password)
+        // Méthode de connexion à l'API Laravel
+        public static async Task<string?> LogInAsync(string email, string password)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            try
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (byte b in bytes)
+                var loginData = new
                 {
-                    builder.Append(b.ToString("x2")); // Convertit chaque byte en hexadécimal
+                    email = email,
+                    password = password
+                };
+
+                var jsonData = JsonConvert.SerializeObject(loginData);
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+                // Envoie la requête POST à l'API Laravel
+                var response = await client.PostAsync(apiUrl, content); // Assurez-vous que apiUrl est correct
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(responseString);
+                    return responseObject?.token ?? null;
                 }
-                return builder.ToString();
-            }
-        }
-
-        public bool logIn(string email, string password)
-        {
-            bool isAuthenticated = false;
-            string hashedPassword = HashPassword(password);
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                try
+                else
                 {
-                    connection.Open();
-                    string query = "SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password";
-
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@Email", email);
-                        command.Parameters.AddWithValue("@Password", hashedPassword);
-
-                        // Debug: Afficher les valeurs des paramètres
-                        Console.WriteLine($"Email: {email}, Mot de passe haché: {hashedPassword}");
-
-                        int count = Convert.ToInt32(command.ExecuteScalar());
-                        isAuthenticated = count > 0; // Si count > 0, l'utilisateur est authentifié
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Erreur de connexion : " + ex.Message);
+                    MessageBox.Show("Échec de la connexion. Vérifiez vos identifiants.");
+                    return null;
                 }
             }
-
-            return isAuthenticated;
+            catch (Exception ex)
+            {
+                MessageBox.Show("Une erreur s'est produite lors de la tentative de connexion : " + ex.Message);
+                return null;
+            }
         }
     }
 }
