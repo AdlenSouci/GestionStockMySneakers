@@ -10,9 +10,8 @@ namespace GestionStockMySneakers
     public class Login
     {
         private static readonly HttpClient client = new HttpClient();
-        private const string apiUrl = "http://127.0.0.1:8000/api/login"; // Assurez-vous que c'est bien cette URL
+        private const string apiUrl = "http://127.0.0.1:8000/api/login";
 
-        // Méthode de connexion à l'API Laravel
         public static async Task<string?> LogInAsync(string email, string password)
         {
             try
@@ -26,8 +25,7 @@ namespace GestionStockMySneakers
                 var jsonData = JsonConvert.SerializeObject(loginData);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-                // Envoie la requête POST à l'API Laravel
-                var response = await client.PostAsync(apiUrl, content); // Assurez-vous que apiUrl est correct
+                var response = await client.PostAsync(apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
