@@ -13,7 +13,7 @@ namespace GestionStockMySneakers
         
         private static readonly HttpClient client = new HttpClient();
 
-        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/login"; // Correction ici
+        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/login"; 
 
         public static async Task<string?> LogInAsync(string email, string password)
         {

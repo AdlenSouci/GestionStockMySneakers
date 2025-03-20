@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Net.Http;
 using System.Windows;
@@ -14,13 +15,14 @@ namespace GestionStockMySneakers.Pages
 {
     public partial class Marques : Page
     {
-       
-
         private static readonly HttpClient client = new HttpClient();
-        private readonly string apiUrl = "http://127.0.0.1:8000/api/marques";
+
+        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/marques";
+
 
         public Marques()
         {
+
             InitializeComponent();
             afficher();
         }
