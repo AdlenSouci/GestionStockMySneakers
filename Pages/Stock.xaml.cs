@@ -77,9 +77,28 @@ namespace GestionStockMySneakers.Pages
 
         private void btnModifier_Click(object sender, RoutedEventArgs e)
         {
-            string _sql = "UPDATE tailles_articles SET article_id = @ArticleId, taille = @Taille, stock = @Stock WHERE id = @Id";
             try
             {
+                // Récupérer l'ancienne valeur depuis la base de données
+                string sqlSelect = "SELECT taille, stock FROM tailles_articles WHERE id = @Id";
+                _command = new MySqlCommand(sqlSelect, _connexion);
+                _command.Parameters.AddWithValue("@Id", txtId.Content);
+
+                _connexion.Open();
+                MySqlDataReader reader = _command.ExecuteReader();
+                string ancienneTaille = "";
+                string ancienStock = "";
+
+                if (reader.Read())
+                {
+                    ancienneTaille = reader["taille"].ToString();
+                    ancienStock = reader["stock"].ToString();
+                }
+                reader.Close();
+                _connexion.Close();
+
+                // Requête de mise à jour
+                string _sql = "UPDATE tailles_articles SET article_id = @ArticleId, taille = @Taille, stock = @Stock WHERE id = @Id";
                 _command = new MySqlCommand(_sql, _connexion);
                 _command.Parameters.AddWithValue("@Id", txtId.Content);
                 _command.Parameters.AddWithValue("@ArticleId", int.Parse(SAI_ArticleId.Text));
@@ -91,7 +110,22 @@ namespace GestionStockMySneakers.Pages
 
                 afficher();
 
-                MessageBox.Show("Taille modifiée avec succès", "Modification de taille", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Vérifier ce qui a été modifié
+                string message = "Aucune modification effectuée";
+                if (ancienneTaille != SAI_Taille.Text && ancienStock != SAI_Stock.Text)
+                {
+                    message = "Taille et stock modifiés avec succès";
+                }
+                else if (ancienneTaille != SAI_Taille.Text)
+                {
+                    message = "Taille modifiée avec succès";
+                }
+                else if (ancienStock != SAI_Stock.Text)
+                {
+                    message = "Stock modifié avec succès";
+                }
+
+                MessageBox.Show(message, "Modification", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -103,6 +137,7 @@ namespace GestionStockMySneakers.Pages
                 _connexion.Close();
             }
         }
+
 
         private void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {

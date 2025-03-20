@@ -9,7 +9,7 @@ namespace GestionStockMySneakers.Pages
     public partial class Avis : Page
     {
         private int _selectedAvisId;
-        private string _dsn =  "Server=localhost;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=789-AA__s;SslMode=none;";
+        private Data _dsn = new Data(); // Utilisation de _dsn au lieu de data_database
 
         public Avis()
         {
@@ -23,7 +23,7 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
-                using (MySqlConnection connection = new MySqlConnection(_dsn))
+                using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de Connexion() via _dsn
                 {
                     connection.Open();
                     string query = "SELECT id, user_id, article_id, contenu, note, created_at, reponse FROM avis";
@@ -69,7 +69,7 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
-                        using (MySqlConnection connection = new MySqlConnection(_dsn))
+                        using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de _dsn
                         {
                             connection.Open();
                             string query = "UPDATE avis SET reponse = @Reponse WHERE id = @AvisId";
@@ -117,7 +117,7 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
-                        using (MySqlConnection connection = new MySqlConnection(_dsn))
+                        using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de _dsn
                         {
                             connection.Open();
                             string query = "DELETE FROM avis WHERE id = @AvisId";

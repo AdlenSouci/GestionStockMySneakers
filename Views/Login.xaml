@@ -32,6 +32,18 @@
                    HorizontalAlignment="Center" 
                    Margin="0,20,0,10" />
 
+        <Button Grid.Row="4"
+        Content="Quitter"
+        Margin="10,20,0,50"
+        Width="120"
+        Height="40"
+        HorizontalAlignment="Right"
+        Background="Red"
+        Foreground="White"
+        FontWeight="Bold"
+        Click= "Button_Click_quitt"/>
+
+
         <TextBlock Grid.Row="1" 
                    Text="Veuillez vous connecter" 
                    FontSize="16" 
@@ -50,12 +62,12 @@
                 Margin="262,59,262,136" 
                 Padding="20">
             <StackPanel>
-                <Label Content="Email :" FontSize="14" FontWeight="SemiBold" />
-                <TextBox x:Name="txtEmail" Margin="0,5,0,15" />
+                <Label Content="Email : " FontSize="14"  FontWeight="SemiBold" />
+                <TextBox x:Name="txtEmail" Text="admin@example.com"   Margin="0,5,0,15" />
 
                 <Label Content="Password :" FontSize="14" FontWeight="SemiBold" />
                 <StackPanel Orientation="Horizontal">
-                    <PasswordBox x:Name="passwordBox" Margin="0,5,0,15" Width="200" />
+                    <PasswordBox x:Name="passwordBox" Password="44-SS_qq" Margin="0,5,0,15" Width="200" />
                     <Button x:Name="btnShowPassword" Content="👁️" Width="30" Click="btnShowPassword_Click" />
                 </StackPanel>
             </StackPanel>

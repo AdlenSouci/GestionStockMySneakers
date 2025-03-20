@@ -7,7 +7,8 @@
       mc:Ignorable="d"
       Title="Marques" Height="600" Width="800">
 
-    <Grid>
+    <Grid MouseDown="Grid_MouseDown">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition />
@@ -28,8 +29,13 @@
             <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" Name="dgMarques" IsReadOnly="True" SelectionChanged="dgMarques_SelectionChanged" Margin="0,0,0,28">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding id}" Header="ID" Width="auto"/>
-                    <DataGridTextColumn Binding="{Binding nom}" Header="Nom" Width="auto"/>
-                  
+
+                    <DataGridTextColumn Binding="{Binding nom_marque}" Header="Nom" Width="auto"/>
+
+
+
+
+
                 </DataGrid.Columns>
             </DataGrid>
 
@@ -55,8 +61,8 @@
                         <TextBox Name="SAI_Nom" Width="450"/>
                     </StackPanel>
 
-         
-                    
+
+
                     <StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
                         <Button  Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="65" Height="21" ></Button>
                         <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="65" Margin="10 0 10 0" Height="21" ></Button>

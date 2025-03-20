@@ -1,44 +1,46 @@
 ﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+
+using System.Windows.Media.Imaging;
 
 namespace GestionStockMySneakers.Pages
 {
-    /// <summary>
-    /// Logique d'interaction pour Marques.xaml
-    /// </summary>
     public partial class Marques : Page
-    { // Objets nécessaires pour SQL
-        const string _dsn = //"server=109.234.165.229;port=3306;database=kuph3194_sneakers;username=kuph3194_sneakers;password=Adl@nSouci";
+    {
+       
 
-        "Server=localhost;Port=3306;Database=kera6497_my-sneakers;username=kera6497_adlen;password=789-AA__s;SslMode=none;";
-        private MySqlConnection _connexion = new MySqlConnection(_dsn);
-        private MySqlCommand _command;
-        private MySqlDataAdapter _adapter;
+        private static readonly HttpClient client = new HttpClient();
+        private readonly string apiUrl = "http://127.0.0.1:8000/api/marques";
 
-        private DataTable _dt;  // Ne fait pas partie de MySql.Data (objet .NET)
         public Marques()
         {
             InitializeComponent();
             afficher();
         }
 
-     
-
-        private void afficher()
+        private async void afficher()
         {
             try
             {
-                _adapter = new MySqlDataAdapter("SELECT * FROM marques;", _connexion);
-                _dt = new DataTable();
-                _adapter.Fill(_dt);
-                dgMarques.ItemsSource = _dt.DefaultView;
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var marques = JsonConvert.DeserializeObject<List<Marque>>(responseBody);
+
+                dgMarques.ItemsSource = marques;
+                lblMarques.Content = $"Marques ({marques.Count})";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Erreur : " + ex.Message);
             }
         }
 
@@ -48,95 +50,100 @@ namespace GestionStockMySneakers.Pages
             SAI_Nom.Text = "";
         }
 
-        private void btnAjouter_Click(object sender, RoutedEventArgs e)
+        private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            string _sql = "INSERT INTO marques(nom) VALUES(@Nom)";
+            var nouvelleMarque = new { nom_marque = SAI_Nom.Text };
+
             try
             {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@Nom", SAI_Nom.Text);
+                var json = JsonConvert.SerializeObject(nouvelleMarque);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-                _connexion.Open();
-                _command.ExecuteNonQuery();
+                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                response.EnsureSuccessStatusCode();
 
                 afficher();
                 effacer();
-
-                MessageBox.Show("Marque enregistrée avec succès", "Nouvelle marque", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Marque ajoutée avec succès");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
+                MessageBox.Show("Erreur : " + ex.Message);
             }
         }
-
-        private void btnModifier_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
-            string _sql = "UPDATE marques SET nom = @Nom WHERE id = @Id";
+            if (string.IsNullOrEmpty(txtId.Content.ToString())) return;
+
+            var marqueModifiee = new { nom_marque = SAI_Nom.Text };
+            string url = $"{apiUrl}/{txtId.Content}";
+
             try
             {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@Id", txtId.Content);
-                _command.Parameters.AddWithValue("@Nom", SAI_Nom.Text);
+                var json = JsonConvert.SerializeObject(marqueModifiee);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-                _connexion.Open();
-                _command.ExecuteNonQuery();
+                HttpResponseMessage response = await client.PutAsync(url, content);
+                response.EnsureSuccessStatusCode();
 
                 afficher();
-
-                MessageBox.Show("Marque modifiée avec succès", "Modifier marque", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Marque modifiée avec succès");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
+                MessageBox.Show("Erreur : " + ex.Message);
             }
         }
 
-        private void btnSupprimer_Click(object sender, RoutedEventArgs e)
+        private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
-            string _sql = "DELETE FROM marques WHERE id = @Id;";
+            if (string.IsNullOrEmpty(txtId.Content.ToString())) return;
+
+            string url = $"{apiUrl}/{txtId.Content}";
+
             try
             {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@Id", txtId.Content);
+                HttpResponseMessage response = await client.DeleteAsync(url);
+                response.EnsureSuccessStatusCode();
 
-                _connexion.Open();
-                _command.ExecuteNonQuery();
+                afficher();
+                effacer();
+                MessageBox.Show("Marque supprimée avec succès");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Erreur : " + ex.Message);
             }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
-            }
-
-            afficher();
-            effacer();
         }
 
-        private void dgMarques_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if ((DataRowView)dgMarques.SelectedItem != null)
-            {
-                DataRowView _drv = (DataRowView)dgMarques.SelectedItem;
 
-                txtId.Content = _drv.Row["id"].ToString();
-                SAI_Nom.Text = _drv.Row["nom"].ToString();
+        private void dgMarques_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (dgMarques.SelectedItem is Marque marqueSelectionnee)
+            {
+                txtId.Content = marqueSelectionnee.id;
+                SAI_Nom.Text = marqueSelectionnee.nom_marque;
+            }
+        }
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+            // Vérifiez si le clic est en dehors du DataGrid
+            if (dgMarques.IsFocused == false)
+            {
+                effacer(); // Réinitialiser les champs
+                           // Réactiver le bouton Ajouter
+                btnAjouter.IsEnabled = true;
             }
         }
     }
+    public class Marque
+    {
+        public int id { get; set; }
+        public string nom_marque { get; set; }
+    }
+
+
+
 }
 

@@ -10,6 +10,11 @@ namespace GestionStockMySneakers.Views
             InitializeComponent();
         }
 
+        private void Button_Click_quitt(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text;
@@ -55,5 +60,7 @@ namespace GestionStockMySneakers.Views
                 this.DragMove();
             }
         }
+
+        
     }
 }

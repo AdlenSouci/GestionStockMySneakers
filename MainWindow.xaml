@@ -20,6 +20,8 @@
 
 
 
+
+
         <!--// Menu Panel //-->
         <StackPanel Grid.Column="0"
                     Background="#F8EEB7"
@@ -242,6 +244,7 @@
                 </MenuItem>
 
             </Menu>
+       
 
         </StackPanel>
 

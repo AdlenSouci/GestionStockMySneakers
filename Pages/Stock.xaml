@@ -50,7 +50,7 @@
                     <!-- Article ID -->
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Article ID :" Width="150"/>
-                        <TextBox Name="SAI_ArticleId" Width="450"/>
+                        <TextBox Name="SAI_ArticleId" Width="450" IsReadOnly="True"/>
                     </StackPanel>
 
                     <!-- Taille -->
