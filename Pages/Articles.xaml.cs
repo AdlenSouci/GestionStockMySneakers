@@ -3,23 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Input; // Ajout de cette directive
 
 namespace GestionStockMySneakers.Pages
 {
     public partial class Articles : Page
     {
         private static readonly HttpClient client = new HttpClient();
-        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article"; 
+        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article"; // Assurez-vous que l'URL est correcte
 
         public Articles()
         {
             InitializeComponent();
-            afficher();
+            afficher(); // Afficher les articles existants
         }
 
         private async void afficher()
@@ -32,8 +33,14 @@ namespace GestionStockMySneakers.Pages
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var articles = JsonConvert.DeserializeObject<List<Article>>(responseBody);
 
+                // Vérifiez si articles est null
+                if (articles == null)
+                {
+                    articles = new List<Article>(); // Initialiser à une liste vide si null
+                }
+
                 dgArticles.ItemsSource = articles;
-                lblArticles.Content = $"Articles ({articles.Count})"; 
+                lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
             }
             catch (Exception ex)
             {
@@ -44,7 +51,7 @@ namespace GestionStockMySneakers.Pages
         private void effacer()
         {
             txtId.Content = "";
-            SAI_Marque.Text = "";
+            SAI_Marque.Text = ""; 
             SAI_NomFamille.Text = "";
             SAI_Modele.Text = "";
             SAI_Description.Text = "";
@@ -54,59 +61,83 @@ namespace GestionStockMySneakers.Pages
             SAI_Img.Text = "";
         }
 
-        private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            if (dgArticles.SelectedItem is Article articleSelectionne)
-            {
-                txtId.Content = articleSelectionne.id;
-                SAI_Marque.Text = articleSelectionne.nom_marque;
-                SAI_NomFamille.Text = articleSelectionne.nom_famille;
-                SAI_Modele.Text = articleSelectionne.modele;
-                SAI_Description.Text = articleSelectionne.description;
-                SAI_Couleur.Text = articleSelectionne.nom_couleur;
-                SAI_PrixPublic.Text = articleSelectionne.prix_public.ToString();
-                SAI_PrixAchat.Text = articleSelectionne.prix_achat.ToString();
-                SAI_Img.Text = articleSelectionne.img;
-
-                // Afficher l'image
-                AfficherImage(articleSelectionne.img);
-            }
+            await AjouterArticle();
         }
 
-        private void AfficherImage(string imageName)
+        private async Task AjouterArticle()
         {
+            // Assurez-vous que les champs requis sont remplis
+            if (string.IsNullOrWhiteSpace(SAI_NomFamille.Text) ||
+                string.IsNullOrWhiteSpace(SAI_Modele.Text) ||
+                string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
+                !decimal.TryParse(SAI_PrixPublic.Text, out decimal prixPublic) ||
+                !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat) ||
+                string.IsNullOrWhiteSpace(SAI_Marque.Text)) // Vérifier que le champ marque est rempli
+            {
+                MessageBox.Show("Veuillez remplir tous les champs requis.");
+                return;
+            }
+
+            var article = new Article
+            {
+                nom_marque = SAI_Marque.Text, 
+                nom_famille = SAI_NomFamille.Text,
+                modele = SAI_Modele.Text,
+                description = SAI_Description.Text,
+                nom_couleur = SAI_Couleur.Text,
+                prix_public = prixPublic,
+                prix_achat = prixAchat,
+                img = SAI_Img.Text
+            };
+
+            var json = JsonConvert.SerializeObject(article);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             try
             {
-                var imagePath = @"C:\\CSharp\\GestionStockMySneakers\\img\\" + imageName;
+                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                response.EnsureSuccessStatusCode();
 
-                if (File.Exists(imagePath))
-                {
-                    var uriSource = new Uri(imagePath);
-                    ImageArticle.Source = new BitmapImage(uriSource);
-                }
-                else
-                {
-                    MessageBox.Show("L'image n'existe pas sur le chemin spécifié.", "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ImageArticle.Source = null; // Clear image if not found
-                }
+                MessageBox.Show("Article ajouté avec succès !");
+                afficher(); // Rafraîchir la liste des articles
+                effacer(); // Effacer les champs après l'ajout
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur lors du chargement de l'image : " + ex.Message, "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
-                ImageArticle.Source = null; // Clear image on error
+                MessageBox.Show("Erreur lors de l'ajout de l'article : " + ex.Message);
             }
         }
 
-        //private void Page_MouseDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    // Vérifiez si le clic est en dehors du DataGrid
-        //    if (dgArticles.IsFocused == false)
-        //    {
-        //        effacer(); // Réinitialiser les champs
-        //        // Réactiver le bouton Ajouter
-        //        btnAjouter.IsEnabled = true;
-        //    }
-        //}
+        private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dgArticles.SelectedItem is Article selectedArticle)
+            {
+                txtId.Content = selectedArticle.id.ToString();
+                SAI_Marque.Text = selectedArticle.nom_marque; 
+                SAI_NomFamille.Text = selectedArticle.nom_famille;
+                SAI_Modele.Text = selectedArticle.modele;
+                SAI_Description.Text = selectedArticle.description;
+                SAI_Couleur.Text = selectedArticle.nom_couleur;
+                SAI_PrixPublic.Text = selectedArticle.prix_public.ToString();
+                SAI_PrixAchat.Text = selectedArticle.prix_achat.ToString();
+                SAI_Img.Text = selectedArticle.img;
+
+                if (!string.IsNullOrEmpty(selectedArticle.img))
+                {
+                    ImageArticle.Source = new BitmapImage(new Uri(selectedArticle.img, UriKind.RelativeOrAbsolute));
+                }
+            }
+        }
+
+        private void Page_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (dgArticles.SelectedItem != null)
+            {
+                dgArticles.SelectedItem = null;
+            }
+        }
     }
 
     public class Article
@@ -120,5 +151,6 @@ namespace GestionStockMySneakers.Pages
         public decimal prix_public { get; set; }
         public decimal prix_achat { get; set; }
         public string img { get; set; }
+        public int id_famille { get; set; } 
+        public int id_marque { get; set; }
     }
-}

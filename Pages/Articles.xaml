@@ -5,9 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d"
-      Title="Articles" Height="800" Width="1000">
-
-
+      Title="Articles" Height="800" Width="1000"
+      MouseDown="Page_MouseDown">
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -61,9 +60,8 @@
                         </WrapPanel>
                         <WrapPanel>
                             <Label Content="Description :" Width="150" FontWeight="Bold"/>
-                            <!--<TextBox Name="SAI_Description" Width="270" Height="80" TextWrapping="Wrap" TextChanged="SAI_Description_TextChanged"/>-->
                             <TextBox Name="SAI_Description" Width="270" Height="80" TextWrapping="Wrap"/>
-                    </WrapPanel>
+                        </WrapPanel>
                         <WrapPanel>
                             <Label Content="Couleur :" Width="150" FontWeight="Bold"/>
                             <TextBox Name="SAI_Couleur" Width="270" />
@@ -86,11 +84,11 @@
                         <Image x:Name="ImageArticle" Width="250" Height="180" Stretch="Uniform" />
                     </StackPanel>
 
-                    <!--<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
                         <Button Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="80" Background="#4CAF50"/>
-                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="80" Background="#FFC107"/>
-                        <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="90" Background="#F44336"/>
-                    </StackPanel>-->
+                        <!--<Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="80" Background="#FFC107"/>
+                        <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="90" Background="#F44336"/>-->
+                    </StackPanel>
                 </Grid>
             </Border>
         </Grid>
