@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
-using System.Windows.Input; // Ajout de cette directive
+using System.Windows.Input;
 
 namespace GestionStockMySneakers.Pages
 {
@@ -16,11 +16,35 @@ namespace GestionStockMySneakers.Pages
     {
         private static readonly HttpClient client = new HttpClient();
         private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article"; // Assurez-vous que l'URL est correcte
+        private List<string> marques;
+        private List<string> familles;
 
         public Articles()
         {
             InitializeComponent();
-            afficher(); // Afficher les articles existants
+            LoadMarques(); // Load brands
+            LoadFamilles(); // Load families
+            afficher(); // Display existing articles
+        }
+
+        private async void LoadMarques()
+        {
+            // Remplacez par votre point de terminaison API réel pour les marques
+            var response = await client.GetAsync(apiUrl + "/marques");
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            marques = JsonConvert.DeserializeObject<List<string>>(responseBody);
+            cmbMarque.ItemsSource = marques;
+        }
+
+        private async void LoadFamilles()
+        {
+            // Remplacez par votre point de terminaison API réel pour les familles
+            var response = await client.GetAsync(apiUrl + "/familles");
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            familles = JsonConvert.DeserializeObject<List<string>>(responseBody);
+            cmbFamille.ItemsSource = familles;
         }
 
         private async void afficher()
@@ -51,8 +75,8 @@ namespace GestionStockMySneakers.Pages
         private void effacer()
         {
             txtId.Content = "";
-            SAI_Marque.Text = ""; 
-            SAI_NomFamille.Text = "";
+            cmbMarque.SelectedItem = null;
+            cmbFamille.SelectedItem = null;
             SAI_Modele.Text = "";
             SAI_Description.Text = "";
             SAI_Couleur.Text = "";
@@ -69,12 +93,12 @@ namespace GestionStockMySneakers.Pages
         private async Task AjouterArticle()
         {
             // Assurez-vous que les champs requis sont remplis
-            if (string.IsNullOrWhiteSpace(SAI_NomFamille.Text) ||
+            if (cmbMarque.SelectedItem == null ||
+                cmbFamille.SelectedItem == null ||
                 string.IsNullOrWhiteSpace(SAI_Modele.Text) ||
                 string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
                 !decimal.TryParse(SAI_PrixPublic.Text, out decimal prixPublic) ||
-                !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat) ||
-                string.IsNullOrWhiteSpace(SAI_Marque.Text)) // Vérifier que le champ marque est rempli
+                !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat))
             {
                 MessageBox.Show("Veuillez remplir tous les champs requis.");
                 return;
@@ -82,14 +106,14 @@ namespace GestionStockMySneakers.Pages
 
             var article = new Article
             {
-                nom_marque = SAI_Marque.Text, 
-                nom_famille = SAI_NomFamille.Text,
+                nom_marque = cmbMarque.SelectedItem?.ToString(),
+                nom_famille = cmbFamille.SelectedItem?.ToString(),
                 modele = SAI_Modele.Text,
                 description = SAI_Description.Text,
                 nom_couleur = SAI_Couleur.Text,
                 prix_public = prixPublic,
                 prix_achat = prixAchat,
-                img = SAI_Img.Text
+                img = SAI_Img.Text,
             };
 
             var json = JsonConvert.SerializeObject(article);
@@ -115,8 +139,8 @@ namespace GestionStockMySneakers.Pages
             if (dgArticles.SelectedItem is Article selectedArticle)
             {
                 txtId.Content = selectedArticle.id.ToString();
-                SAI_Marque.Text = selectedArticle.nom_marque; 
-                SAI_NomFamille.Text = selectedArticle.nom_famille;
+                cmbMarque.SelectedItem = selectedArticle.nom_marque;
+                cmbFamille.SelectedItem = selectedArticle.nom_famille;
                 SAI_Modele.Text = selectedArticle.modele;
                 SAI_Description.Text = selectedArticle.description;
                 SAI_Couleur.Text = selectedArticle.nom_couleur;
@@ -138,6 +162,16 @@ namespace GestionStockMySneakers.Pages
                 dgArticles.SelectedItem = null;
             }
         }
+
+        private void cmbMarque_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la marque est sélectionnée
+        }
+
+        private void cmbFamille_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
+        }
     }
 
     public class Article
@@ -151,6 +185,7 @@ namespace GestionStockMySneakers.Pages
         public decimal prix_public { get; set; }
         public decimal prix_achat { get; set; }
         public string img { get; set; }
-        public int id_famille { get; set; } 
+        public int id_famille { get; set; }
         public int id_marque { get; set; }
     }
+}

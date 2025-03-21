@@ -48,11 +48,11 @@
                         </WrapPanel>
                         <WrapPanel>
                             <Label Content="Marque :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_Marque" Width="270" />
+                            <ComboBox Name="cmbMarque" Width="270" SelectionChanged="cmbMarque_SelectionChanged"/>
                         </WrapPanel>
                         <WrapPanel>
                             <Label Content="Famille :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_NomFamille" Width="270" />
+                            <ComboBox Name="cmbFamille" Width="270" SelectionChanged="cmbFamille_SelectionChanged"/>
                         </WrapPanel>
                         <WrapPanel>
                             <Label Content="Modèle :" Width="150" FontWeight="Bold"/>
