@@ -48,7 +48,7 @@
                 Margin="80,20,80,20" 
                 Padding="20">
             <StackPanel>
-                <TextBlock Text="Email :" FontWeight="SemiBold" />
+                <TextBlock Text="E-mail :" FontWeight="SemiBold" />
                 <TextBox x:Name="txtEmail" Text="admin@example.com" Height="25" VerticalContentAlignment="Center" Margin="0,5,0,15" />
 
                 <TextBlock Text="Mot de passe :" FontWeight="SemiBold" />
@@ -92,7 +92,7 @@
                     Foreground="LightYellow"
                     FontWeight="Bold"
                     Click="btnLogin_Click" />
-            
+
             <Button Grid.Column="1"
                     x:Name="btnCancel"
                     Content="Quitter"
@@ -106,14 +106,5 @@
                     Click= "btnCancel_Click"/>
 
         </Grid>
-
-
-
-
-
-
-
-
-
     </Grid>
 </Window>

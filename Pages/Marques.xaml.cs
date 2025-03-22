@@ -15,14 +15,10 @@ namespace GestionStockMySneakers.Pages
 {
     public partial class Marques : Page
     {
-        private static readonly HttpClient client = new HttpClient();
-
         private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/marques";
-
 
         public Marques()
         {
-
             InitializeComponent();
             afficher();
         }
@@ -31,7 +27,7 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(apiUrl);
                 response.EnsureSuccessStatusCode();
 
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -61,7 +57,7 @@ namespace GestionStockMySneakers.Pages
                 var json = JsonConvert.SerializeObject(nouvelleMarque);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                HttpResponseMessage response = await ApiClient.Client.PostAsync(apiUrl, content);
                 response.EnsureSuccessStatusCode();
 
                 afficher();
@@ -85,7 +81,7 @@ namespace GestionStockMySneakers.Pages
                 var json = JsonConvert.SerializeObject(marqueModifiee);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PutAsync(url, content);
+                HttpResponseMessage response = await ApiClient.Client.PutAsync(url, content);
                 response.EnsureSuccessStatusCode();
 
                 afficher();
@@ -105,7 +101,7 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
-                HttpResponseMessage response = await client.DeleteAsync(url);
+                HttpResponseMessage response = await ApiClient.Client.DeleteAsync(url);
                 response.EnsureSuccessStatusCode();
 
                 afficher();

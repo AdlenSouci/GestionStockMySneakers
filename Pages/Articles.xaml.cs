@@ -1,71 +1,75 @@
-﻿using Newtonsoft.Json;
+﻿using GestionStockMySneakers.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using GestionStockMySneakers;
 
 namespace GestionStockMySneakers.Pages
 {
     public partial class Articles : Page
     {
-        private static readonly HttpClient client = new HttpClient();
-        // Si tu mets déjà "/articles" dans la variable apiURL, dans LoadMarques, ça va s'ajouter et donner "/articles/marques"
-        //private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article";
-        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"]
-            ?? throw new ArgumentNullException(nameof(apiUrl), "L'URL de l'API est introuvable dans app.config.");
-        // Initialiser les List avec new
-        private List<string> marques = new List<string>();
-        private List<string> familles = new List<string>();
-
+       
+        private List<Marque> marques = new List<Marque>();
         public Articles()
         {
             InitializeComponent();
+            afficher(); // Display existing articles
             LoadMarques(); // Chargement des marques
             LoadFamilles(); // Chargement des familles
-            afficher(); // Display existing articles
-        }
+         }
 
         private async void LoadMarques()
         {
-            // Remplacez par votre point de terminaison API réel pour les marques
-            var response = await client.GetAsync(apiUrl + "/marques");
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            marques = JsonConvert.DeserializeObject<List<string>>(responseBody);
-            cmbMarque.ItemsSource = marques;
+            try { 
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/marques");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Marque> marques = JsonConvert.DeserializeObject<List<Models.Marque>>(responseBody) ?? new List<Models.Marque>();
+
+                cmbMarque.DisplayMemberPath = "nom_marque";
+                cmbMarque.ItemsSource = marques;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+
         }
 
         private async void LoadFamilles()
         {
-            // Remplacez par votre point de terminaison API réel pour les familles
-            var response = await client.GetAsync(apiUrl + "/familles");
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            familles = JsonConvert.DeserializeObject<List<string>>(responseBody);
-            cmbFamille.ItemsSource = familles;
+            try
+            {
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/familles");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Famille> familles = JsonConvert.DeserializeObject<List<Models.Famille>>(responseBody) ?? new List<Models.Famille>();
+
+                cmbFamille.DisplayMemberPath = "nom_famille";
+                cmbFamille.ItemsSource = familles;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+
         }
 
         private async void afficher()
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync(apiUrl + "/articles");
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
                 response.EnsureSuccessStatusCode();
-
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var articles = JsonConvert.DeserializeObject<List<Article>>(responseBody);
-
-                // Vérifiez si articles est null
-                if (articles == null)
-                {
-                    articles = new List<Article>(); // Initialiser à une liste vide si null
-                }
+                List<Models.Article> articles = JsonConvert.DeserializeObject<List<Models.Article>>(responseBody) ?? new List<Article>();
 
                 dgArticles.ItemsSource = articles;
                 lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
@@ -125,7 +129,7 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
-                HttpResponseMessage response = await client.PostAsync(apiUrl, content);
+                HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl, content);
                 response.EnsureSuccessStatusCode();
 
                 MessageBox.Show("Article ajouté avec succès !");
@@ -176,20 +180,5 @@ namespace GestionStockMySneakers.Pages
         {
             // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
         }
-    }
-
-    public class Article
-    {
-        public int id { get; set; }
-        public string nom_marque { get; set; }
-        public string nom_famille { get; set; }
-        public string modele { get; set; }
-        public string description { get; set; }
-        public string nom_couleur { get; set; }
-        public decimal prix_public { get; set; }
-        public decimal prix_achat { get; set; }
-        public string img { get; set; }
-        public int id_famille { get; set; }
-        public int id_marque { get; set; }
     }
 }
