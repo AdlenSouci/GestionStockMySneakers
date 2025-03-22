@@ -7,7 +7,7 @@
       mc:Ignorable="d"
       Title="Marques" Height="600" Width="800">
 
-    <Grid MouseDown="Grid_MouseDown">
+    <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -63,12 +63,12 @@
 
 
 
-                    <StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
+                    <!--<StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
                         <Button  Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="65" Height="21" ></Button>
                         <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="65" Margin="10 0 10 0" Height="21" ></Button>
                         <Button  Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="66" Height="21"></Button>
 
-                    </StackPanel>
+                    </StackPanel>-->
 
 
                 </StackPanel>

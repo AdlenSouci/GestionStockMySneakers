@@ -26,7 +26,7 @@ namespace GestionStockMySneakers.Views
                 return;
             }
 
-            // Utilisation de la classe Login.cs pour l'authentification
+         
             string? token = await GestionStockMySneakers.Login.LogInAsync(email, password);
 
             if (token == null)
