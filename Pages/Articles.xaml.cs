@@ -1,275 +1,262 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GestionStockMySneakers.Models;
+using Newtonsoft.Json;
 using System;
-using System.Data;
-using System.IO;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using GestionStockMySneakers;
 
 namespace GestionStockMySneakers.Pages
 {
     public partial class Articles : Page
     {
-        Data d = new Data();
-
-        private MySqlConnection _connexion;
-        private MySqlCommand _command;
-        private MySqlDataAdapter _adapter;
-
-        private DataTable _dt;
+       
+        private List<Marque> marques = new List<Marque>();
+        private List<Models.Article> articles = new List<Article>();
 
         public Articles()
         {
-            _connexion = d.Connexion();
             InitializeComponent();
-            afficher();
+            afficher(); // Display existing articles
+            LoadMarques(); // Chargement des marques
+            LoadFamilles(); // Chargement des familles
+            LoadCouleurs(); // Chargement des couleurs
         }
 
-        private void afficher()
+        private async void LoadMarques()
         {
-            try
-            {
-                _adapter = new MySqlDataAdapter("SELECT * FROM articles;", _connexion);
-                _dt = new DataTable();
-                _adapter.Fill(_dt);
-                dgArticles.ItemsSource = _dt.DefaultView;
+            try { 
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/marques");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Marque> marques = JsonConvert.DeserializeObject<List<Models.Marque>>(responseBody) ?? new List<Models.Marque>();
+
+                cmbMarque.DisplayMemberPath = "nom_marque";
+                cmbMarque.SelectedValuePath = "id";
+                cmbMarque.ItemsSource = marques;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+        }
+
+        private async void LoadFamilles()
+        {
+            try
+            {
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/familles");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Famille> familles = JsonConvert.DeserializeObject<List<Models.Famille>>(responseBody) ?? new List<Models.Famille>();
+
+                cmbFamille.DisplayMemberPath = "nom_famille";
+                cmbFamille.SelectedValuePath = "id";
+                cmbFamille.ItemsSource = familles;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+        }
+
+        private async void LoadCouleurs()
+        {
+            try
+            {
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/couleurs");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Couleur> couleurs = JsonConvert.DeserializeObject<List<Models.Couleur>>(responseBody) ?? new List<Models.Couleur>();
+
+                cmbCouleur.DisplayMemberPath = "nom_couleur";
+                cmbCouleur.SelectedValuePath = "id";
+                cmbCouleur.ItemsSource = couleurs;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+        }
+
+        private async void afficher()
+        {
+            // Afficher le spinner
+            pbLoading.Visibility = Visibility.Visible;
+            dgArticles.Visibility = Visibility.Collapsed;
+
+            try
+            {
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Article> articles = JsonConvert.DeserializeObject<List<Models.Article>>(responseBody) ?? new List<Article>();
+
+                dgArticles.ItemsSource = articles;
+                lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+            finally
+            {
+                // Masquer le spinner et afficher les données
+                pbLoading.Visibility = Visibility.Collapsed;
+                dgArticles.Visibility = Visibility.Visible;
             }
         }
 
         private void effacer()
         {
             txtId.Content = "";
-            SAI_Marque.Text = "";
-            SAI_NomFamille.Text = "";
+            cmbMarque.SelectedItem = null;
+            cmbFamille.SelectedItem = null;
             SAI_Modele.Text = "";
             SAI_Description.Text = "";
-            SAI_Couleur.Text = "";
+            cmbCouleur.SelectedItem = null;
             SAI_PrixPublic.Text = "";
             SAI_PrixAchat.Text = "";
             SAI_Img.Text = "";
         }
 
-        private void btnAjouter_Click(object sender, RoutedEventArgs e)
+        private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            // Vérifiez que tous les champs sont remplis avant d'ajouter
-            if (string.IsNullOrWhiteSpace(SAI_Marque.Text))
-            {
-                MessageBox.Show("Le champ 'Nom de la marque' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_NomFamille.Text))
-            {
-                MessageBox.Show("Le champ 'Nom de la famille' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_Modele.Text))
-            {
-                MessageBox.Show("Le champ 'Modèle' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_Description.Text))
-            {
-                MessageBox.Show("Le champ 'Description' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_Couleur.Text))
-            {
-                MessageBox.Show("Le champ 'Couleur' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_PrixPublic.Text))
-            {
-                MessageBox.Show("Le champ 'Prix public' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_PrixAchat.Text))
-            {
-                MessageBox.Show("Le champ 'Prix d'achat' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(SAI_Img.Text))
-            {
-                MessageBox.Show("Le champ 'Image' est vide.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Vérifiez que les prix sont des décimaux valides
-            decimal prixPublic, prixAchat;
-            if (!decimal.TryParse(SAI_PrixPublic.Text, out prixPublic) || !decimal.TryParse(SAI_PrixAchat.Text, out prixAchat))
-            {
-                MessageBox.Show("Veuillez entrer des valeurs numériques valides pour les prix.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            string _sql = "INSERT INTO articles(id_marque, nom_marque, id_famille, nom_famille, modele, description, nom_couleur, prix_public, prix_achat, img) " +
-                          "VALUES((SELECT id FROM marques WHERE nom_marque = @NomMarque), @NomMarque, (SELECT id FROM familles WHERE nom_famille = @NomFamille), @NomFamille, @Modele, @Description, @NomCouleur, @PrixPublic, @PrixAchat, @Img)";
-            try
-            {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@NomMarque", SAI_Marque.Text);
-                _command.Parameters.AddWithValue("@NomFamille", SAI_NomFamille.Text);
-                _command.Parameters.AddWithValue("@Modele", SAI_Modele.Text);
-                _command.Parameters.AddWithValue("@Description", SAI_Description.Text);
-                _command.Parameters.AddWithValue("@NomCouleur", SAI_Couleur.Text);
-                _command.Parameters.AddWithValue("@PrixPublic", prixPublic);
-                _command.Parameters.AddWithValue("@PrixAchat", prixAchat);
-                _command.Parameters.AddWithValue("@Img", SAI_Img.Text);
-
-                _connexion.Open();
-                _command.ExecuteNonQuery();
-
-                afficher();
-                effacer();
-
-                MessageBox.Show("Article enregistré avec succès", "Nouvel article", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
-            }
+            await AjouterArticle();
         }
 
-        private void btnModifier_Click(object sender, RoutedEventArgs e)
+        private async Task AjouterArticle()
         {
-            string _sql = "UPDATE articles SET id_marque = (SELECT id FROM marques WHERE nom_marque = @NomMarque), nom_marque = @NomMarque, " +
-                          "id_famille = (SELECT id FROM familles WHERE nom_famille = @NomFamille), nom_famille = @NomFamille, " +
-                          "modele = @Modele, description = @Description, nom_couleur = @NomCouleur, prix_public = @PrixPublic, " +
-                          "prix_achat = @PrixAchat, img = @Img WHERE id = @Id";
-            try
+            // Assurez-vous que les champs requis sont remplis
+            if (cmbMarque.SelectedItem == null ||
+                cmbFamille.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(SAI_Modele.Text) ||
+                //string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
+                !decimal.TryParse(SAI_PrixPublic.Text, out decimal prixPublic) ||
+                !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat))
             {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@Id", txtId.Content);
-                _command.Parameters.AddWithValue("@NomMarque", SAI_Marque.Text);
-                _command.Parameters.AddWithValue("@NomFamille", SAI_NomFamille.Text);
-                _command.Parameters.AddWithValue("@Modele", SAI_Modele.Text);
-                _command.Parameters.AddWithValue("@Description", SAI_Description.Text);
-                _command.Parameters.AddWithValue("@NomCouleur", SAI_Couleur.Text);
-
-                // Vérifiez que les prix sont des décimaux valides
-                decimal prixPublic, prixAchat;
-                if (!decimal.TryParse(SAI_PrixPublic.Text, out prixPublic) || !decimal.TryParse(SAI_PrixAchat.Text, out prixAchat))
-                {
-                    MessageBox.Show("Veuillez entrer des valeurs numériques valides pour les prix.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                _command.Parameters.AddWithValue("@PrixPublic", prixPublic);
-                _command.Parameters.AddWithValue("@PrixAchat", prixAchat);
-                _command.Parameters.AddWithValue("@Img", SAI_Img.Text);
-
-                _connexion.Open();
-                _command.ExecuteNonQuery();
-
-                afficher();
-
-                MessageBox.Show("Article modifié avec succès", "Modifier Article", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Veuillez remplir tous les champs requis.");
+                return;
             }
-            catch (Exception ex)
+
+            var article = new Article
             {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
-            }
-        }
+                //nom_marque = cmbMarque.SelectedItem?.ToString(),
+                //nom_famille = cmbFamille.SelectedItem?.ToString(),
+                modele = SAI_Modele.Text,
+                description = SAI_Description.Text,
+                //nom_couleur = SAI_Couleur.Text,
+                prix_public = prixPublic,
+                prix_achat = prixAchat,
+                img = SAI_Img.Text,
+            };
 
-        private void btnSupprimer_Click(object sender, RoutedEventArgs e)
-        {
-            string _sql = "DELETE FROM articles WHERE id = @Id;";
+            var json = JsonConvert.SerializeObject(article);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             try
             {
-                _command = new MySqlCommand(_sql, _connexion);
-                _command.Parameters.AddWithValue("@Id", txtId.Content);
-                _connexion.Open();
-                _command.ExecuteNonQuery();
+                HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl, content);
+                response.EnsureSuccessStatusCode();
+
+                MessageBox.Show("Article ajouté avec succès !");
+                afficher(); // Rafraîchir la liste des articles
+                effacer(); // Effacer les champs après l'ajout
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Erreur lors de l'ajout de l'article : " + ex.Message);
             }
-            finally
-            {
-                _command.Dispose();
-                _connexion.Close();
-            }
-
-            afficher();
-            effacer();
         }
 
         private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((DataRowView)dgArticles.SelectedItem != null)
+            /*
+            if (dgArticles.SelectedItem is Article selectedArticle)
             {
-                DataRowView _drv = (DataRowView)dgArticles.SelectedItem;
+                txtId.Content = selectedArticle.id.ToString();
+                cmbMarque.SelectedItem = selectedArticle.nom_marque;
+                cmbFamille.SelectedItem = selectedArticle.nom_famille;
+                SAI_Modele.Text = selectedArticle.modele;
+                SAI_Description.Text = selectedArticle.description;
+                SAI_Couleur.Text = selectedArticle.nom_couleur;
+                SAI_PrixPublic.Text = selectedArticle.prix_public.ToString();
+                SAI_PrixAchat.Text = selectedArticle.prix_achat.ToString();
+                SAI_Img.Text = selectedArticle.img;
 
-                txtId.Content = _drv.Row["id"].ToString();
-                SAI_Marque.Text = _drv.Row["nom_marque"].ToString();
-                SAI_NomFamille.Text = _drv.Row["nom_famille"].ToString();
-                SAI_Modele.Text = _drv.Row["modele"].ToString();
-                SAI_Description.Text = _drv.Row["description"].ToString();
-                SAI_Couleur.Text = _drv.Row["nom_couleur"].ToString();
-                SAI_PrixPublic.Text = _drv.Row["prix_public"].ToString();
-                SAI_PrixAchat.Text = _drv.Row["prix_achat"].ToString();
-                SAI_Img.Text = _drv.Row["img"].ToString();
-                string imageUrl = _drv.Row["img"].ToString();
-
-                // Télécharger et afficher l'image
-                AfficherImage(imageUrl);
-            }
-        }
-
-        private void AfficherImage(string imageName)
-        {
-            try
-            {
-                var imagePath = @"C:\\CSharp\\GestionStockMySneakers\\img\\" + imageName;
-
-                if (File.Exists(imagePath))
+                if (!string.IsNullOrEmpty(selectedArticle.img))
                 {
-                    var uriSource = new Uri(imagePath);
-                    ImageArticle.Source = new BitmapImage(uriSource);
-                }
-                else
-                {
-                    MessageBox.Show("L'image n'existe pas sur le chemin spécifié.", "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
-                    ImageArticle.Source = null; // Clear image if not found
+                    ImageArticle.Source = new BitmapImage(new Uri(selectedArticle.img, UriKind.RelativeOrAbsolute));
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur lors du chargement de l'image : " + ex.Message, "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
-                ImageArticle.Source = null; // Clear image on error
-            }
-        }
-
-        private void SAI_Description_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // Vous pouvez ajouter une logique ici si nécessaire
+            */
         }
 
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Vérifiez si le clic est en dehors du DataGrid
-            if (dgArticles.IsFocused == false)
+            if (dgArticles.SelectedItem != null)
             {
-                effacer(); // Réinitialiser les champs
-                // Réactiver le bouton Ajouter
-                btnAjouter.IsEnabled = true;
+                dgArticles.SelectedItem = null;
             }
         }
+
+        private void cmbMarque_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la marque est sélectionnée
+        }
+
+        private void cmbFamille_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
+        }
+        private void cmbCouleur_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
+        }
+
+        private void btnModifier_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgArticles.SelectedItem is Article articleSelectionne)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "Voulez-vous vraiment supprimer cet article ?",
+                    "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+
+                    try
+                    {
+                        HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/article/" + articleSelectionne.id);
+                        response.EnsureSuccessStatusCode();
+
+                        // Supprimer l'article de la liste locale
+                        //articles.Remove(articleSelectionne);
+                        //dgArticles.ItemsSource = null;
+                        //dgArticles.ItemsSource = articles;
+                        //lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
+
+                        MessageBox.Show("Article supprimé avec succès !");
+                        afficher();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Erreur : " + ex.Message);
+                    }
+                }
+            }
+        }
+
     }
 }

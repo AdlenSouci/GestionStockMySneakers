@@ -10,15 +10,15 @@ namespace GestionStockMySneakers.Views
             InitializeComponent();
         }
 
-        private void Button_Click_quitt(object sender, RoutedEventArgs e)
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text;
-            string password = passwordBox.Password;
+            string password = txtPassword.Password;
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
@@ -43,13 +43,19 @@ namespace GestionStockMySneakers.Views
 
         private void btnShowPassword_Click(object sender, RoutedEventArgs e)
         {
-            if (passwordBox.Visibility == Visibility.Visible)
+            if (btnShowPassword.IsChecked == true)
             {
-                passwordBox.Visibility = Visibility.Collapsed;
+                // Afficher le mot de passe
+                txtPasswordVisible.Text = txtPassword.Password;
+                txtPasswordVisible.Visibility = Visibility.Visible;
+                txtPassword.Visibility = Visibility.Collapsed;
             }
             else
             {
-                passwordBox.Visibility = Visibility.Visible;
+                // Masquer le mot de passe
+                txtPassword.Password = txtPasswordVisible.Text;
+                txtPassword.Visibility = Visibility.Visible;
+                txtPasswordVisible.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -61,6 +67,9 @@ namespace GestionStockMySneakers.Views
             }
         }
 
-        
+        private void btnShowPassword_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

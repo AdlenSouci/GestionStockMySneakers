@@ -13,7 +13,7 @@ namespace GestionStockMySneakers
         
         private static readonly HttpClient client = new HttpClient();
 
-        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/login"; 
+        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/login"; // Correction ici
 
         public static async Task<string?> LogInAsync(string email, string password)
         {
@@ -30,7 +30,7 @@ namespace GestionStockMySneakers
                     var jsonData = JsonConvert.SerializeObject(loginData);
                     var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync(apiUrl, content);
+                    var response = await ApiClient.Client.PostAsync(apiUrl, content);
                     var responseString = await response.Content.ReadAsStringAsync();
 
                     if (response.IsSuccessStatusCode)

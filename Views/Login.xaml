@@ -6,13 +6,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestionStockMySneakers.Views"
         mc:Ignorable="d"
-        Title="Login"
-        Height="750"
-        Width="1150"
-        WindowStyle="None"
-        AllowsTransparency="True"
+        Title="Connexion"
+        Height="600"
+        Width="480"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="CanResize"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        ShowInTaskbar="True"
         MouseDown="Window_MouseDown">
 
     <Grid Background="LightYellow">
@@ -32,18 +32,6 @@
                    HorizontalAlignment="Center" 
                    Margin="0,20,0,10" />
 
-        <Button Grid.Row="4"
-        Content="Quitter"
-        Margin="10,20,0,50"
-        Width="120"
-        Height="40"
-        HorizontalAlignment="Right"
-        Background="Red"
-        Foreground="White"
-        FontWeight="Bold"
-        Click= "Button_Click_quitt"/>
-
-
         <TextBlock Grid.Row="1" 
                    Text="Veuillez vous connecter" 
                    FontSize="16" 
@@ -52,36 +40,71 @@
                    Margin="0,0,0,20" />
 
         <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/Assets/logo.png" Width="150" Height="150" HorizontalAlignment="Center" />
-            </StackPanel>
+            <Image Source="/Assets/logo.png" Width="150" Height="150" HorizontalAlignment="Center" />
         </Grid>
 
         <Border Grid.Row="3" 
                 Background="FloralWhite" 
-                Margin="262,59,262,136" 
+                Margin="80,20,80,20" 
                 Padding="20">
             <StackPanel>
-                <Label Content="Email : " FontSize="14"  FontWeight="SemiBold" />
-                <TextBox x:Name="txtEmail" Text="admin@example.com"   Margin="0,5,0,15" />
+                <TextBlock Text="E-mail :" FontWeight="SemiBold" />
+                <TextBox x:Name="txtEmail" Text="admin@example.com" Height="25" VerticalContentAlignment="Center" Margin="0,5,0,15" />
 
-                <Label Content="Password :" FontSize="14" FontWeight="SemiBold" />
-                <StackPanel Orientation="Horizontal">
-                    <PasswordBox x:Name="passwordBox" Password="44-SS_qq" Margin="0,5,0,15" Width="200" />
-                    <Button x:Name="btnShowPassword" Content="👁️" Width="30" Click="btnShowPassword_Click" />
-                </StackPanel>
+                <TextBlock Text="Mot de passe :" FontWeight="SemiBold" />
+                <Grid Margin="0,5,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <!-- PasswordBox prend toute la place dispo -->
+                        <ColumnDefinition Width="40" />
+                        <!-- Largeur fixe pour le bouton 👁 -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- PasswordBox -->
+                    <PasswordBox Name="txtPassword" Password="44-SS_qq" Grid.Column="0" Height="25" VerticalContentAlignment="Center" PasswordChar="●"/>
+                    <!-- TextBox pour afficher le texte en clair -->
+                    <TextBox Name="txtPasswordVisible" Grid.Column="0" Height="25" VerticalContentAlignment="Center" Visibility="Collapsed"/>
+
+                    <!-- Bouton "👁" -->
+                    <ToggleButton Name="btnShowPassword" Grid.Column="1" Width="40" Height="25" VerticalContentAlignment="Center" Click="btnShowPassword_Click">
+                        👁
+                    </ToggleButton>
+                </Grid>
+
             </StackPanel>
         </Border>
 
-        <Button Grid.Row="4"
-                Content="Login"
-                Margin="0,20,0,50"
-                Width="120"
-                Height="40"
-                HorizontalAlignment="Center"
-                Background="DarkOrange"
-                Foreground="LightYellow"
-                FontWeight="Bold"
-                Click="Button_Click" />
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+
+            <Button Grid.Column="0"
+                    x:Name="btnLogin"
+                    Content="Se connecter"
+                    Margin="0,20,10,50"
+                    Width="120"
+                    Height="40"
+                    HorizontalAlignment="Right"
+                    Background="DarkOrange"
+                    Foreground="LightYellow"
+                    FontWeight="Bold"
+                    Click="btnLogin_Click" />
+
+            <Button Grid.Column="1"
+                    x:Name="btnCancel"
+                    Content="Quitter"
+                    Margin="10,20,0,50"
+                    Width="120"
+                    Height="40"
+                    HorizontalAlignment="Left"
+                    Background="Red"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    Click= "btnCancel_Click"/>
+
+        </Grid>
     </Grid>
 </Window>
