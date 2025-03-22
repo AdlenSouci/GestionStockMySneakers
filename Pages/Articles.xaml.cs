@@ -17,13 +17,16 @@ namespace GestionStockMySneakers.Pages
     {
        
         private List<Marque> marques = new List<Marque>();
+        private List<Models.Article> articles = new List<Article>();
+
         public Articles()
         {
             InitializeComponent();
             afficher(); // Display existing articles
             LoadMarques(); // Chargement des marques
             LoadFamilles(); // Chargement des familles
-         }
+            LoadCouleurs(); // Chargement des couleurs
+        }
 
         private async void LoadMarques()
         {
@@ -34,13 +37,13 @@ namespace GestionStockMySneakers.Pages
                 List<Models.Marque> marques = JsonConvert.DeserializeObject<List<Models.Marque>>(responseBody) ?? new List<Models.Marque>();
 
                 cmbMarque.DisplayMemberPath = "nom_marque";
+                cmbMarque.SelectedValuePath = "id";
                 cmbMarque.ItemsSource = marques;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Erreur : " + ex.Message);
             }
-
         }
 
         private async void LoadFamilles()
@@ -53,13 +56,32 @@ namespace GestionStockMySneakers.Pages
                 List<Models.Famille> familles = JsonConvert.DeserializeObject<List<Models.Famille>>(responseBody) ?? new List<Models.Famille>();
 
                 cmbFamille.DisplayMemberPath = "nom_famille";
+                cmbFamille.SelectedValuePath = "id";
                 cmbFamille.ItemsSource = familles;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Erreur : " + ex.Message);
             }
+        }
 
+        private async void LoadCouleurs()
+        {
+            try
+            {
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/couleurs");
+                response.EnsureSuccessStatusCode();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                List<Models.Couleur> couleurs = JsonConvert.DeserializeObject<List<Models.Couleur>>(responseBody) ?? new List<Models.Couleur>();
+
+                cmbCouleur.DisplayMemberPath = "nom_couleur";
+                cmbCouleur.SelectedValuePath = "id";
+                cmbCouleur.ItemsSource = couleurs;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
         }
 
         private async void afficher()
@@ -97,7 +119,7 @@ namespace GestionStockMySneakers.Pages
             cmbFamille.SelectedItem = null;
             SAI_Modele.Text = "";
             SAI_Description.Text = "";
-            SAI_Couleur.Text = "";
+            cmbCouleur.SelectedItem = null;
             SAI_PrixPublic.Text = "";
             SAI_PrixAchat.Text = "";
             SAI_Img.Text = "";
@@ -114,7 +136,7 @@ namespace GestionStockMySneakers.Pages
             if (cmbMarque.SelectedItem == null ||
                 cmbFamille.SelectedItem == null ||
                 string.IsNullOrWhiteSpace(SAI_Modele.Text) ||
-                string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
+                //string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
                 !decimal.TryParse(SAI_PrixPublic.Text, out decimal prixPublic) ||
                 !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat))
             {
@@ -124,11 +146,11 @@ namespace GestionStockMySneakers.Pages
 
             var article = new Article
             {
-                nom_marque = cmbMarque.SelectedItem?.ToString(),
-                nom_famille = cmbFamille.SelectedItem?.ToString(),
+                //nom_marque = cmbMarque.SelectedItem?.ToString(),
+                //nom_famille = cmbFamille.SelectedItem?.ToString(),
                 modele = SAI_Modele.Text,
                 description = SAI_Description.Text,
-                nom_couleur = SAI_Couleur.Text,
+                //nom_couleur = SAI_Couleur.Text,
                 prix_public = prixPublic,
                 prix_achat = prixAchat,
                 img = SAI_Img.Text,
@@ -154,6 +176,7 @@ namespace GestionStockMySneakers.Pages
 
         private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            /*
             if (dgArticles.SelectedItem is Article selectedArticle)
             {
                 txtId.Content = selectedArticle.id.ToString();
@@ -171,6 +194,7 @@ namespace GestionStockMySneakers.Pages
                     ImageArticle.Source = new BitmapImage(new Uri(selectedArticle.img, UriKind.RelativeOrAbsolute));
                 }
             }
+            */
         }
 
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
@@ -190,5 +214,49 @@ namespace GestionStockMySneakers.Pages
         {
             // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
         }
+        private void cmbCouleur_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
+        }
+
+        private void btnModifier_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgArticles.SelectedItem is Article articleSelectionne)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "Voulez-vous vraiment supprimer cet article ?",
+                    "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+
+                    try
+                    {
+                        HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/article/" + articleSelectionne.id);
+                        response.EnsureSuccessStatusCode();
+
+                        // Supprimer l'article de la liste locale
+                        //articles.Remove(articleSelectionne);
+                        //dgArticles.ItemsSource = null;
+                        //dgArticles.ItemsSource = articles;
+                        //lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
+
+                        MessageBox.Show("Article supprimé avec succès !");
+                        afficher();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Erreur : " + ex.Message);
+                    }
+                }
+            }
+        }
+
     }
 }

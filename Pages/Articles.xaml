@@ -21,12 +21,15 @@
                 <RowDefinition Height="4*"/>
             </Grid.RowDefinitions>
 
-            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" Name="dgArticles" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgArticles" IsReadOnly="True" SelectionChanged="dgArticles_SelectionChanged" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding id_marque}" Header="id_marque" Width="*" Visibility="Collapsed" />
                     <DataGridTextColumn Binding="{Binding nom_marque}" Header="Marque" Width="*" />
-                    <DataGridTextColumn Binding="{Binding nom_famille}" Header="Nom de la famille" Width="*" />
+                    <DataGridTextColumn Binding="{Binding id_famille}" Header="id_famille" Width="*" Visibility="Collapsed" />
+                    <DataGridTextColumn Binding="{Binding nom_famille}" Header="Famille" Width="*" />
                     <DataGridTextColumn Binding="{Binding modele}" Header="Modèle" Width="*" />
                     <DataGridTextColumn Binding="{Binding description}" Header="Description" Width="*" />
+                    <DataGridTextColumn Binding="{Binding id_couleur}" Header="id_couleur" Width="*" Visibility="Collapsed" />
                     <DataGridTextColumn Binding="{Binding nom_couleur}" Header="Couleur" Width="*" />
                     <DataGridTextColumn Binding="{Binding prix_public}" Header="Prix public" Width="*" />
                     <DataGridTextColumn Binding="{Binding prix_achat}" Header="Prix d'achat" Width="*" />
@@ -46,41 +49,41 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="ID :" Width="150" FontWeight="Bold"/>
-                            <Label Name="txtId" Width="270" />
+                            <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgArticles, Mode=OneWay}" Width="270" />
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Marque :" Width="150" FontWeight="Bold"/>
-                            <ComboBox Name="cmbMarque" Width="270"  SelectionChanged="cmbMarque_SelectionChanged"/>
+                            <ComboBox SelectedValue="{Binding SelectedItem.id_marque, ElementName=dgArticles, Mode=OneWay}" Name="cmbMarque" Width="270"  SelectionChanged="cmbMarque_SelectionChanged"/>
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Famille :" Width="150" FontWeight="Bold"/>
-                            <ComboBox Name="cmbFamille" Width="270" SelectionChanged="cmbFamille_SelectionChanged"/>
+                            <ComboBox SelectedValue="{Binding SelectedItem.id_famille, ElementName=dgArticles, Mode=OneWay}" Name="cmbFamille" Width="270" SelectionChanged="cmbFamille_SelectionChanged"/>
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Modèle :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_Modele" Width="270" />
+                            <TextBox Text="{Binding SelectedItem.modele, ElementName=dgArticles, Mode=OneWay}" Name="SAI_Modele" Width="270" />
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Description :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_Description" Width="270" Height="80" TextWrapping="Wrap"/>
+                            <TextBox  Text="{Binding SelectedItem.description, ElementName=dgArticles, Mode=OneWay}" Name="SAI_Description" Width="270" Height="80" TextWrapping="Wrap"/>
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Couleur :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_Couleur" Width="270" />
+                            <ComboBox SelectedValue="{Binding SelectedItem.id_couleur, ElementName=dgArticles, Mode=OneWay}" Name="cmbCouleur" Width="270"  SelectionChanged="cmbCouleur_SelectionChanged"/>
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Prix public :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_PrixPublic" Width="270" />
+                            <TextBox Text="{Binding SelectedItem.prix_public, ElementName=dgArticles, Mode=OneWay}" Name="SAI_PrixPublic" Width="270" />
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Prix d'achat :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_PrixAchat" Width="270" />
+                            <TextBox Text="{Binding SelectedItem.prix_achat, ElementName=dgArticles, Mode=OneWay}" Name="SAI_PrixAchat" Width="270" />
                         </WrapPanel>
-                        <WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
                             <Label Content="Image :" Width="150" FontWeight="Bold"/>
-                            <TextBox Name="SAI_Img" Width="270" />
+                            <TextBox Text="{Binding SelectedItem.img, ElementName=dgArticles, Mode=OneWay}" Name="SAI_Img" Width="270" />
                         </WrapPanel>
                     </StackPanel>
 
@@ -89,9 +92,9 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
-                        <Button Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="80" Background="#4CAF50"/>
-                        <!--<Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="80" Background="#FFC107"/>
-                        <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="90" Background="#F44336"/>-->
+                        <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Width="80" Background="#4CAF50"/>
+                        <Button Name="btnModifier" Content="Enregistrer" Click="btnModifier_Click" Width="80" Background="#FFC107"/>
+                        <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Width="90" Background="#F44336"/>
                     </StackPanel>
                 </Grid>
             </Border>
