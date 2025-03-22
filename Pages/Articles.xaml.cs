@@ -15,15 +15,19 @@ namespace GestionStockMySneakers.Pages
     public partial class Articles : Page
     {
         private static readonly HttpClient client = new HttpClient();
-        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article"; // Assurez-vous que l'URL est correcte
-        private List<string> marques;
-        private List<string> familles;
+        // Si tu mets déjà "/articles" dans la variable apiURL, dans LoadMarques, ça va s'ajouter et donner "/articles/marques"
+        //private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"] + "/article";
+        private static readonly string apiUrl = ConfigurationManager.AppSettings["api_url"]
+            ?? throw new ArgumentNullException(nameof(apiUrl), "L'URL de l'API est introuvable dans app.config.");
+        // Initialiser les List avec new
+        private List<string> marques = new List<string>();
+        private List<string> familles = new List<string>();
 
         public Articles()
         {
             InitializeComponent();
-            LoadMarques(); // Load brands
-            LoadFamilles(); // Load families
+            LoadMarques(); // Chargement des marques
+            LoadFamilles(); // Chargement des familles
             afficher(); // Display existing articles
         }
 
@@ -51,7 +55,7 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                HttpResponseMessage response = await client.GetAsync(apiUrl + "/articles");
                 response.EnsureSuccessStatusCode();
 
                 string responseBody = await response.Content.ReadAsStringAsync();
