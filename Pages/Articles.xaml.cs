@@ -64,6 +64,10 @@ namespace GestionStockMySneakers.Pages
 
         private async void afficher()
         {
+            // Afficher le spinner
+            pbLoading.Visibility = Visibility.Visible;
+            dgArticles.Visibility = Visibility.Collapsed;
+
             try
             {
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
@@ -77,6 +81,12 @@ namespace GestionStockMySneakers.Pages
             catch (Exception ex)
             {
                 MessageBox.Show("Erreur : " + ex.Message);
+            }
+            finally
+            {
+                // Masquer le spinner et afficher les données
+                pbLoading.Visibility = Visibility.Collapsed;
+                dgArticles.Visibility = Visibility.Visible;
             }
         }
 
