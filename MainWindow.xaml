@@ -81,36 +81,28 @@
 
                 </MenuItem>
 
-                <!--// Main Menu - Music //-->
-
-                <MenuItem Header="Crud"
-                          Template="{StaticResource Menu_SubMenu_Template}" RenderTransformOrigin="0.27,0.56">
+                <!--// Main Menu - CRUD //-->
+                <MenuItem Header="CRUD" Template="{StaticResource Menu_SubMenu_Template}" RenderTransformOrigin="0.27,0.56">
 
                     <MenuItem.Icon>
-
-                        <Image Source="Assets/img_crud.png"
-                               Stretch="None" />
-
+                        <Image Source="Assets/img_crud.png" Stretch="None" />
                     </MenuItem.Icon>
 
-
-                    <MenuItem Header="Crud Article"
-                              Template="{StaticResource Item_Template}"   Click="MenuItem_Click_A" >
-
-
-
+                    <MenuItem Header="Articles"
+                        Template="{StaticResource Item_Template}"   Click="MenuItem_Click_A" >
                     </MenuItem>
 
-
-                    <MenuItem Header="Crud Marque"
-                              Template="{StaticResource Item_Template}" Click="MenuItem_Click_M">
-
-
-
+                    <MenuItem Header="Familles"
+                        Template="{StaticResource Item_Template}" Click="MenuItem_Click_F">
                     </MenuItem>
 
+                    <MenuItem Header="Marques"
+                        Template="{StaticResource Item_Template}" Click="MenuItem_Click_M">
+                    </MenuItem>
 
-
+                    <MenuItem Header="Couleurs"
+                        Template="{StaticResource Item_Template}" Click="MenuItem_Click_C">
+                    </MenuItem>
 
                 </MenuItem>
 
@@ -148,7 +140,7 @@
 
 
                 <MenuItem Header="Commandes" 
-                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_C">
+                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Com">
                           
 
                     <MenuItem.Icon>
