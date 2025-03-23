@@ -162,7 +162,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Pages\Famille.xaml.cs">
+      <Compile Update="Pages\Familles.xaml.cs">
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>

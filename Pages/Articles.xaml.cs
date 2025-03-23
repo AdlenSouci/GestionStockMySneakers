@@ -2,14 +2,13 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using GestionStockMySneakers;
 
 namespace GestionStockMySneakers.Pages
 {
@@ -17,7 +16,8 @@ namespace GestionStockMySneakers.Pages
     {
        
         private List<Marque> marques = new List<Marque>();
-        private List<Models.Article> articles = new List<Article>();
+        //private List<Models.Article> articles = new List<Article>();
+        private ObservableCollection<Models.Article> articles = new ObservableCollection<Article>();
 
         public Articles()
         {
@@ -31,7 +31,7 @@ namespace GestionStockMySneakers.Pages
         private async void LoadMarques()
         {
             try { 
-                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/marques");
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/marque");
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 List<Models.Marque> marques = JsonConvert.DeserializeObject<List<Models.Marque>>(responseBody) ?? new List<Models.Marque>();
@@ -50,7 +50,7 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/familles");
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/famille");
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 List<Models.Famille> familles = JsonConvert.DeserializeObject<List<Models.Famille>>(responseBody) ?? new List<Models.Famille>();
@@ -95,7 +95,7 @@ namespace GestionStockMySneakers.Pages
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                List<Models.Article> articles = JsonConvert.DeserializeObject<List<Models.Article>>(responseBody) ?? new List<Article>();
+                articles = JsonConvert.DeserializeObject<ObservableCollection<Models.Article>>(responseBody) ?? new ObservableCollection<Article>();
 
                 dgArticles.ItemsSource = articles;
                 lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
@@ -114,87 +114,12 @@ namespace GestionStockMySneakers.Pages
 
         private void effacer()
         {
-            txtId.Content = "";
-            cmbMarque.SelectedItem = null;
-            cmbFamille.SelectedItem = null;
-            SAI_Modele.Text = "";
-            SAI_Description.Text = "";
-            cmbCouleur.SelectedItem = null;
-            SAI_PrixPublic.Text = "";
-            SAI_PrixAchat.Text = "";
-            SAI_Img.Text = "";
+            dgArticles.SelectedItem = null;
         }
 
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            await AjouterArticle();
-        }
-
-        private async Task AjouterArticle()
-        {
-            // Assurez-vous que les champs requis sont remplis
-            if (cmbMarque.SelectedItem == null ||
-                cmbFamille.SelectedItem == null ||
-                string.IsNullOrWhiteSpace(SAI_Modele.Text) ||
-                //string.IsNullOrWhiteSpace(SAI_Couleur.Text) ||
-                !decimal.TryParse(SAI_PrixPublic.Text, out decimal prixPublic) ||
-                !decimal.TryParse(SAI_PrixAchat.Text, out decimal prixAchat))
-            {
-                MessageBox.Show("Veuillez remplir tous les champs requis.");
-                return;
-            }
-
-            var article = new Article
-            {
-                //nom_marque = cmbMarque.SelectedItem?.ToString(),
-                //nom_famille = cmbFamille.SelectedItem?.ToString(),
-                modele = SAI_Modele.Text,
-                description = SAI_Description.Text,
-                //nom_couleur = SAI_Couleur.Text,
-                prix_public = prixPublic,
-                prix_achat = prixAchat,
-                img = SAI_Img.Text,
-            };
-
-            var json = JsonConvert.SerializeObject(article);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            try
-            {
-                HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl, content);
-                response.EnsureSuccessStatusCode();
-
-                MessageBox.Show("Article ajouté avec succès !");
-                afficher(); // Rafraîchir la liste des articles
-                effacer(); // Effacer les champs après l'ajout
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur lors de l'ajout de l'article : " + ex.Message);
-            }
-        }
-
-        private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            /*
-            if (dgArticles.SelectedItem is Article selectedArticle)
-            {
-                txtId.Content = selectedArticle.id.ToString();
-                cmbMarque.SelectedItem = selectedArticle.nom_marque;
-                cmbFamille.SelectedItem = selectedArticle.nom_famille;
-                SAI_Modele.Text = selectedArticle.modele;
-                SAI_Description.Text = selectedArticle.description;
-                SAI_Couleur.Text = selectedArticle.nom_couleur;
-                SAI_PrixPublic.Text = selectedArticle.prix_public.ToString();
-                SAI_PrixAchat.Text = selectedArticle.prix_achat.ToString();
-                SAI_Img.Text = selectedArticle.img;
-
-                if (!string.IsNullOrEmpty(selectedArticle.img))
-                {
-                    ImageArticle.Source = new BitmapImage(new Uri(selectedArticle.img, UriKind.RelativeOrAbsolute));
-                }
-            }
-            */
+            effacer();
         }
 
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
@@ -205,25 +130,76 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        private void cmbMarque_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Vous pouvez ajouter une logique ici si nécessaire lorsque la marque est sélectionnée
-        }
-
-        private void cmbFamille_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
-        }
-        private void cmbCouleur_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Vous pouvez ajouter une logique ici si nécessaire lorsque la famille est sélectionnée
-        }
-
-        private void btnModifier_Click(object sender, RoutedEventArgs e)
+        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
         {
 
-        }
+            // Vérifier que tous les champs sont remplis
+            if (string.IsNullOrEmpty(txtModele.Text) || string.IsNullOrEmpty(txtDescription.Text) ||
+                cmbFamille.SelectedItem == null || cmbMarque.SelectedItem == null || cmbCouleur.SelectedItem == null)
+            {
+                MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
+                return;
+            }
 
+            var article = new
+            {
+                id_famille = ((Models.Famille)cmbFamille.SelectedItem).id,
+                id_marque = ((Models.Marque)cmbMarque.SelectedItem).id,
+                id_couleur = ((Models.Couleur)cmbCouleur.SelectedItem).id,
+                modele = txtModele.Text,
+                description = txtDescription.Text,
+                prix_public = decimal.Parse(txtPrixPublic.Text.Replace('.',',')),
+                prix_achat = decimal.Parse(txtPrixAchat.Text.Replace('.', ',')),
+                img = "default.jpg" // Remplace par un vrai upload d'image si nécessaire
+            };
+
+            try
+            {
+                HttpResponseMessage response;
+                string json = JsonConvert.SerializeObject(article);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                if (null==txtId.Content)
+                {
+                    // Ajout
+                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/article", content);
+                    // 🆕 Récupérer l'article ajouté
+                    var newArticle = JsonConvert.DeserializeObject<Article>(await response.Content.ReadAsStringAsync());
+
+                    // 🚀 Ajouter l'article directement au DataGrid
+                    if (null!=newArticle)
+                        articles.Add(newArticle);
+
+                    MessageBox.Show("Article ajouté avec succès !");
+                }
+                else
+                {
+                    // Mise à jour
+                    int articleId = int.Parse(txtId.Content.ToString());
+                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/article/{articleId}", content);
+
+                    // 📢 Trouver et modifier l'article dans la liste existante
+                    var updatedArticle = articles.FirstOrDefault(a => a.id == articleId);
+                    if (updatedArticle != null)
+                    {
+                        updatedArticle.modele = txtModele.Text;
+                        updatedArticle.description = txtDescription.Text;
+                        updatedArticle.prix_public = decimal.Parse(txtPrixPublic.Text.Replace('.', ','));
+                        updatedArticle.prix_achat = decimal.Parse(txtPrixAchat.Text.Replace('.', ','));
+                        updatedArticle.id_famille = ((Models.Famille)cmbFamille.SelectedItem).id;
+                        updatedArticle.id_marque = ((Models.Marque)cmbMarque.SelectedItem).id;
+                        updatedArticle.id_couleur = ((Models.Couleur)cmbCouleur.SelectedItem).id;
+                    }
+                    dgArticles.Items.Refresh();
+                    MessageBox.Show("Article mis à jour avec succès !");
+                }
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+        }
 
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
@@ -235,20 +211,14 @@ namespace GestionStockMySneakers.Pages
 
                 if (result == MessageBoxResult.Yes)
                 {
-
                     try
                     {
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/article/" + articleSelectionne.id);
                         response.EnsureSuccessStatusCode();
 
                         // Supprimer l'article de la liste locale
-                        //articles.Remove(articleSelectionne);
-                        //dgArticles.ItemsSource = null;
-                        //dgArticles.ItemsSource = articles;
-                        //lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
-
-                        MessageBox.Show("Article supprimé avec succès !");
-                        afficher();
+                        articles.Remove(articleSelectionne);
+                        //MessageBox.Show("Article supprimé avec succès !");
                     }
                     catch (Exception ex)
                     {
@@ -257,6 +227,5 @@ namespace GestionStockMySneakers.Pages
                 }
             }
         }
-
     }
 }

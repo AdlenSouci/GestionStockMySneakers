@@ -12,13 +12,13 @@ using System.Windows.Data;
 
 namespace GestionStockMySneakers.Pages
 {
-    public partial class Marques : Page
+    public partial class Couleurs : Page
     {
 
-        private ObservableCollection<Models.Marque> marques = new ObservableCollection<Models.Marque>();
+        private ObservableCollection<Models.Couleur> couleurs = new ObservableCollection<Models.Couleur>();
 
 
-        public Marques()
+        public Couleurs()
         {
             InitializeComponent();
             afficher();
@@ -27,17 +27,17 @@ namespace GestionStockMySneakers.Pages
         {
             // Afficher le spinner
             pbLoading.Visibility = Visibility.Visible;
-            dgMarques.Visibility = Visibility.Collapsed;
+            dgCouleurs.Visibility = Visibility.Collapsed;
 
             try
             {
-                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/marque");
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/couleur");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                marques = JsonConvert.DeserializeObject<ObservableCollection<Models.Marque>>(responseBody) ?? new ObservableCollection<Marque>();
+                couleurs = JsonConvert.DeserializeObject<ObservableCollection<Models.Couleur>>(responseBody) ?? new ObservableCollection<Couleur>();
 
-                dgMarques.ItemsSource = marques;
-                lblMarques.Content = $"Marques ({marques.Count})"; // Afficher le nombre de marques
+                dgCouleurs.ItemsSource = couleurs;
+                lblCouleurs.Content = $"Couleurs ({couleurs.Count})"; // Afficher le nombre de couleurs
             }
             catch (Exception ex)
             {
@@ -47,13 +47,13 @@ namespace GestionStockMySneakers.Pages
             {
                 // Masquer le spinner et afficher les données
                 pbLoading.Visibility = Visibility.Collapsed;
-                dgMarques.Visibility = Visibility.Visible;
+                dgCouleurs.Visibility = Visibility.Visible;
             }
         }
 
         private void effacer()
         {
-            dgMarques.SelectedItem = null;
+            dgCouleurs.SelectedItem = null;
         }
 
 
@@ -66,51 +66,51 @@ namespace GestionStockMySneakers.Pages
         {
 
             // Vérifier que tous les champs sont remplis
-            if (string.IsNullOrEmpty(txtNomMarque.Text))
+            if (string.IsNullOrEmpty(txtNomCouleur.Text))
             {
                 MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
                 return;
             }
 
-            var marque = new
+            var couleur = new
             {
-                nom_marque = txtNomMarque.Text,
+                nom_couleur = txtNomCouleur.Text,
             };
 
             try
             {
                 HttpResponseMessage response;
-                string json = JsonConvert.SerializeObject(marque);
+                string json = JsonConvert.SerializeObject(couleur);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
                 {
                     // Ajout
-                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/marque", content);
-                    // Récupérer la marque ajoutée
-                    var newMarque = JsonConvert.DeserializeObject<Marque>(await response.Content.ReadAsStringAsync());
+                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/couleur", content);
+                    // Récupérer la couleur ajoutée
+                    var newCouleur = JsonConvert.DeserializeObject<Couleur>(await response.Content.ReadAsStringAsync());
 
-                    // Ajouter la marque directement au DataGrid
-                    if (null != newMarque)
-                        marques.Add(newMarque);
+                    // Ajouter la couleur directement au DataGrid
+                    if (null != newCouleur)
+                        couleurs.Add(newCouleur);
 
-                    MessageBox.Show("Marque ajoutée avec succès !");
+                    MessageBox.Show("Couleur ajoutée avec succès !");
                 }
                 else
                 {
                     // Mise à jour
-                    int marqueId = int.Parse(txtId.Content.ToString());
-                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/marque/{marqueId}", content);
+                    int couleurId = int.Parse(txtId.Content.ToString());
+                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/couleur/{couleurId}", content);
 
-                    // Trouver et modifier la marque dans la liste existante
-                    var updatedMarque = marques.FirstOrDefault(a => a.id == marqueId);
-                    if (updatedMarque != null)
+                    // Trouver et modifier la couleur dans la liste existante
+                    var updatedCouleur = couleurs.FirstOrDefault(a => a.id == couleurId);
+                    if (updatedCouleur != null)
                     {
-                        updatedMarque.nom_marque = txtNomMarque.Text;
+                        updatedCouleur.nom_couleur = txtNomCouleur.Text;
                     }
-                    dgMarques.Items.Refresh();
+                    dgCouleurs.Items.Refresh();
 
-                    MessageBox.Show("Marque mise à jour avec succès !");
+                    MessageBox.Show("Couleur mise à jour avec succès !");
                 }
                 response.EnsureSuccessStatusCode();
             }
@@ -123,22 +123,22 @@ namespace GestionStockMySneakers.Pages
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
             {
-                if (dgMarques.SelectedItem is Marque marqueSelectionnee)
+                if (dgCouleurs.SelectedItem is Couleur couleurSelectionnee)
                 {
                     MessageBoxResult result = MessageBox.Show(
-                        "Voulez-vous vraiment supprimer cette marque ?",
+                        "Voulez-vous vraiment supprimer cette couleur ?",
                         "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                     if (result == MessageBoxResult.Yes)
                     {
                         try
                         {
-                            HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/marque/{marqueSelectionnee.id}");
+                            HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/couleur/{couleurSelectionnee.id}");
                             response.EnsureSuccessStatusCode();
 
-                            // Supprimer la marque de la liste locale
-                            marques.Remove(marqueSelectionnee);
-                            //MessageBox.Show("Marque supprimé avec succès !");
+                            // Supprimer la couleur de la liste locale
+                            couleurs.Remove(couleurSelectionnee);
+                            //MessageBox.Show("Couleur supprimé avec succès !");
                         }
                         catch (Exception ex)
                         {
