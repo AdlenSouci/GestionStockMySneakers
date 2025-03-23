@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using GestionStockMySneakers;
+using System.Collections.ObjectModel;
 
 namespace GestionStockMySneakers.Pages
 {
@@ -17,7 +18,8 @@ namespace GestionStockMySneakers.Pages
     {
        
         private List<Marque> marques = new List<Marque>();
-        private List<Models.Article> articles = new List<Article>();
+        //private List<Models.Article> articles = new List<Article>();
+        private ObservableCollection<Models.Article> articles = new ObservableCollection<Article>();
 
         public Articles()
         {
@@ -95,7 +97,7 @@ namespace GestionStockMySneakers.Pages
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                List<Models.Article> articles = JsonConvert.DeserializeObject<List<Models.Article>>(responseBody) ?? new List<Article>();
+                articles = JsonConvert.DeserializeObject<ObservableCollection<Models.Article>>(responseBody) ?? new ObservableCollection<Article>();
 
                 dgArticles.ItemsSource = articles;
                 lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
@@ -235,20 +237,14 @@ namespace GestionStockMySneakers.Pages
 
                 if (result == MessageBoxResult.Yes)
                 {
-
                     try
                     {
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/article/" + articleSelectionne.id);
                         response.EnsureSuccessStatusCode();
 
                         // Supprimer l'article de la liste locale
-                        //articles.Remove(articleSelectionne);
-                        //dgArticles.ItemsSource = null;
-                        //dgArticles.ItemsSource = articles;
-                        //lblArticles.Content = $"Articles ({articles.Count})"; // Afficher le nombre d'articles
-
-                        MessageBox.Show("Article supprimé avec succès !");
-                        afficher();
+                        articles.Remove(articleSelectionne);
+                        //MessageBox.Show("Article supprimé avec succès !");
                     }
                     catch (Exception ex)
                     {
