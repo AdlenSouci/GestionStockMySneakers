@@ -1,0 +1,87 @@
+﻿<Page x:Class="GestionStockMySneakers.Pages.Annonces"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
+      mc:Ignorable="d"
+      Title="Annonces"
+      MouseDown="Page_MouseDown">
+
+    <Grid Background="AliceBlue" Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Name="lblAnnonces" Content="Annonces" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
+
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="4*"/>
+            </Grid.RowDefinitions>
+
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgAnnonces" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding id}" Header="Id" Width="*" Visibility="Collapsed" />
+                    <DataGridTextColumn Binding="{Binding h1}" Header="H1" Width="*" />
+                    <DataGridTextColumn Binding="{Binding h3}" Header="H3" Width="*" Visibility="Collapsed" />
+                    <DataGridTextColumn Binding="{Binding texte}" Header="Texte" Width="*" />
+                    <DataGridTextColumn Binding="{Binding imageURL}" Header="ImageURL" Width="*" />
+                    <DataGridTextColumn Binding="{Binding statut}" Header="Statut" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Spinner -->
+            <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
+                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+
+            <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFF" Padding="10" BorderBrush="#CCC" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="ID :" Width="150" FontWeight="Bold"/>
+                            <Label x:Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgAnnonces, Mode=OneWay}" Width="270" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="H1 :" Width="150" FontWeight="Bold"/>
+                            <TextBox Text="{Binding SelectedItem.h1, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtH1" Width="270" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="H3 :" Width="150" FontWeight="Bold"/>
+                            <TextBox Text="{Binding SelectedItem.h3, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtH3" Width="270" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="Texte :" Width="150" FontWeight="Bold"/>
+                            <TextBox Text="{Binding SelectedItem.texte, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtTexte" Width="270" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="Image :" Width="150" FontWeight="Bold"/>
+                            <TextBox  Text="{Binding SelectedItem.imageURL, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtImageURL" Width="270" Height="80" TextWrapping="Wrap"/>
+                        </WrapPanel>
+                        <WrapPanel Margin="0 2 0 2">
+                            <Label Content="Statut :" Width="150" FontWeight="Bold"/>
+                            <TextBox  Text="{Binding SelectedItem.statut, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtStatut" Width="270" Height="80" TextWrapping="Wrap"/>
+                        </WrapPanel>
+                     </StackPanel>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,10,20,10">
+                        <Image x:Name="ImageArticle" Width="250" Height="180" Stretch="Uniform" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+                        <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Width="80" Background="#4CAF50"/>
+                        <Button Name="btnEnregistrer" Content="Enregistrer" Click="btnEnregistrer_Click" Width="80" Background="#FFC107"/>
+                        <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Width="90" Background="#F44336"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

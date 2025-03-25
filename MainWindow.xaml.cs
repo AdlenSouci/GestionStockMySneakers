@@ -86,6 +86,11 @@ namespace GestionStockMySneakers
             MainFrame.NavigationService.Navigate(new Uri("Pages/Parametres.xaml", UriKind.Relative));
         }
 
+        private void MenuItem_Click_Annonces(object sender, RoutedEventArgs e)
+        {
+            MainFrame.NavigationService.Navigate(new Uri("Pages/Annonces.xaml", UriKind.Relative));
+        }
+
         private void MenuItem_Click_Quitter(object sender, RoutedEventArgs e)
         {
             Close();
