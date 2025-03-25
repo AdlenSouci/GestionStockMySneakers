@@ -104,6 +104,14 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
+                <MenuItem Header="Annonces" 
+                          Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Annonces">
+                    <MenuItem.Icon>
+                        <Image Source="Assets/img_history.png"
+                               Stretch="None" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
                 <MenuItem Header="Avis"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Avis">
                     <MenuItem.Icon>
