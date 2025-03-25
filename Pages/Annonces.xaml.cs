@@ -87,7 +87,7 @@ namespace GestionStockMySneakers.Pages
                 h3 = txtH3.Text,
                 texte = txtTexte.Text,
                 imageURL = txtImageURL.Text,
-                statut = txtStatut.Text,
+                statut = Enum.Parse<StatutAnnonce>((string)cmbStatut.SelectedValue),
             };
 
             try
@@ -123,7 +123,7 @@ namespace GestionStockMySneakers.Pages
                         updatedAnnonce.h3 = txtH3.Text;
                         updatedAnnonce.texte = txtTexte.Text;
                         updatedAnnonce.imageURL = txtImageURL.Text;
-                        updatedAnnonce.statut = txtStatut.Text;
+                        updatedAnnonce.statut = Enum.Parse<StatutAnnonce>((string)cmbStatut.SelectedValue);
 
                         //updatedAnnonce.id_couleur = ((Models.Couleur)cmbCouleur.SelectedItem).id;
                     }

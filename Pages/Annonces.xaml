@@ -67,7 +67,10 @@
                         </WrapPanel>
                         <WrapPanel Margin="0 2 0 2">
                             <Label Content="Statut :" Width="150" FontWeight="Bold"/>
-                            <TextBox  Text="{Binding SelectedItem.statut, ElementName=dgAnnonces, Mode=OneWay}" x:Name="txtStatut" Width="270" Height="80" TextWrapping="Wrap"/>
+                            <ComboBox x:Name="cmbStatut" SelectedValuePath="Tag" SelectedValue="{Binding SelectedItem.statut, ElementName=dgAnnonces, Mode=OneWay}" Width="270" >
+                                <ComboBoxItem Tag="Publiée" >Publiée</ComboBoxItem>
+                                <ComboBoxItem Tag="Brouillon">Brouillon</ComboBoxItem>
+                            </ComboBox>
                         </WrapPanel>
                      </StackPanel>
 

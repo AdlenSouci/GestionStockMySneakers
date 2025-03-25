@@ -69,7 +69,7 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/couleurs");
+                var response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/couleur");
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 List<Models.Couleur> couleurs = JsonConvert.DeserializeObject<List<Models.Couleur>>(responseBody) ?? new List<Models.Couleur>();
