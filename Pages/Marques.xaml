@@ -7,8 +7,7 @@
       mc:Ignorable="d"
       Title="Marques">
 
-    <Grid MouseDown="Grid_MouseDown">
-
+    <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
@@ -36,35 +35,17 @@
                  Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
 
             <!--Detail-->
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="600*" />
-                    <ColumnDefinition Width="101*"/>
-                    <ColumnDefinition Width="99*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,-28,0,0" >
+            <Grid Grid.Column="1" Margin="5 0 15 0">
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
 
-
-                    <!--ID-->
-                    <StackPanel  Orientation="Horizontal">
-                        <Label Content="ID :" Width="150" />
-                        <Label Name="txtId" Width="450" />
-                    </StackPanel>
-
-                    <!-- Marque -->
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Nom :" Width="150"/>
-                        <TextBox Name="SAI_Nom" Width="450"/>
-                    </StackPanel>
-
-
-
-                    <StackPanel Grid.Row="9" Margin="0,5,0,0" Orientation="Horizontal" HorizontalAlignment="Center" Width="216">
-                        <Button  Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Width="65" Height="21" ></Button>
-                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Width="65" Margin="10 0 10 0" Height="21" ></Button>
-                        <Button  Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Width="66" Height="21"></Button>
-
-                    </StackPanel>
+                <WrapPanel Grid.Row="0" Margin="0 2 0 2">
+                    <Label Content="ID : " Width="150" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgMarques, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                </WrapPanel>
 
                 <!-- Nom de la marque -->
                 <WrapPanel Grid.Row="1" Margin="0 2 0 2">

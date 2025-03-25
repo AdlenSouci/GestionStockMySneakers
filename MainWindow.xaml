@@ -93,6 +93,9 @@
                     <MenuItem Header="Couleurs"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Couleurs">
                     </MenuItem>
+                    <MenuItem Header="Users"
+                        Template="{StaticResource Item_Template}" Click="MenuItem_Click_Users">
+                    </MenuItem>
 
                 </MenuItem>
 

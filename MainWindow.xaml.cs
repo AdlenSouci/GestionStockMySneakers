@@ -51,6 +51,11 @@ namespace GestionStockMySneakers
             MainFrame.NavigationService.Navigate(new Uri("Pages/Articles.xaml", UriKind.Relative));
         }
 
+        private void MenuItem_Click_Users(object sender, RoutedEventArgs e)
+        {
+            MainFrame.NavigationService.Navigate(new Uri("Pages/users.xaml", UriKind.Relative));
+        }
+
         private void MenuItem_Click_Familles(object sender, RoutedEventArgs e)
         {
             MainFrame.NavigationService.Navigate(new Uri("Pages/Familles.xaml", UriKind.Relative));
@@ -102,6 +107,11 @@ namespace GestionStockMySneakers
             {
                 this.DragMove();
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
