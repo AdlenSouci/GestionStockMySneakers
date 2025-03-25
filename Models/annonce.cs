@@ -2,6 +2,11 @@
 
 namespace GestionStockMySneakers.Models
 {
+    public enum StatutAnnonce
+    {
+        Publiée,
+        Brouillon
+    }
     public class Annonce
     {
         public int id { get; set; }
@@ -9,7 +14,7 @@ namespace GestionStockMySneakers.Models
         public string? h3 { get; set; }
         public string? texte { get; set; }
         public string? imageURL { get; set; }
-        public string? statut { get; set; }
+        public StatutAnnonce? statut { get; set; }
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
     }
