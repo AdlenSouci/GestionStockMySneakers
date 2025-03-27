@@ -1,160 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GestionStockMySneakers.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using MySql.Data.MySqlClient;
+using System.Windows.Data;
+
 
 namespace GestionStockMySneakers.Pages
 {
     public partial class Avis : Page
     {
-        private int _selectedAvisId;
-        private Data _dsn = new Data(); // Utilisation de _dsn au lieu de data_database
+
+        ObservableCollection<GestionStockMySneakers.Models.Avis> avis = new ObservableCollection<GestionStockMySneakers.Models.Avis>();
+
 
         public Avis()
         {
             InitializeComponent();
-            ChargerAvis();
+            afficher();
         }
-
-        private void ChargerAvis()
+        private async void afficher()
         {
-            List<AvisModel> avisList = new List<AvisModel>();
+            // Afficher le spinner
+            pbLoading.Visibility = Visibility.Visible;
+            dgAvis.Visibility = Visibility.Collapsed;
 
             try
             {
-                using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de Connexion() via _dsn
-                {
-                    connection.Open();
-                    string query = "SELECT id, user_id, article_id, contenu, note, created_at, reponse FROM avis";
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/avis");
 
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        using (MySqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                avisList.Add(new AvisModel
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Contenu = reader.GetString("contenu"),
-                                    Reponse = reader.IsDBNull(reader.GetOrdinal("reponse")) ? "" : reader.GetString("reponse")
-                                });
-                            }
-                        }
-                    }
+                // Vérifie si la réponse est réussie
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Erreur serveur : {response.StatusCode}");
                 }
-                dgAvis.ItemsSource = avisList;
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                // Désérialisation des données
+                avis = JsonConvert.DeserializeObject<ObservableCollection<GestionStockMySneakers.Models.Avis>>(responseBody) ?? new ObservableCollection<GestionStockMySneakers.Models.Avis>();
+
+                dgAvis.ItemsSource = avis;
+                lblAvis.Content = $"Avis ({avis.Count})";
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show("Erreur de requête HTTP : " + ex.Message);
+            }
+            catch (JsonException ex)
+            {
+                MessageBox.Show("Erreur de désérialisation JSON : " + ex.Message);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors du chargement des avis : {ex.Message}");
+                MessageBox.Show("Erreur générale : " + ex.Message);
+            }
+            finally
+            {
+                // Masquer le spinner et afficher les données
+                pbLoading.Visibility = Visibility.Collapsed;
+                dgAvis.Visibility = Visibility.Visible;
             }
         }
 
-        private void dgAvis_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (dgAvis.SelectedItem is AvisModel selectedAvis)
-            {
-                _selectedAvisId = selectedAvis.Id;
-                txtReponse.Text = selectedAvis.Reponse ?? "";
-            }
-        }
 
-        private void btnEnvoyerReponse_Click(object sender, RoutedEventArgs e)
-        {
-            if (dgAvis.SelectedItem is AvisModel selectedAvis)
-            {
-                if (!string.IsNullOrWhiteSpace(txtReponse.Text))
-                {
-                    try
-                    {
-                        using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de _dsn
-                        {
-                            connection.Open();
-                            string query = "UPDATE avis SET reponse = @Reponse WHERE id = @AvisId";
-                            using (MySqlCommand command = new MySqlCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@Reponse", txtReponse.Text);
-                                command.Parameters.AddWithValue("@AvisId", selectedAvis.Id);
 
-                                int rowsAffected = command.ExecuteNonQuery();
 
-                                if (rowsAffected > 0)
-                                {
-                                    MessageBox.Show("Réponse enregistrée avec succès !");
-                                    selectedAvis.Reponse = txtReponse.Text;
-                                    dgAvis.Items.Refresh();
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Aucune mise à jour effectuée.");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Erreur : {ex.Message}");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Veuillez entrer une réponse avant d'envoyer.");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Veuillez sélectionner un avis.");
-            }
-        }
 
-        private void btnSupprimer_Click(object sender, RoutedEventArgs e)
-        {
-            if (dgAvis.SelectedItem is AvisModel selectedAvis)
-            {
-                if (MessageBox.Show("Voulez-vous vraiment supprimer cet avis ?", "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        using (MySqlConnection connection = _dsn.Connexion()) // Utilisation de _dsn
-                        {
-                            connection.Open();
-                            string query = "DELETE FROM avis WHERE id = @AvisId";
-                            using (MySqlCommand command = new MySqlCommand(query, connection))
-                            {
-                                command.Parameters.AddWithValue("@AvisId", selectedAvis.Id);
-                                int rowsAffected = command.ExecuteNonQuery();
 
-                                if (rowsAffected > 0)
-                                {
-                                    MessageBox.Show("Avis supprimé avec succès !");
-                                    ChargerAvis();
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Aucune suppression effectuée.");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Erreur : {ex.Message}");
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Veuillez sélectionner un avis à supprimer.");
-            }
-        }
-    }
 
-    public class AvisModel
-    {
-        public int Id { get; set; }
-        public string Contenu { get; set; }
-        public string Reponse { get; set; }
     }
 }
