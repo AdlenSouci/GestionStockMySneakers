@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d"
-      Title="Avis">
+      Title="Avis"
+         MouseDown="Page_MouseDown">
 
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
@@ -13,6 +14,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="30"/>
+
+
         </Grid.RowDefinitions>
 
         <!-- Titre des avis -->
@@ -23,6 +26,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
+                
             </Grid.ColumnDefinitions>
 
             <!-- DataGrid affichant les avis -->
@@ -49,13 +53,17 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
 
                 <!-- Affichage des informations de l'avis sélectionné -->
+              
+
                 <WrapPanel Grid.Row="0" Margin="0 2 0 2">
                     <Label Content="ID Utilisateur : " Width="150" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <TextBox Name="txtUserId" Text="{Binding SelectedItem.user_id, ElementName=dgAvis, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                    <TextBox Name="txtUserId" Text="{Binding SelectedItem.user_id, ElementName=dgAvis, Mode=TwoWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
+
 
                 <WrapPanel Grid.Row="1" Margin="0 2 0 2">
                     <Label Content="Article :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
@@ -76,27 +84,31 @@
                     <Label Content="Date :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
                     <TextBox Name="txtCreatedAt" Text="{Binding SelectedItem.created_at, ElementName=dgAvis, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
+                <WrapPanel Grid.Row="5" Margin="0 2 0 2">
+                    <Label Content="ID : " Width="150" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <TextBox Name="txtId" Text="{Binding SelectedItem.id, ElementName=dgAvis, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                </WrapPanel>
 
-                <!-- ID de l'avis sélectionné -->
-                <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgAvis, Mode=OneWay}" />
+                <!-- ID de l'avis sélectionné --><!--
+                <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgAvis, Mode=OneWay}" />-->
 
                 <!-- Boutons d'action -->
-                <!--<StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
+                <StackPanel Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
                     <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="150 0 5 0"/>
                     <Button Name="btnEnregistrer" Content="Enregistrer" Click="btnEnregistrer_Click" Height="30" Width="85" Background="#FFC107" Margin="5 0 5 0"/>
                     <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Height="30" Width="90" Background="#F44336"/>
-                </StackPanel>-->
+                </StackPanel>
             </Grid>
         </Grid>
 
         <!-- Section pour répondre à un avis -->
-        <!--<StackPanel Grid.Row="2" Margin="10">
+        <StackPanel Grid.Row="2" Margin="10">
             <TextBlock Text="Réponse à l'avis : " FontWeight="SemiBold" Margin="0,10"/>
             <TextBox Name="txtReponse" Width="300" Height="100" Margin="0,5" VerticalScrollBarVisibility="Auto" 
                      HorizontalAlignment="Stretch" Text="{Binding reponse}" />
             <Button Content="Envoyer Réponse" Name="btnEnvoyerReponse" Margin="0,10" HorizontalAlignment="Right" Width="150"
                     Click="btnEnvoyerReponse_Click"/>
-        </StackPanel>-->
+        </StackPanel>
 
         <!-- Footer -->
         <Label Grid.Row="3" Content="Footer" />
