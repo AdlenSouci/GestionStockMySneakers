@@ -34,7 +34,7 @@ namespace GestionStockMySneakers.Pages
                 users = JsonConvert.DeserializeObject<ObservableCollection<GestionStockMySneakers.Models.Users>>(responseBody) ?? new ObservableCollection<GestionStockMySneakers.Models.Users>();
 
                 dgUsers.ItemsSource = users;
-                lblUsers.Content = $"Users ({users.Count})"; // Afficher le nombre d'utilisateurs
+                lblUsers.Content = $"Users ({users.Count})"; 
             }
             catch (Exception ex)
             {
