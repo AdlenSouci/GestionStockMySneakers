@@ -73,16 +73,15 @@ namespace GestionStockMySneakers.Pages
         {
 
             // Vérifier que tous les champs sont remplis
-            //if (string.IsNullOrEmpty(txtModele.Text) || string.IsNullOrEmpty(txtH&.Text) ||
-            //    cmbFamille.SelectedItem == null || cmbMarque.SelectedItem == null || cmbCouleur.SelectedItem == null)
-            //{
-            //    MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
-            //    return;
-            //}
+            if (string.IsNullOrEmpty(txtH1.Text) || string.IsNullOrEmpty(txtH3.Text) ||
+                string.IsNullOrEmpty(txtTexte.Text) || string.IsNullOrEmpty(txtImageURL.Text) || string.IsNullOrEmpty(cmbStatut.SelectedValue.ToString()))
+            {
+                MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
+                return;
+            }
 
             var annonce = new
             {
-                //id_couleur = ((Models.Couleur)cmbCouleur.SelectedItem).id,
                 h1 = txtH1.Text,
                 h3 = txtH3.Text,
                 texte = txtTexte.Text,
@@ -101,7 +100,8 @@ namespace GestionStockMySneakers.Pages
                     // Ajout
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/annonce", content);
                     // Récupérer l'annonce ajoutée
-                    var newAnnonce = JsonConvert.DeserializeObject<Annonce>(await response.Content.ReadAsStringAsync());
+                    string a = await response.Content.ReadAsStringAsync();
+                    var newAnnonce = JsonConvert.DeserializeObject<Annonce>(a);
 
                     // Ajouter l'annonce directement au DataGrid
                     if (null != newAnnonce)
