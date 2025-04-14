@@ -1,49 +1,60 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GestionStockMySneakers.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace GestionStockMySneakers.Pages
 {
-    /// <summary>
-    /// Logique d'interaction pour Commande.xaml
-    /// </summary>
     public partial class Commande : Page
     {
-        Data d = new Data();
-        private MySqlConnection _connexion;
-        private MySqlDataAdapter _adapter;
-        private DataTable _dt;
+        private ObservableCollection<CommandeEntete> commandes = new ObservableCollection<CommandeEntete>();
+
         public Commande()
         {
-            _connexion = d.Connexion();
             InitializeComponent();
             afficher();
         }
-        private void afficher()
+
+        private async void afficher()
         {
+            pbLoading.Visibility = Visibility.Visible;
+            dgCommandes.Visibility = Visibility.Collapsed;
+
             try
             {
-                _adapter = new MySqlDataAdapter("SELECT * FROM commandes_entetes;", _connexion);
-                _dt = new DataTable();
-                _adapter.Fill(_dt);
-                dgCommandes.ItemsSource = _dt.DefaultView;
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/commandes");
+
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                commandes = JsonConvert.DeserializeObject<ObservableCollection<CommandeEntete>>(responseBody)
+                            ?? new ObservableCollection<CommandeEntete>();
+
+                dgCommandes.ItemsSource = commandes;
+                lblCommandes.Content = $"Commandes ({commandes.Count})";
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+            finally
+            {
+                pbLoading.Visibility = Visibility.Collapsed;
+                dgCommandes.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void Page_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (dgCommandes.SelectedItem != null)
+            {
+                dgCommandes.SelectedItem = null;
             }
         }
     }

@@ -4,65 +4,47 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      Title="CommandesEntetes" Height="600" Width="800">
+      Title="Commandes" Height="600" Width="800"
+      MouseDown="Page_MouseDown">
 
-    <Page.Resources>
-        <!-- Style pour le DataGrid -->
-        <Style TargetType="DataGrid">
-            <Setter Property="Background" Value="WhiteSmoke"/>
-            <Setter Property="RowBackground" Value="White"/>
-            <Setter Property="AlternatingRowBackground" Value="#f2f2f2"/>
-            <Setter Property="GridLinesVisibility" Value="None"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="14"/>
-        </Style>
-
-        <!-- Style pour les colonnes -->
-        <Style TargetType="DataGridCell">
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="White"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#0078D7"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Style pour l'en-tête -->
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Background" Value="#0078D7"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="10"/>
-        </Style>
-    </Page.Resources>
-
-    <Grid>
+    <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Titre -->
-        <Label Grid.Row="0" Name="lblCommandes" Content="Commandes" FontSize="24" FontWeight="Bold" Foreground="DarkMagenta" HorizontalAlignment="Center"/>
+        <Label Grid.Row="0" Name="lblCommandes" Content="Commandes" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
 
-        <!-- Contenu -->
-        <Grid Grid.Row="1">
-            <DataGrid SelectionMode="Single" AutoGenerateColumns="False" Name="dgCommandes" IsReadOnly="True" Margin="10">
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="4*"/>
+            </Grid.RowDefinitions>
+
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgCommandes" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding date}" Header="Date" Width="auto"/>
-                    <DataGridTextColumn Binding="{Binding id_user}" Header="Utilisateur" Width="auto"/>
-                    <DataGridTextColumn Binding="{Binding id_num_commande}" Header="Numéro de Commande" Width="auto"/>
-                    <DataGridTextColumn Binding="{Binding total_ht}" Header="Total HT" Width="auto" />
-                    <DataGridTextColumn Binding="{Binding total_ttc}" Header="Total TTC" Width="auto" />
-                    <DataGridTextColumn Binding="{Binding total_tva}" Header="Total TVA" Width="auto" />
-                    <DataGridTextColumn Binding="{Binding total_remise}" Header="Total Remise" Width="auto" />
+                    <DataGridTextColumn Binding="{Binding id_num_commande}" Header="Numéro de Commande" Width="*" />
+                    <DataGridTextColumn Binding="{Binding id_user}" Header="Utilisateur" Width="*" />
+                    <DataGridTextColumn Binding="{Binding total_ht}" Header="Total HT" Width="*" />
+                    <DataGridTextColumn Binding="{Binding total_ttc}" Header="Total TTC" Width="*" />
+                    <DataGridTextColumn Binding="{Binding total_tva}" Header="Total TVA" Width="*" />
+                    <DataGridTextColumn Binding="{Binding total_remise}" Header="Total Remise" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
+
+            <!-- Spinner -->
+            <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
+                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+
+            <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFF" Padding="10" BorderBrush="#CCC" BorderThickness="1">
+                <StackPanel Orientation="Vertical" Margin="10">
+                    <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+                        <Button Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="0 0 5 0"/>
+                        <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Height="30" Width="85" Background="#FFC107" Margin="0 0 5 0"/>
+                        <Button Name="btnSupprimer" Content="Supprimer" Click="btnSupprimer_Click" Height="30" Width="90" Background="#F44336"/>
+                    </StackPanel>-->
+                </StackPanel>
+            </Border>
         </Grid>
     </Grid>
 </Page>
