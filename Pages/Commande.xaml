@@ -1,14 +1,12 @@
 ﻿<Page x:Class="GestionStockMySneakers.Pages.Commande"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      mc:Ignorable="d" 
-      Title="Commandes" Height="600" Width="800"
-       MouseDown="Page_MouseDown">
-
-    
-
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d"
+      Title="Commandes" Height="750" Width="950"
+      MouseDown="Page_MouseDown">
+    <!-- Taille de la page augmentée pour faire de la place -->
 
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
@@ -20,60 +18,150 @@
 
         <Grid Grid.Row="1" Margin="10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*" />
-                <RowDefinition Height="4*"/>
+                <RowDefinition Height="Auto" />
+                <!-- Ligne pour la grille des commandes existantes -->
+                <RowDefinition Height="Auto"/>
+                <!-- Ligne pour le formulaire d'ajout/modification -->
             </Grid.RowDefinitions>
 
-            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgCommandes" 
-                      IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" 
+            <!-- Grille des commandes existantes -->
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgCommandes"
+                      IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333"
                       AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1"
+                      MaxHeight="250" VerticalScrollBarVisibility="Auto"
                       SelectionChanged="dgCommandes_SelectionChanged">
+                <!-- MaxHeight ajouté pour limiter la taille -->
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding id_num_commande}" Header="Numéro de Commande" Width="*" />
                     <DataGridTextColumn Binding="{Binding id_user}" Header="Utilisateur" Width="*" />
-                    <DataGridTextColumn Binding="{Binding total_ht}" Header="Total HT" Width="*" />
-                    <DataGridTextColumn Binding="{Binding total_ttc}" Header="Total TTC" Width="*" />
-                    <DataGridTextColumn Binding="{Binding total_tva}" Header="Total TVA" Width="*" />
-                    <DataGridTextColumn Binding="{Binding total_remise}" Header="Total Remise" Width="*" />
+                    <DataGridTextColumn Binding="{Binding total_ht, StringFormat={}{0:N2}}" Header="Total HT" Width="*" />
+                    <!-- Ajout Format -->
+                    <DataGridTextColumn Binding="{Binding total_ttc, StringFormat={}{0:N2}}" Header="Total TTC" Width="*" />
+                    <!-- Ajout Format -->
+                    <DataGridTextColumn Binding="{Binding total_tva, StringFormat={}{0:N2}}" Header="Total TVA" Width="*" />
+                    <!-- Ajout Format -->
+                    <DataGridTextColumn Binding="{Binding total_remise, StringFormat={}{0:N2}}" Header="Total Remise" Width="*" />
+                    <!-- Ajout Format -->
                 </DataGrid.Columns>
             </DataGrid>
 
-            <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
-                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+            <ProgressBar Grid.Row="0" Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
+                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0"/>
 
-            <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFF" Padding="10" BorderBrush="#CCC" BorderThickness="1">
-                <StackPanel Orientation="Vertical" Margin="10">
+            <!-- Formulaire pour ajouter/modifier une commande -->
+            <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFF" Padding="15" BorderBrush="#CCC" BorderThickness="1">
+                <StackPanel Orientation="Vertical">
 
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content=" ID Utilisateur :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtIdUser" Width="270" />
-                    </WrapPanel>
+                    <!-- Champs de l'en-tête -->
+                    <GroupBox Header="En-tête de la commande" FontWeight="Bold" Margin="0 0 0 10">
+                        <StackPanel Margin="10">
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content=" ID Utilisateur :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtIdUser" Width="270" />
+                            </WrapPanel>
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content="N° Commande :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtIdNumCommande" Width="270" IsReadOnly="True" Background="#EEE"/>
+                            </WrapPanel>
+                            <!-- Les totaux sont maintenant affichés mais non modifiables, ils seront calculés -->
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content="Total HT :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTotalHT" Width="270" IsReadOnly="True" Background="#EEE"/>
+                            </WrapPanel>
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content="Total TTC :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTotalTTC" Width="270" IsReadOnly="True" Background="#EEE"/>
+                            </WrapPanel>
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content="Total TVA :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTotalTVA" Width="270" IsReadOnly="True" Background="#EEE"/>
+                            </WrapPanel>
+                            <WrapPanel Margin="0 2 0 2">
+                                <Label Content="Total Remise :" Width="150" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtTotalRemise" Width="270" IsReadOnly="True" Background="#EEE"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </GroupBox>
 
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content="N° Commande :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtIdNumCommande" Width="270" IsReadOnly="True" />
-                    </WrapPanel>
+                    <!-- ###################################################### -->
+                    <!-- #### SECTION POUR AJOUTER LES DÉTAILS DE COMMANDE #### -->
+                    <!-- ###################################################### -->
+                    <GroupBox Header="Détails de la commande" FontWeight="Bold" Margin="0 10 0 10">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Ligne pour la saisie d'un article -->
+                                <RowDefinition Height="*"/>
+                                <!-- Ligne pour la liste des articles ajoutés -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Ligne pour le bouton supprimer -->
+                            </Grid.RowDefinitions>
 
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content="Total HT :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtTotalHT" Width="270" />
-                    </WrapPanel>
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content="Total TTC :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtTotalTTC" Width="270" />
-                    </WrapPanel>
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content="Total TVA :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtTotalTVA" Width="270" />
-                    </WrapPanel>
-                    <WrapPanel Margin="0 2 0 2">
-                        <Label Content="Total Remise :" Width="150" FontWeight="Bold"/>
-                        <TextBox x:Name="txtTotalRemise" Width="270" />
-                    </WrapPanel>
+                            <!-- Champs de saisie pour UN article -->
+                            <Border Grid.Row="0" BorderBrush="LightGray" BorderThickness="1" Padding="10" Margin="0 0 0 10">
+                                <StackPanel>
+                                    <WrapPanel Margin="2">
+                                        <Label Content="ID Article:" Width="100" />
+                                        <TextBox x:Name="txtDetailIdArticle" Width="150"/>
+                                        <Label Content="Taille:" Width="60" Margin="10 0 0 0"/>
+                                        <TextBox x:Name="txtDetailTaille" Width="100"/>
+                                        <Label Content="Quantité:" Width="70" Margin="10 0 0 0"/>
+                                        <TextBox x:Name="txtDetailQuantite" Width="80"/>
+                                    </WrapPanel>
+                                    <!-- On garde les champs prix/tva/remise pour correspondre au JSON attendu par l'API actuelle -->
+                                    <!-- MAIS idéalement, ils seraient lus de la BDD ou calculés -->
+                                    <WrapPanel Margin="2">
+                                        <Label Content="Prix HT Unit.:" Width="100" />
+                                        <TextBox x:Name="txtDetailPrixHT" Width="150"/>
+                                        <Label Content="Prix TTC Unit.:" Width="100" Margin="10 0 0 0"/>
+                                        <TextBox x:Name="txtDetailPrixTTC" Width="100"/>
+                                    </WrapPanel>
+                                    <WrapPanel Margin="2">
+                                        <Label Content="Montant TVA Unit.:" Width="130" />
+                                        <TextBox x:Name="txtDetailMontantTVA" Width="120"/>
+                                        <Label Content="Remise Unit.:" Width="100" Margin="10 0 0 0"/>
+                                        <TextBox x:Name="txtDetailRemise" Width="100"/>
+                                    </WrapPanel>
+                                    <Button x:Name="btnAjouterDetail" Content="Ajouter Article à la commande"
+                                            Click="btnAjouterDetail_Click" Width="250" Height="25"
+                                            HorizontalAlignment="Left" Margin="100 10 0 5" Background="#2196F3" Foreground="White"/>
+                                </StackPanel>
+                            </Border>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
-                        <Button Name="btnAjouter" Content="Ajouter" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="0 0 5 0"/>
+                            <!-- DataGrid pour afficher les articles ajoutés à la commande EN COURS -->
+                            <DataGrid Grid.Row="1" x:Name="dgCommandeDetails" AutoGenerateColumns="False"
+                                      IsReadOnly="True" CanUserAddRows="False" MaxHeight="150" Margin="0 5 0 5"
+                                      AlternatingRowBackground="#F9F9F9" BorderBrush="#DDD" BorderThickness="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding id_article}" Header="ID Article" Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding taille}" Header="Taille" Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding quantite}" Header="Quantité" Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding prix_ht, StringFormat={}{0:N2}}" Header="Prix HT U." Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding prix_ttc, StringFormat={}{0:N2}}" Header="Prix TTC U." Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding montant_tva, StringFormat={}{0:N2}}" Header="TVA U." Width="*"/>
+                                    <DataGridTextColumn Binding="{Binding remise, StringFormat={}{0:N2}}" Header="Remise U." Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Bouton pour supprimer un article sélectionné -->
+                            <Button Grid.Row="2" x:Name="btnSupprimerDetail" Content="Supprimer Article Sélectionné"
+                                    Click="btnSupprimerDetail_Click" Width="200" Height="25" HorizontalAlignment="Right"
+                                    Background="#F44336" Foreground="White"/>
+
+                        </Grid>
+                    </GroupBox>
+                    <!-- ###################################################### -->
+                    <!-- ###### FIN SECTION DÉTAILS DE COMMANDE ############### -->
+                    <!-- ###################################################### -->
+
+
+                    <!-- Bouton final pour ajouter LA COMMANDE ENTIERE -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0">
+                        <Button Name="btnAjouter" Content="Ajouter Commande" Click="btnAjouter_Click" Height="35" Width="150" Background="#4CAF50" Foreground="White" FontWeight="Bold" />
+                        <!-- Tu pourrais ajouter des boutons Modifier/Supprimer ici plus tard -->
+                        <Button Name="btnEffacerFormulaire" Content="Effacer Formulaire" Click="btnEffacerFormulaire_Click" Height="35" Width="150" Background="#FF9800" Foreground="White" Margin="10 0 0 0"/>
                     </StackPanel>
+
                 </StackPanel>
             </Border>
         </Grid>

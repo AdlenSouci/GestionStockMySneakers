@@ -1,19 +1,28 @@
 ﻿using System;
+using Newtonsoft.Json; // Assure-toi d'avoir ce using
 
 namespace GestionStockMySneakers.Models
 {
     public class CommandeDetail
     {
-        public int id { get; set; }                      // Clé primaire
-        public int id_commande { get; set; }             // Référence vers CommandeEntete
-        public int id_article { get; set; }              // Référence vers Article
-        public string taille { get; set; }               // Taille de l'article
-        public int quantite { get; set; }                // Quantité
-        public decimal prix_ht { get; set; }             // Prix HT unitaire
-        public decimal prix_ttc { get; set; }            // Prix TTC unitaire
-        public decimal montant_tva { get; set; }         // Montant TVA unitaire
-        public decimal remise { get; set; }              // Remise appliquée
-        public DateTime created_at { get; set; }         // Horodatage création
-        public DateTime updated_at { get; set; }         // Horodatage modification
+        [JsonIgnore] // Ne pas envoyer lors de la création (POST)
+        public int id { get; set; }
+
+        [JsonIgnore] // Ne pas envoyer lors de la création (POST), Laravel s'en charge
+        public int id_commande { get; set; }
+
+        public int id_article { get; set; }
+        public string taille { get; set; }
+        public int quantite { get; set; }
+        public decimal prix_ht { get; set; }     // Garder pour l'instant car requis par la validation API
+        public decimal prix_ttc { get; set; }    // Garder pour l'instant car requis par la validation API
+        public decimal montant_tva { get; set; } // Garder pour l'instant car requis par la validation API
+        public decimal remise { get; set; }      // Garder pour l'instant car requis par la validation API
+
+        [JsonIgnore] // Géré par Laravel
+        public DateTime created_at { get; set; }
+
+        [JsonIgnore] // Géré par Laravel
+        public DateTime updated_at { get; set; }
     }
 }

@@ -1,22 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json; // Assure-toi d'avoir ce using
 
 namespace GestionStockMySneakers.Models
 {
     public class CommandeEntete
     {
-        public int id { get; set; }                     // Clé primaire
-        public string date { get; set; }                // Date de la commande
-        public int id_user { get; set; }                // ID de l'utilisateur
-        public int id_num_commande { get; set; }        // Numéro de commande
-        public decimal total_ht { get; set; }           // Total HT
-        public decimal total_ttc { get; set; }          // Total TTC
-        public decimal total_tva { get; set; }          // TVA
-        public decimal total_remise { get; set; }       // Remise totale
-        public DateTime created_at { get; set; }        // Horodatage création
-        public DateTime updated_at { get; set; }        // Horodatage modification
+        [JsonIgnore] // Ne pas envoyer lors de la création (POST)
+        public int id { get; set; }
 
-        // Optionnel : liste des détails liés à cette commande
+        // [JsonIgnore] // Optionnel: Si Laravel gère toujours la date via now(), tu peux l'ignorer aussi.
+        // public string date { get; set; } // Sinon, assure-toi de l'envoyer dans un format que l'API comprend si nécessaire.
+
+        public int id_user { get; set; }
+        public int id_num_commande { get; set; } // Tu le génères en C#
+        public decimal total_ht { get; set; }
+        public decimal total_ttc { get; set; }
+        public decimal total_tva { get; set; }
+        public decimal total_remise { get; set; }
+
+        [JsonIgnore] // Géré par Laravel
+        public DateTime created_at { get; set; }
+
+        [JsonIgnore] // Géré par Laravel
+        public DateTime updated_at { get; set; }
+
+        // Laisser les détails être sérialisés
         public List<CommandeDetail> details { get; set; }
     }
 }
