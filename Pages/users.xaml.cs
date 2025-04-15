@@ -31,10 +31,25 @@ namespace GestionStockMySneakers.Pages
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/users");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
+
+                // Désérialisation
                 users = JsonConvert.DeserializeObject<ObservableCollection<GestionStockMySneakers.Models.Users>>(responseBody) ?? new ObservableCollection<GestionStockMySneakers.Models.Users>();
 
+                // Vérification des données désérialisées
+                if (users != null && users.Count > 0)
+                {
+                    foreach (var user in users)
+                    {
+                        Console.WriteLine($"User  ID: {user.user_id}, Name: {user.name}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Aucun utilisateur trouvé.");
+                }
+
                 dgUsers.ItemsSource = users;
-                lblUsers.Content = $"Users ({users.Count})"; 
+                lblUsers.Content = $"Users ({users.Count})";
             }
             catch (Exception ex)
             {
