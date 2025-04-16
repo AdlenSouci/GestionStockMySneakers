@@ -5,10 +5,10 @@ namespace GestionStockMySneakers.Models
 {
     public class CommandeDetail
     {
-        [JsonIgnore] // Ne pas envoyer lors de la création (POST)
+        [JsonIgnore] 
         public int id { get; set; }
 
-        [JsonIgnore] // Ne pas envoyer lors de la création (POST), Laravel s'en charge
+        [JsonIgnore] 
         public int id_commande { get; set; }
 
         public int id_article { get; set; }

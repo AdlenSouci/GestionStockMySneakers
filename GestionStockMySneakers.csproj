@@ -167,8 +167,4 @@
       </Compile>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="img\" />
-    </ItemGroup>
-
 </Project>

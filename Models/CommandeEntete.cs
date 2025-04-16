@@ -6,11 +6,8 @@ namespace GestionStockMySneakers.Models
 {
     public class CommandeEntete
     {
-        [JsonIgnore] // Ne pas envoyer lors de la création (POST)
-        public int id { get; set; }
-
-        // [JsonIgnore] // Optionnel: Si Laravel gère toujours la date via now(), tu peux l'ignorer aussi.
-        // public string date { get; set; } // Sinon, assure-toi de l'envoyer dans un format que l'API comprend si nécessaire.
+        [JsonProperty("id")] // <-- Indique que le champ JSON "id" doit mapper vers cette propriété
+        public int id_commande { get; set; }
 
         public int id_user { get; set; }
         public int id_num_commande { get; set; } // Tu le génères en C#

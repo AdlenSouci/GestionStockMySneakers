@@ -1,74 +1,92 @@
-﻿using GestionStockMySneakers.Models;
+﻿using GestionStockMySneakers.Models; // Assure-toi que ce using est correct ET que CommandeEntete a id_commande (potentiellement avec [JsonProperty("id")])
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel; // Nécessaire pour ObservableCollection
+using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq; // Nécessaire pour Sum()
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
+using System.Diagnostics; // Pour Debug.WriteLine
 
 namespace GestionStockMySneakers.Pages
 {
     public partial class Commande : Page
     {
+        // Collections pour les données
         private ObservableCollection<CommandeEntete> commandes = new ObservableCollection<CommandeEntete>();
-        // Collection pour stocker les détails de la commande EN COURS DE CRÉATION
         private ObservableCollection<CommandeDetail> detailsTemporaires = new ObservableCollection<CommandeDetail>();
 
+        // Constructeur
         public Commande()
         {
             InitializeComponent();
-            // Lier le DataGrid des détails à la collection temporaire
-            dgCommandeDetails.ItemsSource = detailsTemporaires;
-            afficher(); // Charger les commandes existantes
+            dgCommandeDetails.ItemsSource = detailsTemporaires; // Lier la grille des détails temporaires
+            btnSupprimerCommande.IsEnabled = false; // Désactiver le bouton supprimer au démarrage
+            afficher(); // Charger les commandes initiales
         }
 
-        // --- MÉTHODES POUR LA LISTE DES COMMANDES EXISTANTES ---
-
+        // --- CHARGEMENT INITIAL DES COMMANDES ---
         private async void afficher()
         {
-            // ... (ton code existant pour afficher dgCommandes est bon) ...
+            // Gérer l'état de l'interface pendant le chargement
             pbLoading.Visibility = Visibility.Visible;
             dgCommandes.Visibility = Visibility.Collapsed;
-            btnAjouter.IsEnabled = false; // Désactiver pendant le chargement
+            btnAjouter.IsEnabled = false;
+            btnSupprimerCommande.IsEnabled = false;
+            btnEffacerFormulaire.IsEnabled = false;
 
             try
             {
+                Debug.WriteLine("--- Début Affichage Commandes ---");
+                // Appel API pour récupérer les commandes
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/commandes");
-                response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode(); // Vérifie si la requête a réussi (status 2xx)
                 string responseBody = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"Réponse API GET /commandes: {response.StatusCode}");
 
+                // Désérialiser la réponse JSON en objets C#
+                // Important: Le modèle CommandeEntete DOIT pouvoir mapper l'ID (via nom ou JsonProperty)
                 commandes = JsonConvert.DeserializeObject<ObservableCollection<CommandeEntete>>(responseBody)
-                            ?? new ObservableCollection<CommandeEntete>();
+                            ?? new ObservableCollection<CommandeEntete>(); // Si null, créer une collection vide
 
-                dgCommandes.ItemsSource = commandes;
-                lblCommandes.Content = $"Commandes ({commandes.Count})";
+                // Trier par ID (id_commande) décroissant pour voir les plus récentes
+                var commandesTriees = commandes.OrderByDescending(c => c.id_commande).ToList();
+                // Mettre à jour la source de données de la grille principale
+                dgCommandes.ItemsSource = new ObservableCollection<CommandeEntete>(commandesTriees);
+
+                // Mettre à jour le titre avec le nombre de commandes
+                lblCommandes.Content = $"Gestion des Commandes ({commandesTriees.Count})";
+                Debug.WriteLine($"Affichage terminé. {commandesTriees.Count} commandes chargées.");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur lors de l'affichage des commandes : " + ex.Message);
-            }
+            // Gestion des différentes erreurs possibles
+            catch (HttpRequestException httpEx) { Debug.WriteLine($"ERREUR HTTP Affichage: {httpEx.Message}"); MessageBox.Show($"Erreur connexion commandes: {httpEx.Message}", "Erreur Réseau", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (JsonException jsonEx) { Debug.WriteLine($"ERREUR JSON Affichage: {jsonEx.Message}"); MessageBox.Show($"Erreur lecture données commandes: {jsonEx.Message}", "Erreur Données", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex) { Debug.WriteLine($"ERREUR Inattendue Affichage: {ex.ToString()}"); MessageBox.Show("Erreur inattendue affichage commandes: " + ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
             finally
             {
+                // Assurer que l'interface est réactivée même en cas d'erreur
                 pbLoading.Visibility = Visibility.Collapsed;
                 dgCommandes.Visibility = Visibility.Visible;
-                btnAjouter.IsEnabled = true; // Réactiver
+                btnAjouter.IsEnabled = true;
+                btnEffacerFormulaire.IsEnabled = true;
+                // Activer Supprimer seulement si un item est sélectionné
+                btnSupprimerCommande.IsEnabled = dgCommandes.SelectedItem != null;
+                Debug.WriteLine("--- Fin Affichage Commandes (finally) ---");
             }
         }
 
+        // --- GESTION DE LA SÉLECTION DANS LA GRILLE PRINCIPALE ---
         private void dgCommandes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Quand on sélectionne une commande existante, on affiche ses infos
-            // Pour l'instant, on ne charge pas ses détails dans le formulaire d'ajout
-            // On vide plutôt le formulaire d'ajout pour éviter la confusion
+            // Vérifier si un élément est sélectionné
             if (dgCommandes.SelectedItem is CommandeEntete selectedCommande)
             {
-                // Afficher l'en-tête sélectionné dans les champs (qui sont ReadOnly)
+                // Afficher les détails de la commande sélectionnée dans le formulaire
+                Debug.WriteLine($"Sélection changée: Commande ID {selectedCommande.id_commande} sélectionnée.");
                 txtIdUser.Text = selectedCommande.id_user.ToString();
                 txtIdNumCommande.Text = selectedCommande.id_num_commande.ToString();
                 txtTotalHT.Text = selectedCommande.total_ht.ToString("N2", CultureInfo.InvariantCulture);
@@ -76,211 +94,275 @@ namespace GestionStockMySneakers.Pages
                 txtTotalTVA.Text = selectedCommande.total_tva.ToString("N2", CultureInfo.InvariantCulture);
                 txtTotalRemise.Text = selectedCommande.total_remise.ToString("N2", CultureInfo.InvariantCulture);
 
-                // Vider la section des détails de la commande en cours
+                // Vider la liste des détails temporaires (pour nouvelle saisie ou affichage clair)
                 detailsTemporaires.Clear();
-                ViderChampsDetail(); // Vider les champs de saisie de détail
-                CalculerEtAfficherTotaux(); // Recalculer les totaux (qui seront à 0)
+                ViderChampsDetail();
+                CalculerEtAfficherTotaux(); // Remet les totaux du formulaire à 0
 
-                // Désactiver l'ajout de détails si on regarde une ancienne commande? Ou permettre de copier? Pour l'instant on bloque pas.
+                // Activer/Désactiver les boutons pertinents
+                btnSupprimerCommande.IsEnabled = true; // On peut supprimer la commande sélectionnée
+                btnAjouter.IsEnabled = false; // On ne crée pas pendant qu'on regarde/supprime une existante
+                btnEffacerFormulaire.IsEnabled = true; // On peut toujours effacer le formulaire
+            }
+            else // Aucun élément sélectionné
+            {
+                Debug.WriteLine("Sélection changée: Aucune commande sélectionnée.");
+                // Réinitialiser l'état des boutons
+                btnSupprimerCommande.IsEnabled = false; // Pas de commande à supprimer
+                btnAjouter.IsEnabled = true; // Prêt à créer une nouvelle commande
+                // Optionnel: Vider le formulaire si on désélectionne
+                // ViderFormulaireComplet();
             }
         }
 
-        // --- MÉTHODES POUR LE FORMULAIRE D'AJOUT ---
+        // --- SUPPRESSION D'UNE COMMANDE ---
+        private async void btnSupprimerCommande_Click(object sender, RoutedEventArgs e)
+        {
+            // Vérifier qu'une commande est bien sélectionnée
+            if (dgCommandes.SelectedItem is CommandeEntete selectedCommande)
+            {
+                Debug.WriteLine($"Clic sur Supprimer pour commande ID: {selectedCommande.id_commande}");
+                // Demander confirmation
+                MessageBoxResult confirmation = MessageBox.Show(
+                    $"Êtes-vous sûr de vouloir supprimer la commande N° {selectedCommande.id_num_commande} (ID interne: {selectedCommande.id_commande}) ?\nCette action est irréversible.",
+                    "Confirmation de suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
-        // Bouton pour ajouter UN ARTICLE à la liste temporaire
+                if (confirmation == MessageBoxResult.Yes)
+                {
+                    Debug.WriteLine("Confirmation OUI pour la suppression.");
+                    // Gérer l'état de l'interface pendant la suppression
+                    pbLoading.Visibility = Visibility.Visible;
+                    btnSupprimerCommande.IsEnabled = false;
+                    btnAjouter.IsEnabled = false;
+                    btnEffacerFormulaire.IsEnabled = false;
+                    dgCommandes.IsEnabled = false; // Empêcher la sélection pendant l'appel
+
+                    try
+                    {
+                        // Construire l'URL de l'API DELETE avec l'ID correct (id_commande)
+                        string url = $"{ApiClient.apiUrl}/commandes/{selectedCommande.id_commande}";
+                        Debug.WriteLine($"--- APPEL API DELETE : {url} ---");
+                        // Envoyer la requête DELETE
+                        HttpResponseMessage response = await ApiClient.Client.DeleteAsync(url);
+                        Debug.WriteLine($"--- FIN APPEL API DELETE --- Statut: {response.StatusCode}");
+
+                        // Gérer la réponse de l'API
+                        if (response.IsSuccessStatusCode) // Status 2xx (ex: 200 OK, 204 No Content)
+                        {
+                            Debug.WriteLine($"Suppression réussie (API). Message: {await response.Content.ReadAsStringAsync()}");
+                            MessageBox.Show("Commande supprimée avec succès !", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                            // Réinitialiser l'interface après succès
+                            ViderFormulaireComplet(); // Vide le formulaire et désélectionne
+                            afficher(); // Recharge la liste mise à jour
+                        }
+                        else // Erreur retournée par l'API (ex: 404 Not Found, 500 Server Error)
+                        {
+                            string errorContent = await response.Content.ReadAsStringAsync();
+                            Debug.WriteLine($"Échec suppression (API). Statut: {response.StatusCode}, Contenu: {errorContent}");
+                            // Afficher l'erreur à l'utilisateur
+                            MessageBox.Show($"Erreur lors de la suppression côté serveur : {response.StatusCode}\n{errorContent}", "Erreur API", MessageBoxButton.OK, MessageBoxImage.Error);
+                            // Réactiver l'interface pour permettre une autre action (ex: réessayer, effacer)
+                            btnSupprimerCommande.IsEnabled = true; // Réactiver car l'item est toujours sélectionné
+                            btnAjouter.IsEnabled = false; // Toujours désactivé si item sélectionné
+                            btnEffacerFormulaire.IsEnabled = true;
+                            dgCommandes.IsEnabled = true;
+                        }
+                    }
+                    // Gestion des erreurs de connexion ou autres erreurs C#
+                    catch (HttpRequestException httpEx) { Debug.WriteLine($"ERREUR HttpRequestException Suppression: {httpEx.ToString()}"); MessageBox.Show("Erreur connexion API suppression: " + httpEx.Message, "Erreur Réseau"); btnSupprimerCommande.IsEnabled = true; btnAjouter.IsEnabled = false; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+                    catch (Exception ex) { Debug.WriteLine($"ERREUR Inattendue Suppression: {ex.ToString()}"); MessageBox.Show("Erreur inattendue suppression: " + ex.Message, "Erreur"); btnSupprimerCommande.IsEnabled = true; btnAjouter.IsEnabled = false; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+                    finally
+                    {
+                        // Assurer que la barre de progression est cachée
+                        pbLoading.Visibility = Visibility.Collapsed;
+                        Debug.WriteLine("--- Fin Suppression Commande (finally) ---");
+                    }
+                }
+                else { Debug.WriteLine("Confirmation NON pour la suppression."); } // L'utilisateur a cliqué Non
+            }
+            else { Debug.WriteLine("Clic sur Supprimer mais aucune commande sélectionnée."); MessageBox.Show("Sélectionnez une commande avant de supprimer.", "Sélection requise", MessageBoxButton.OK, MessageBoxImage.Warning); } // Sécurité si le bouton était mal activé
+        }
+
+
+        // --- AJOUT D'UN ARTICLE À LA LISTE TEMPORAIRE ---
         private void btnAjouterDetail_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Lire et Valider les entrées pour le détail
-            if (!int.TryParse(txtDetailIdArticle.Text, out int idArticle) || idArticle <= 0)
-            {
-                MessageBox.Show("Veuillez entrer un ID Article valide (nombre entier positif).");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(txtDetailTaille.Text))
-            {
-                MessageBox.Show("Veuillez entrer une Taille.");
-                return;
-            }
-            if (!int.TryParse(txtDetailQuantite.Text, out int quantite) || quantite <= 0)
-            {
-                MessageBox.Show("Veuillez entrer une Quantité valide (nombre entier positif).");
-                return;
-            }
-            // Valider les champs numériques (prix, tva, remise)
+            // 1. Valider les entrées utilisateur pour le détail
+            if (!int.TryParse(txtDetailIdArticle.Text, out int idArticle) || idArticle <= 0) { MessageBox.Show("ID Article invalide."); return; }
+            if (string.IsNullOrWhiteSpace(txtDetailTaille.Text)) { MessageBox.Show("Taille requise."); return; }
+            if (!int.TryParse(txtDetailQuantite.Text, out int quantite) || quantite <= 0) { MessageBox.Show("Quantité invalide."); return; }
+            // Valider les champs numériques (HT, TVA, Remise) - TTC n'est plus saisi
             if (!decimal.TryParse(txtDetailPrixHT.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal prixHT) || prixHT < 0 ||
-                !decimal.TryParse(txtDetailPrixTTC.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal prixTTC) || prixTTC < 0 ||
                 !decimal.TryParse(txtDetailMontantTVA.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal montantTVA) || montantTVA < 0 ||
                 !decimal.TryParse(txtDetailRemise.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal remise) || remise < 0)
             {
-                MessageBox.Show("Veuillez entrer des valeurs numériques valides et positives pour les prix, TVA et remise. Utilisez '.' comme séparateur décimal.");
+                MessageBox.Show("Valeurs numériques (Prix HT, Montant TVA, Remise) invalides ou négatives. Utilisez '.' pour les décimales.", "Erreur Format", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 2. Créer l'objet CommandeDetail
+            // 2. Calculer le Prix TTC à partir de HT et TVA saisis
+            decimal prixTTC = prixHT + montantTVA;
+
+            // 3. Créer un nouvel objet CommandeDetail avec les données validées et calculées
             CommandeDetail nouveauDetail = new CommandeDetail
             {
                 id_article = idArticle,
                 taille = txtDetailTaille.Text,
                 quantite = quantite,
                 prix_ht = prixHT,
-                prix_ttc = prixTTC,
+                prix_ttc = prixTTC, // Utilisation du TTC calculé
                 montant_tva = montantTVA,
                 remise = remise
-                // id, id_commande, created_at, updated_at ne sont pas définis ici
             };
 
-            // 3. Ajouter à la collection (et donc au DataGrid dgCommandeDetails)
+            // 4. Ajouter le détail à la liste temporaire (qui est liée à dgCommandeDetails)
             detailsTemporaires.Add(nouveauDetail);
+            Debug.WriteLine($"Article ajouté (localement): ID {idArticle}, Qte {quantite}, HT={prixHT:N2}, TVA={montantTVA:N2}, TTC(calc)={prixTTC:N2}");
 
-            // 4. Recalculer et afficher les totaux globaux
+            // 5. Recalculer les totaux globaux de la commande en cours
             CalculerEtAfficherTotaux();
 
-            // 5. Vider les champs de saisie du détail pour le prochain article
+            // 6. Vider les champs de saisie pour préparer l'ajout suivant
             ViderChampsDetail();
         }
 
-        // Bouton pour supprimer l'article sélectionné dans dgCommandeDetails
+        // --- SUPPRESSION D'UN ARTICLE DE LA LISTE TEMPORAIRE ---
         private void btnSupprimerDetail_Click(object sender, RoutedEventArgs e)
         {
+            // Vérifier si un détail est sélectionné dans la grille des détails temporaires
             if (dgCommandeDetails.SelectedItem is CommandeDetail selectedDetail)
             {
+                // Supprimer l'élément de la collection ObservableCollection
                 detailsTemporaires.Remove(selectedDetail);
+                Debug.WriteLine($"Article supprimé (localement): ID {selectedDetail.id_article}");
                 // Recalculer les totaux après suppression
                 CalculerEtAfficherTotaux();
             }
-            else
-            {
-                MessageBox.Show("Veuillez sélectionner un article dans la liste des détails à supprimer.");
-            }
+            else { MessageBox.Show("Sélectionnez un article dans la liste des détails à supprimer.", "Sélection Requise", MessageBoxButton.OK, MessageBoxImage.Warning); }
         }
 
-        // Calculer les totaux à partir de la liste detailsTemporaires et les afficher
+        // --- CALCUL ET AFFICHAGE DES TOTAUX DE LA COMMANDE EN COURS ---
         private void CalculerEtAfficherTotaux()
         {
+            // Sommer les valeurs des articles dans la liste temporaire
             decimal totalHT = detailsTemporaires.Sum(d => d.prix_ht * d.quantite);
-            decimal totalTTC = detailsTemporaires.Sum(d => d.prix_ttc * d.quantite);
-            // Attention: la TVA et la Remise dépendent de si les champs détail sont unitaires ou totaux ligne
-            // Ici on suppose qu'ils sont unitaires (comme les prix)
+            decimal totalTTC = detailsTemporaires.Sum(d => d.prix_ttc * d.quantite); // Somme les TTC (maintenant cohérents car calculés)
             decimal totalTVA = detailsTemporaires.Sum(d => d.montant_tva * d.quantite);
             decimal totalRemise = detailsTemporaires.Sum(d => d.remise * d.quantite);
 
-            // Afficher dans les TextBox (ReadOnly) de l'en-tête
+            // Mettre à jour les champs d'affichage de l'en-tête (en lecture seule)
             txtTotalHT.Text = totalHT.ToString("N2", CultureInfo.InvariantCulture);
             txtTotalTTC.Text = totalTTC.ToString("N2", CultureInfo.InvariantCulture);
             txtTotalTVA.Text = totalTVA.ToString("N2", CultureInfo.InvariantCulture);
             txtTotalRemise.Text = totalRemise.ToString("N2", CultureInfo.InvariantCulture);
+            Debug.WriteLine($"Totaux recalculés: HT={totalHT:N2}, TTC={totalTTC:N2}, TVA={totalTVA:N2}");
         }
 
-
-        // --- BOUTON PRINCIPAL POUR AJOUTER LA COMMANDE ---
+        // --- AJOUT DE LA COMMANDE COMPLÈTE (EN-TÊTE + DÉTAILS) ---
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("Clic sur Créer Commande.");
+            // Gérer l'état de l'interface pendant l'ajout
             pbLoading.Visibility = Visibility.Visible;
             btnAjouter.IsEnabled = false;
+            btnSupprimerCommande.IsEnabled = false;
+            btnEffacerFormulaire.IsEnabled = false;
+            dgCommandes.IsEnabled = false;
 
             try
             {
-                // 1. Valider l'en-tête (juste l'ID utilisateur pour l'instant)
+                // Valider les informations minimales (ID utilisateur et présence de détails)
                 if (!int.TryParse(txtIdUser.Text, out int idUser) || idUser <= 0)
                 {
-                    MessageBox.Show("Veuillez entrer un ID Utilisateur valide.");
-                    return; // Sortie anticipée
+                    MessageBox.Show("ID Utilisateur invalide.");
+                    // Réactiver l'interface en cas d'erreur de validation
+                    pbLoading.Visibility = Visibility.Collapsed; btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; return;
                 }
-
-                // 2. Valider qu'il y a des détails !
                 if (detailsTemporaires.Count == 0)
                 {
-                    MessageBox.Show("Impossible d'ajouter une commande vide. Veuillez ajouter au moins un article.");
-                    return; // Sortie anticipée
+                    MessageBox.Show("Commande vide. Ajoutez des articles.");
+                    // Réactiver l'interface en cas d'erreur de validation
+                    pbLoading.Visibility = Visibility.Collapsed; btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; return;
                 }
 
-                // 3. Générer le numéro de commande (ou laisser l'API le faire)
+                // Générer un numéro de commande (si non géré par l'API)
                 int idNumCommande = (int)(DateTime.Now.Ticks % int.MaxValue);
-                // txtIdNumCommande.Text = idNumCommande.ToString(); // Affiché automatiquement par le binding si besoin
 
-                // 4. Créer l'objet CommandeEntete COMPLET
-                // Utiliser les totaux calculés directement
+                // Créer l'objet CommandeEntete complet avec les totaux calculés et les détails
                 CommandeEntete nouvelleCommande = new CommandeEntete()
                 {
+                    // id_commande n'est pas défini ici, il sera généré par la BDD lors de l'insertion
                     id_user = idUser,
                     id_num_commande = idNumCommande,
-                    total_ht = decimal.Parse(txtTotalHT.Text, CultureInfo.InvariantCulture), // Lire depuis le champ calculé
+                    total_ht = decimal.Parse(txtTotalHT.Text, CultureInfo.InvariantCulture), // Lire les totaux affichés
                     total_ttc = decimal.Parse(txtTotalTTC.Text, CultureInfo.InvariantCulture),
                     total_tva = decimal.Parse(txtTotalTVA.Text, CultureInfo.InvariantCulture),
                     total_remise = decimal.Parse(txtTotalRemise.Text, CultureInfo.InvariantCulture),
-
-                    // Assigner la VRAIE liste des détails
-                    details = new List<CommandeDetail>(detailsTemporaires) // Convertir ObservableCollection en List pour l'envoi
+                    details = new List<CommandeDetail>(detailsTemporaires) // Convertir l'ObservableCollection en List pour l'envoi
                 };
 
-                // (Optionnel mais recommandé) Ajouter les [JsonIgnore] sur id, created_at, updated_at
-                // dans les modèles CommandeEntete et CommandeDetail pour ne pas les envoyer.
-
-                // 5. Sérialiser et Envoyer
-                string jsonCommande = JsonConvert.SerializeObject(nouvelleCommande, Formatting.Indented);
-                System.Diagnostics.Debug.WriteLine("--- DÉBUT APPEL API ---");
-                System.Diagnostics.Debug.WriteLine("JSON envoyé : \n" + jsonCommande);
+                // Sérialiser l'objet en JSON
+                string jsonCommande = JsonConvert.SerializeObject(nouvelleCommande, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                Debug.WriteLine("--- DÉBUT APPEL API POST /commandes ---\n" + jsonCommande);
                 StringContent content = new StringContent(jsonCommande, Encoding.UTF8, "application/json");
 
+                // Envoyer la requête POST à l'API
                 HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/commandes", content);
+                Debug.WriteLine($"--- FIN APPEL API POST --- Statut: {response.StatusCode}");
 
-                System.Diagnostics.Debug.WriteLine($"--- FIN APPEL API --- Statut: {response.StatusCode}");
-
-                // 6. Gérer la réponse
+                // Gérer la réponse de l'API
                 if (response.IsSuccessStatusCode)
                 {
-                    System.Diagnostics.Debug.WriteLine("API a répondu Succès.");
+                    Debug.WriteLine($"Ajout réussi (API). Réponse: {await response.Content.ReadAsStringAsync()}");
                     MessageBox.Show("Commande ajoutée avec succès !");
-                    ViderFormulaireComplet(); // Vider tout le formulaire
-                    afficher(); // Rafraîchir la liste des commandes existantes
+                    // Réinitialiser l'interface après succès
+                    ViderFormulaireComplet();
+                    afficher(); // Recharger la liste
                 }
-                else
+                else // Erreur retournée par l'API
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
-                    System.Diagnostics.Debug.WriteLine($"API a répondu Erreur. Contenu: {errorContent}");
-                    MessageBox.Show($"Erreur lors de l'ajout : {response.StatusCode}\n{errorContent}");
+                    Debug.WriteLine($"Échec ajout (API). Statut: {response.StatusCode}, Contenu: {errorContent}");
+                    MessageBox.Show($"Erreur ajout serveur : {response.StatusCode}\n{errorContent}", "Erreur API");
+                    // Réactiver l'interface pour permettre correction/nouvelle tentative
+                    btnAjouter.IsEnabled = true;
+                    btnEffacerFormulaire.IsEnabled = true;
+                    dgCommandes.IsEnabled = true;
                 }
             }
-            catch (FormatException formatEx) // Erreur de parsing avant l'API
-            {
-                System.Diagnostics.Debug.WriteLine($"ERREUR FormatException: {formatEx.ToString()}");
-                MessageBox.Show("Erreur de format dans les champs numériques : " + formatEx.Message);
-            }
-            catch (HttpRequestException httpEx) // Erreur de connexion/réseau
-            {
-                System.Diagnostics.Debug.WriteLine($"ERREUR HttpRequestException: {httpEx.ToString()}");
-                MessageBox.Show("Erreur de connexion à l'API : " + httpEx.Message + "\nVérifiez l'URL, la connexion internet et les logs serveur.");
-            }
-            catch (Exception ex) // Autres erreurs
-            {
-                System.Diagnostics.Debug.WriteLine($"ERREUR INATTENDUE: {ex.ToString()}");
-                MessageBox.Show("Une erreur inattendue est survenue : " + ex.Message);
-            }
+            // Gestion des erreurs C# (format, connexion, etc.)
+            catch (FormatException formatEx) { Debug.WriteLine($"ERREUR FormatException Ajout: {formatEx.ToString()}"); MessageBox.Show("Erreur format totaux: " + formatEx.Message); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+            catch (HttpRequestException httpEx) { Debug.WriteLine($"ERREUR HttpRequestException Ajout: {httpEx.ToString()}"); MessageBox.Show("Erreur connexion API ajout: " + httpEx.Message, "Erreur Réseau"); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+            catch (Exception ex) { Debug.WriteLine($"ERREUR Inattendue Ajout: {ex.ToString()}"); MessageBox.Show("Erreur inattendue ajout: " + ex.Message, "Erreur"); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
             finally
             {
+                // Assurer que la barre de progression est cachée
                 pbLoading.Visibility = Visibility.Collapsed;
-                btnAjouter.IsEnabled = true;
+                Debug.WriteLine("--- Fin Ajout Commande (finally) ---");
             }
         }
 
 
-        // --- MÉTHODES UTILITAIRES POUR VIDER LES CHAMPS ---
+        // --- MÉTHODES UTILITAIRES ---
 
-        // Vider les champs de saisie pour UN détail
+        // Vider les champs de saisie pour UN détail d'article
         private void ViderChampsDetail()
         {
             txtDetailIdArticle.Clear();
             txtDetailTaille.Clear();
             txtDetailQuantite.Clear();
             txtDetailPrixHT.Clear();
-            txtDetailPrixTTC.Clear();
             txtDetailMontantTVA.Clear();
             txtDetailRemise.Clear();
+            // tbDetailPrixTTCCalcule.Text = "--.--"; // Réinitialiser si vous affichez le TTC calculé
+            txtDetailIdArticle.Focus(); // Mettre le focus sur le premier champ
         }
 
-        // Vider TOUT le formulaire (en-tête + détails temporaires)
+        // Vider TOUT le formulaire (en-tête + détails temporaires) ET réinitialiser les états
         private void ViderFormulaireComplet()
         {
+            Debug.WriteLine("Vidage complet du formulaire.");
+            // Vider champs en-tête
             txtIdUser.Clear();
             txtIdNumCommande.Clear();
             txtTotalHT.Clear();
@@ -288,46 +370,52 @@ namespace GestionStockMySneakers.Pages
             txtTotalTVA.Clear();
             txtTotalRemise.Clear();
 
-            detailsTemporaires.Clear(); // Vider la liste des détails en cours
-            ViderChampsDetail(); // Vider aussi les champs de saisie de détail
-                                 // Les totaux seront recalculés à 0 par CalculerEtAfficherTotaux si appelé, ou simplement vides.
+            // Vider la liste temporaire et les champs de saisie de détail
+            detailsTemporaires.Clear();
+            ViderChampsDetail();
+
+            // Réinitialiser la sélection de la grille et l'état des boutons
+            dgCommandes.SelectedItem = null; // Important: déclenche SelectionChanged qui gère les états
+            btnSupprimerCommande.IsEnabled = false; // Assurer par sécurité
+            btnAjouter.IsEnabled = true;
+            btnEffacerFormulaire.IsEnabled = true;
+            dgCommandes.IsEnabled = true;
+
+            txtIdUser.Focus(); // Prêt pour une nouvelle saisie
         }
 
         // Bouton pour effacer manuellement le formulaire
         private void btnEffacerFormulaire_Click(object sender, RoutedEventArgs e)
         {
-            ViderFormulaireComplet();
-            dgCommandes.SelectedItem = null; // Désélectionner aussi la commande existante
-            MessageBox.Show("Formulaire effacé.");
+            ViderFormulaireComplet(); // Appelle la méthode de vidage complet
+            MessageBox.Show("Formulaire effacé.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
 
-        // --- GESTION DE LA DÉSÉLECTION ---
+        // --- GESTION DE LA DÉSÉLECTION PAR CLIC EXTÉRIEUR ---
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Si on clique en dehors du DataGrid des commandes existantes
-            if (e.OriginalSource is DependencyObject source)
+            // Si on clique en dehors de la grille et qu'un item est sélectionné
+            if (e.OriginalSource is DependencyObject source && !(e.Source is Button)) // Ignorer les clics sur les boutons
             {
                 var dataGrid = FindVisualParent<DataGrid>(source);
-                // Si on clique en dehors de dgCommandes ET qu'un item était sélectionné
                 if (dataGrid != dgCommandes && dgCommandes.SelectedItem != null)
                 {
-                    dgCommandes.SelectedItem = null; // Désélectionner la commande existante
-                                                     // ViderFormulaireComplet(); // Optionnel: vider aussi le formulaire quand on désélectionne
+                    dgCommandes.SelectedItem = null; // Désélectionner
+                    Debug.WriteLine("Clic en dehors de la grille -> Désélection.");
+                    // L'événement SelectionChanged gérera la mise à jour de l'état des boutons
+                    // ViderFormulaireComplet(); // Décommentez si vous voulez aussi vider le formulaire
                 }
             }
         }
 
-        // Helper pour trouver un parent visuel (gardé de l'exemple précédent)
+        // Helper récursif pour trouver un parent visuel d'un type donné
         private static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
         {
             DependencyObject parentObject = System.Windows.Media.VisualTreeHelper.GetParent(child);
-            if (parentObject == null) return null;
-            T parent = parentObject as T;
-            if (parent != null)
-                return parent;
-            else
-                return FindVisualParent<T>(parentObject);
+            if (parentObject == null) return null; // Pas de parent
+            T parent = parentObject as T; // Essayer de caster le parent
+            return parent ?? FindVisualParent<T>(parentObject); // Retourner si trouvé, sinon chercher plus haut
         }
     }
 }

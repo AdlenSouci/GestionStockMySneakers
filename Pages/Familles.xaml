@@ -49,16 +49,19 @@
                     <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
+                
+
                 <!-- Nom de la famille -->
                 <WrapPanel Grid.Row="1" Margin="0 2 0 2">
                     <Label Content="Nom de la famille :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
                     <TextBox Name="txtNomFamille" Text="{Binding SelectedItem.nom_famille, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
                 
-                <!-- Id Parent -->
+
+                
                 <WrapPanel Grid.Row="2" Margin="0 2 0 2">
                     <Label Content="ID Parent :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
-                    <TextBox Name="txtIdParent" Text="{Binding SelectedItem.id_parent, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                    <Label Name="txtIdParent" Content="{Binding SelectedItem.id_parent, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
