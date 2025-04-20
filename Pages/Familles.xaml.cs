@@ -78,9 +78,9 @@ namespace GestionStockMySneakers.Pages
 
             int? idParent = null; // id_parent est nullable
             // Si txtIdParent n'est pas vide, on essaie de le convertir en entier
-            if (!string.IsNullOrWhiteSpace(txtIdParent.Text))
+            if (!string.IsNullOrWhiteSpace(txtIdParent.Content.ToString()))
             {
-                if (!int.TryParse(txtIdParent.Text, out int parsedIdParent))
+                if (!int.TryParse(txtIdParent.Content.ToString(), out int parsedIdParent))
                 {
                     MessageBox.Show("L'ID Parent doit être un nombre entier valide ou laissé vide.");
                     return;
@@ -152,9 +152,9 @@ namespace GestionStockMySneakers.Pages
 
             // Traitement de id_parent pour la mise à jour
             int? idParentUpdate = null;
-            if (!string.IsNullOrWhiteSpace(txtIdParent.Text))
+            if (!string.IsNullOrWhiteSpace(txtIdParent.Content.ToString()))
             {
-                if (!int.TryParse(txtIdParent.Text, out int parsedIdParentUpdate))
+                if (!int.TryParse(txtIdParent.Content.ToString(), out int parsedIdParentUpdate))
                 {
                     MessageBox.Show("L'ID Parent doit être un nombre entier valide ou laissé vide pour la mise à jour.");
                     return;
@@ -252,6 +252,8 @@ namespace GestionStockMySneakers.Pages
                         // Envoie une requête DELETE à l'API pour supprimer la famille
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/famille/{familleSelectionnee.id}"); // <--- Modifié: /famille/, familleSelectionnee.id
                         response.EnsureSuccessStatusCode(); // Vérifie si la requête a réussi
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show(responseContent);
 
                         // Supprime la famille de la liste locale
                         familles.Remove(familleSelectionnee); // <--- Modifié: familles, familleSelectionnee
@@ -262,6 +264,7 @@ namespace GestionStockMySneakers.Pages
                     catch (HttpRequestException httpEx) // Pour les erreurs API/Réseau
                     {
                         // Gérer les erreurs spécifiques (ex: suppression impossible car clé étrangère ou famille parente)
+                        MessageBox.Show(httpEx.StatusCode.ToString());
                         if (httpEx.StatusCode == System.Net.HttpStatusCode.Conflict || httpEx.StatusCode == System.Net.HttpStatusCode.BadRequest)
                         {
                             // Message adapté pour les familles
