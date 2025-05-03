@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 
 namespace GestionStockMySneakers.Pages
@@ -69,58 +70,39 @@ namespace GestionStockMySneakers.Pages
         // Gère le clic sur le bouton "Nouveau" pour AJOUTER une famille
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Validation des champs
             if (string.IsNullOrWhiteSpace(txtNomFamille.Text))
             {
-                MessageBox.Show("Le nom de la famille est obligatoire.");
+                MessageBox.Show("Veuillez entrer un nom pour la nouvelle famille.");
                 return;
             }
 
-            int? idParent = null; // id_parent est nullable
-            // Si txtIdParent n'est pas vide, on essaie de le convertir en entier
-            if (!string.IsNullOrWhiteSpace(txtIdParent.Content.ToString()))
-            {
-                if (!int.TryParse(txtIdParent.Content.ToString(), out int parsedIdParent))
-                {
-                    MessageBox.Show("L'ID Parent doit être un nombre entier valide ou laissé vide.");
-                    return;
-                }
-                idParent = parsedIdParent;
-            }
-
-            // 2. Création de l'objet famille à envoyer
             var familleAAjouter = new
             {
-                nom_famille = txtNomFamille.Text.Trim(),
-                id_parent = idParent // Utilise la valeur int? (peut être null)
+                nom_famille = txtNomFamille.Text.Trim()
             };
 
-            // 3. Appel API POST pour ajouter la famille
             try
             {
-                string json = JsonConvert.SerializeObject(familleAAjouter, Formatting.None,
-                                           new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include }); // Assure que id_parent=null est envoyé si c'est le cas
+                string json = JsonConvert.SerializeObject(familleAAjouter);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/famille", content);
-                response.EnsureSuccessStatusCode(); // Vérifie le succès (statut 2xx)
+                response.EnsureSuccessStatusCode();
 
-                // 4. Récupérer la famille ajoutée depuis la réponse
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var newFamille = JsonConvert.DeserializeObject<Famille>(responseBody);
 
-                // 5. Mettre à jour l'interface utilisateur
                 if (newFamille != null)
                 {
-                    familles.Add(newFamille); // Ajoute à la collection observable (met à jour la grille)
-                    lblFamilles.Content = $"Familles ({familles.Count})"; // Met à jour le compteur
+                    familles.Add(newFamille); // ← la collection ObservableCollection<Famille> familles
+                    lblFamilles.Content = $"Familles ({familles.Count})";
                     MessageBox.Show($"Famille '{newFamille.nom_famille}' ajoutée avec succès !");
-                    effacer(); // Vide le formulaire après succès
+                    effacer(); // Si tu as une méthode pour nettoyer les champs
                 }
                 else
                 {
                     MessageBox.Show("Famille ajoutée, mais impossible de récupérer les détails depuis l'API.");
-                    afficher(); // Optionnel: recharger la liste complète
+                    afficher(); // Recharge la liste au cas où
                 }
             }
             catch (HttpRequestException httpEx)
@@ -129,14 +111,14 @@ namespace GestionStockMySneakers.Pages
             }
             catch (JsonException jsonEx)
             {
-                MessageBox.Show($"Erreur de format JSON lors de l'ajout : {jsonEx.Message}");
+                MessageBox.Show($"Erreur JSON lors de l'ajout : {jsonEx.Message}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Erreur inattendue lors de l'ajout : {ex.Message}");
             }
         }
-        // *** FIN DE LA MÉTHODE MODIFIÉE ***
+
 
 
         // --- LES MÉTHODES SUIVANTES RESTENT INCHANGÉES PAR RAPPORT À VOTRE ORIGINAL ---
@@ -165,7 +147,7 @@ namespace GestionStockMySneakers.Pages
             var famille = new
             {
                 nom_famille = txtNomFamille.Text,
-                id_parent = idParentUpdate, // Utilisation de la variable nullable
+                id_parent = idParentUpdate, // 
             };
 
             try
@@ -284,6 +266,18 @@ namespace GestionStockMySneakers.Pages
             else // Si rien n'est sélectionné
             {
                 MessageBox.Show("Veuillez sélectionner une famille à supprimer."); // <--- Modifié: Message
+            }
+        }
+
+        private void Page_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Vérifie si la source du clic n'est pas un élément de la grille ou un bouton
+            if (e.OriginalSource is Grid || e.OriginalSource is Border || e.OriginalSource is Page)
+            {
+                if (dgFamilles.SelectedItem != null)
+                {
+                    effacer(); // Utilise la fonction existante pour désélectionner et vider
+                }
             }
         }
     }

@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d"
-      Title="Familles">
+      Title="Familles"
+       MouseDown="Page_MouseDown" >
 
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>

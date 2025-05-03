@@ -213,7 +213,7 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        // --- MODIFIÉ : btnEnregistrer_Click effectue UNIQUEMENT la MODIFICATION ---
+      
         private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
         {
             // 1. Vérifier si un article est sélectionné (ID non nul)

@@ -7,6 +7,7 @@ using System.Net.Http; // Utilisé pour envoyer des requêtes HTTP
 using System.Text; // Utilisé pour encoder du texte
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GestionStockMySneakers.Pages
 {
@@ -130,10 +131,10 @@ namespace GestionStockMySneakers.Pages
                 MessageBox.Show($"Erreur inattendue lors de l'ajout : {ex.Message}");
             }
         }
-        // *** FIN DE LA MÉTHODE MODIFIÉE ***
+      
 
 
-        // --- LES MÉTHODES SUIVANTES RESTENT INCHANGÉES PAR RAPPORT À VOTRE ORIGINAL ---
+
         private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
         {
             // Vérifie si le champ du nom de la marque est vide
@@ -160,21 +161,7 @@ namespace GestionStockMySneakers.Pages
                 // Il ne traitera que la partie 'else' (modification) car l'ajout est géré par btnAjouter_Click.
                 if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
                 {
-                    // -------- Bloc d'ajout original (maintenant géré par btnAjouter_Click) --------
-                    // // Ajout d'une nouvelle marque
-                    // response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/marque", content);
-                    //
-                    // // Récupère la marque ajoutée et la convertit depuis JSON en objet Marque
-                    // var newMarque = JsonConvert.DeserializeObject<Marque>(await response.Content.ReadAsStringAsync());
-                    //
-                    // // Ajoute directement la nouvelle marque à la liste affichée
-                    // if (newMarque != null)
-                    //     marques.Add(newMarque);
-                    //
-                    // MessageBox.Show("Marque ajoutée avec succès !");
-                    // -------- Fin du bloc d'ajout original --------
-
-                    // On pourrait afficher un message indiquant d'utiliser le bouton "Nouveau"
+              
                     MessageBox.Show("Pour ajouter une nouvelle marque, veuillez utiliser le bouton 'Nouveau'.");
                 }
                 else
@@ -212,6 +199,19 @@ namespace GestionStockMySneakers.Pages
             catch (Exception ex) // Pour toute autre erreur
             {
                 MessageBox.Show("Erreur : " + ex.Message);
+            }
+        }
+
+
+        private void Page_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Vérifie si la source du clic n'est pas un élément de la grille ou un bouton
+            if (e.OriginalSource is Grid || e.OriginalSource is Border || e.OriginalSource is Page)
+            {
+                if (dgMarques.SelectedItem != null)
+                {
+                    effacer(); // Utilise la fonction existante pour désélectionner et vider
+                }
             }
         }
 
@@ -262,5 +262,9 @@ namespace GestionStockMySneakers.Pages
                 MessageBox.Show("Veuillez sélectionner une marque à supprimer.");
             }
         }
+
     }
+
+
+    
 }
