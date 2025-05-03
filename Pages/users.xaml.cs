@@ -31,10 +31,25 @@ namespace GestionStockMySneakers.Pages
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/users");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
+
+                // Désérialisation
                 users = JsonConvert.DeserializeObject<ObservableCollection<GestionStockMySneakers.Models.Users>>(responseBody) ?? new ObservableCollection<GestionStockMySneakers.Models.Users>();
 
+                // Vérification des données désérialisées
+                if (users != null && users.Count > 0)
+                {
+                    foreach (var user in users)
+                    {
+                        Console.WriteLine($"User  ID: {user.user_id}, Name: {user.name}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Aucun utilisateur trouvé.");
+                }
+
                 dgUsers.ItemsSource = users;
-                lblUsers.Content = $"Users ({users.Count})"; 
+                lblUsers.Content = $"Users ({users.Count})";
             }
             catch (Exception ex)
             {
@@ -53,9 +68,65 @@ namespace GestionStockMySneakers.Pages
             dgUsers.SelectedItem = null;
         }
 
-        private void btnAjouter_Click(object sender, RoutedEventArgs e)
+        private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            effacer();
+            if (string.IsNullOrEmpty(txtNom.Text) || string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Password))
+            {
+                MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
+                return;
+            }
+
+            var user = new
+            {
+                name = txtNom.Text,
+                email = txtEmail.Text,
+                adresse_livraison = txtAdresse.Text,
+                password = txtPassword.Password,
+                is_admin = false
+            };
+
+            try
+            {
+                HttpResponseMessage response;
+                string json = JsonConvert.SerializeObject(user);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
+                {
+                    // Ajout
+                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
+
+                    var newUser = JsonConvert.DeserializeObject<GestionStockMySneakers.Models.Users>(await response.Content.ReadAsStringAsync());
+
+                    if (newUser != null)
+                        users.Add(newUser);
+
+                    MessageBox.Show("Utilisateur ajouté avec succès !");
+                }
+                else
+                {
+                    int userId = int.Parse(txtId.Content.ToString());
+                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/users/{userId}", content);
+
+                    var updatedUser = users.FirstOrDefault(u => u.user_id == userId);
+                    if (updatedUser != null)
+                    {
+                        updatedUser.name = txtNom.Text;
+                        updatedUser.email = txtEmail.Text;
+                        updatedUser.adresse_livraison = txtAdresse.Text;
+                        // Note: Ne pas mettre à jour le mot de passe ici pour des raisons de sécurité
+                    }
+                    dgUsers.Items.Refresh();
+
+                    MessageBox.Show("Utilisateur mis à jour avec succès !");
+                }
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message);
+            }
+
         }
 
         private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)

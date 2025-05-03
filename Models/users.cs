@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace GestionStockMySneakers.Models
 {
     public class Users
     {
+
+        [JsonProperty("id")]
         public int user_id { get; set; }
         public string? name { get; set; }
         public string? email { get; set; }
