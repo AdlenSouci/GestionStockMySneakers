@@ -22,7 +22,7 @@
                 <RowDefinition Height="4*"/>
             </Grid.RowDefinitions>
 
-            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgArticles" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgArticles" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1" SelectionChanged="dgArticles_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding id_marque}" Header="id_marque" Width="*" Visibility="Collapsed" />
                     <DataGridTextColumn Binding="{Binding nom_marque}" Header="Marque" Width="*" />
@@ -98,8 +98,7 @@
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,10,20,10">
                         <Image x:Name="ImageArticle" Width="250" Height="180" Stretch="Uniform" />
                     </StackPanel>
-
-
+                   
                 </Grid>
             </Border>
         </Grid>

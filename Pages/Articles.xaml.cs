@@ -9,15 +9,16 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Globalization; // Ajout pour CultureInfo.InvariantCulture si nécessaire
+using System.Globalization;
+using System.Windows.Media.Imaging;
 
+using System.IO;
 namespace GestionStockMySneakers.Pages
 {
     public partial class Articles : Page
     {
         private ObservableCollection<Models.Article> articles = new ObservableCollection<Article>();
-        // La liste marques n'est pas utilisée globalement, on peut la déclarer localement si besoin.
-        // private List<Marque> marques = new List<Marque>();
+
 
         public Articles()
         {
@@ -87,7 +88,7 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        // --- Affichage initial et rafraîchissement de la grille ---
+
         private async void afficher()
         {
             pbLoading.Visibility = Visibility.Visible;
@@ -98,10 +99,10 @@ namespace GestionStockMySneakers.Pages
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                // Remplacer la collection existante pour refléter l'état actuel de l'API
+          
                 var articlesDepuisApi = JsonConvert.DeserializeObject<ObservableCollection<Models.Article>>(responseBody) ?? new ObservableCollection<Article>();
-                articles = articlesDepuisApi; // Assigner la nouvelle collection
-                dgArticles.ItemsSource = articles; // Mettre à jour la source de la grille
+                articles = articlesDepuisApi;
+                dgArticles.ItemsSource = articles;
                 lblArticles.Content = $"Articles ({articles.Count})";
             }
             catch (Exception ex)
@@ -117,14 +118,14 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        // --- Fonction pour désélectionner la ligne (et vider le formulaire via Binding OneWay) ---
+   
         private void effacer()
         {
             dgArticles.SelectedItem = null;
-            // Les champs texte/combo se videront grâce au Binding OneWay vers SelectedItem
+          
         }
 
-        // --- MODIFIÉ : btnAjouter_Click effectue l'AJOUT ---
+  
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
             // 1. Validation des champs
@@ -158,7 +159,7 @@ namespace GestionStockMySneakers.Pages
                 description = txtDescription.Text,
                 prix_public = prixPublic,
                 prix_achat = prixAchat,
-                img = string.IsNullOrWhiteSpace(txtImg.Text) ? "default.jpg" : txtImg.Text // Utilise le texte ou "default.jpg"
+                img = string.IsNullOrWhiteSpace(txtImg.Text) ? "default.jpg" : txtImg.Text 
             };
 
             // 3. Appel API POST
@@ -310,7 +311,48 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        // --- MODIFIÉ : btnSupprimer_Click utilise effacer() après succès ---
+
+        private void AfficherImage(string imageName)
+        {
+            try
+            {
+                var imagePath = @"C:\\CSharp\\GestionStockMySneakers\\img\\" + imageName;
+
+                if (File.Exists(imagePath))
+                {
+                    var uriSource = new Uri(imagePath);
+                    ImageArticle.Source = new BitmapImage(uriSource);
+                }
+                else
+                {
+                    MessageBox.Show("L'image n'existe pas sur le chemin spécifié.", "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ImageArticle.Source = null; // Clear image if not found
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors du chargement de l'image : " + ex.Message, "Erreur d'image", MessageBoxButton.OK, MessageBoxImage.Error);
+                ImageArticle.Source = null; // Clear image on error
+            }
+        }
+
+        private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Vérifie si un élément est réellement sélectionné
+            if (dgArticles.SelectedItem is Models.Article articleSelectionne)
+            {
+                // Si oui, récupère le nom du fichier image (depuis la colonne 'img')
+                string nomImage = articleSelectionne.img;
+
+                // Appelle VOTRE méthode existante pour afficher l'image
+                AfficherImage(nomImage);
+            }
+            else
+            {
+                // Si rien n'est sélectionné (ou si on désélectionne), on efface l'image
+                ImageArticle.Source = null;
+            }
+        }
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
             if (dgArticles.SelectedItem is Article articleSelectionne)
