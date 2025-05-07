@@ -56,6 +56,11 @@ namespace GestionStockMySneakers.Pages
             dgCouleurs.SelectedItem = null;
         }
 
+        private void btnNettoyer_Click(object sender, RoutedEventArgs e)
+        {
+            effacer();
+        }
+
 
         private void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
@@ -65,7 +70,6 @@ namespace GestionStockMySneakers.Pages
         private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
 
-            // Vérifier que tous les champs sont remplis
             if (string.IsNullOrEmpty(txtNomCouleur.Text))
             {
                 MessageBox.Show("Veuillez remplir tous les champs obligatoires.");

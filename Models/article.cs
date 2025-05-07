@@ -16,5 +16,6 @@ namespace GestionStockMySneakers.Models
         public decimal prix_public { get; set; }
         public decimal prix_achat { get; set; }
         public string? img { get; set; }
+
     }
 }

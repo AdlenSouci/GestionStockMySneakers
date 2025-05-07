@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d"
-      Title="Marques"
-      MouseDown="Page_MouseDown">
+      Title="Marques">
 
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
@@ -23,19 +22,16 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <!--DataGrid-->
-            <DataGrid Grid.Column="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgMarques" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
+            <DataGrid Grid.Column="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgMarques" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1" SelectionChanged="dgMarques_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding id}" Header="Id" Width="1*" />
-                    <DataGridTextColumn Binding="{Binding nom_marque}" Header="Marque" Width="6*" />
+                    <DataGridTextColumn Binding="{Binding nom_marque}" Header=" Marque" Width="6*" />
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- Spinner -->
             <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
                  Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
 
-            <!--Detail-->
             <Grid Grid.Column="1" Margin="5 0 15 0">
                 <Grid.RowDefinitions >
                     <RowDefinition Height="30"/>
@@ -48,16 +44,16 @@
                     <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgMarques, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
-                <!-- Nom de la marque -->
                 <WrapPanel Grid.Row="1" Margin="0 2 0 2">
                     <Label Content="Marque :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
-                    <TextBox Name="txtNomMarque" Text="{Binding SelectedItem.nom_marque, ElementName=dgMarques, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                    <TextBox Name="txtNomMarque" Text="{Binding SelectedItem.nom_marque, ElementName=dgMarques, Mode=TwoWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
-                    <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="150 0 5 0"/>
+                    <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="5 0 5 0"/>
                     <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Height="30" Width="85" Background="#FFC107" Margin="5 0 5 0"/>
-                    <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="30" Width="90" Background="#F44336"/>
+                    <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="30" Width="90" Background="#F44336" Margin="5 0 5 0"/>
+                    <Button Name="btnNettoyer" Content="Nettoyer" Click="btnNettoyer_Click" Height="30" Width="80" Background="#2196F3" Margin="5 0 5 0"/>
                 </StackPanel>
 
             </Grid>

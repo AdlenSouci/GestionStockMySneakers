@@ -146,12 +146,18 @@ namespace GestionStockMySneakers.Pages
             txtArticleId.Clear();
             txtContenu.Clear();
             txtNote.Clear();
-            txtId.Clear(); // Utilisez Clear() pour le TextBox txtId
+            txtId.Clear(); 
         }
 
         private void btnEnvoyerReponse_Click(object sender, RoutedEventArgs e)
         {
             // Logique pour envoyer une réponse à l'avis
         }
+        private void btnNettoyer_Click(object sender, RoutedEventArgs e)
+        {
+            effacer();
+        }
+
+
     }
 }

@@ -214,5 +214,10 @@ namespace GestionStockMySneakers.Pages
                 }
             }
         }
+        private void btnNettoyer_Click(object sender, RoutedEventArgs e)
+        {
+            effacer();
+        }
+
     }
 }
