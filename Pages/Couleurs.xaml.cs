@@ -62,7 +62,7 @@ namespace GestionStockMySneakers.Pages
             effacer();
         }
 
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
 
             // Vérifier que tous les champs sont remplis

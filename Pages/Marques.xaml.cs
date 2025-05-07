@@ -135,7 +135,7 @@ namespace GestionStockMySneakers.Pages
 
 
 
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
             // Vérifie si le champ du nom de la marque est vide
             if (string.IsNullOrEmpty(txtNomMarque.Text))
@@ -177,9 +177,7 @@ namespace GestionStockMySneakers.Pages
                         updatedMarque.nom_marque = txtNomMarque.Text;
                         // Mettre à jour updated_at si nécessaire et si l'API le renvoie
                     }
-                    // dgMarques.Items.Refresh(); // Normalement pas nécessaire avec ObservableCollection + PropertyChanged (si implémenté dans Marque)
-                    // Si Marque n'implémente pas INotifyPropertyChanged, Refresh peut être utile.
-                    // Ou mettre à jour l'objet directement comme fait ci-dessus suffit visuellement.
+                
 
                     MessageBox.Show("Marque mise à jour avec succès !");
                     response.EnsureSuccessStatusCode(); // Vérifie si la requête PUT a réussi

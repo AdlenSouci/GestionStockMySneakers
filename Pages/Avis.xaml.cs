@@ -73,7 +73,7 @@ namespace GestionStockMySneakers.Pages
             effacer();
         }
 
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
             // Vérifier que tous les champs sont remplis
             if (string.IsNullOrEmpty(txtUserId.Text) || string.IsNullOrEmpty(txtArticleId.Text) ||
@@ -85,11 +85,11 @@ namespace GestionStockMySneakers.Pages
 
             var avisData = new
             {
-                user_id = txtUserId.Text, // Assurez-vous que cette valeur est correcte
+                user_id = txtUserId.Text, 
                 article_id = txtArticleId.Text,
                 contenu = txtContenu.Text,
                 note = int.Parse(txtNote.Text),
-                created_at = DateTime.Now // Vous pouvez ajuster cela selon vos besoins
+                created_at = DateTime.Now 
             };
 
             try

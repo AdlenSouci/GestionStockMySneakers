@@ -62,12 +62,11 @@ namespace GestionStockMySneakers.Pages
         private void effacer()
         {
             dgFamilles.SelectedItem = null;
-            // Les bindings OneWay videront les champs txtId, txtNomFamille, txtIdParent
+          
         }
 
 
-        // *** SEULE CETTE MÉTHODE EST MODIFIÉE ***
-        // Gère le clic sur le bouton "Nouveau" pour AJOUTER une famille
+     
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNomFamille.Text))
@@ -83,6 +82,19 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
+                // Vérification de l'existence de la famille avant d'ajouter
+                var checkResponse = await ApiClient.Client.GetAsync(ApiClient.apiUrl + $"/famille?nom_famille={familleAAjouter.nom_famille}");
+                if (checkResponse.IsSuccessStatusCode)
+                {
+                    var existingFamilles = JsonConvert.DeserializeObject<ObservableCollection<Models.Famille>>(await checkResponse.Content.ReadAsStringAsync());
+                    if (existingFamilles != null && existingFamilles.Count > 0)
+                    {
+                        MessageBox.Show("Erreur : Une famille avec ce nom existe déjà.");
+                        return;
+                    }
+                }
+
+                // Ajout de la nouvelle famille
                 string json = JsonConvert.SerializeObject(familleAAjouter);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -94,7 +106,7 @@ namespace GestionStockMySneakers.Pages
 
                 if (newFamille != null)
                 {
-                    familles.Add(newFamille); // ← la collection ObservableCollection<Famille> familles
+                    familles.Add(newFamille); // Ajoute à l'ObservableCollection
                     lblFamilles.Content = $"Familles ({familles.Count})";
                     MessageBox.Show($"Famille '{newFamille.nom_famille}' ajoutée avec succès !");
                     effacer(); // Si tu as une méthode pour nettoyer les champs
@@ -119,97 +131,101 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-
-
-        // --- LES MÉTHODES SUIVANTES RESTENT INCHANGÉES PAR RAPPORT À VOTRE ORIGINAL ---
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
-
-            // Vérifier que tous les champs sont remplis
-            if (string.IsNullOrEmpty(txtNomFamille.Text))
+            if (dgFamilles.SelectedItem == null)
             {
-                MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
+                MessageBox.Show("Pour modifier une famille, veuillez sélectionner une famille existante dans la liste.");
                 return;
             }
 
-            // Traitement de id_parent pour la mise à jour
-            int? idParentUpdate = null;
-            if (!string.IsNullOrWhiteSpace(txtIdParent.Content.ToString()))
+            Models.Famille familleSelectionnee = dgFamilles.SelectedItem as Models.Famille;
+            if (familleSelectionnee == null) // Juste une sécurité supplémentaire
             {
-                if (!int.TryParse(txtIdParent.Content.ToString(), out int parsedIdParentUpdate))
-                {
-                    MessageBox.Show("L'ID Parent doit être un nombre entier valide ou laissé vide pour la mise à jour.");
-                    return;
-                }
-                idParentUpdate = parsedIdParentUpdate;
+                MessageBox.Show("L'élément sélectionné n'est pas une famille valide.");
+                return;
             }
 
-            var famille = new
+            int familleId = familleSelectionnee.id; // On prend l'ID directement de l'objet sélectionné
+
+            // txtNomFamille est un TextBox, donc on lit sa propriété Text.
+            // Elle devrait être remplie par le binding TwoWay avec SelectedItem.nom_famille.
+            if (string.IsNullOrWhiteSpace(txtNomFamille.Text))
             {
-                nom_famille = txtNomFamille.Text,
-                id_parent = idParentUpdate, // 
+                MessageBox.Show("Le nom de la famille ne peut pas être vide.");
+                return;
+            }
+
+            int? idParentUpdate = null;
+            // txtIdParent est maintenant un TextBox, on lit sa propriété Text.
+            if (!string.IsNullOrWhiteSpace(txtIdParent.Text))
+            {
+                if (int.TryParse(txtIdParent.Text, out int parsedIdParentUpdate))
+                {
+                    idParentUpdate = parsedIdParentUpdate;
+                }
+                else
+                {
+                    MessageBox.Show("L'ID Parent doit être un nombre entier valide ou laissé vide.");
+                    return;
+                }
+            }
+
+            if (idParentUpdate.HasValue && idParentUpdate.Value == familleId)
+            {
+                MessageBox.Show("Une famille ne peut pas être son propre parent.");
+                return;
+            }
+
+            var familleAModifier = new
+            {
+                nom_famille = txtNomFamille.Text.Trim(),
+                id_parent = idParentUpdate
             };
 
             try
             {
-                HttpResponseMessage response;
-                // Utilisation de NullValueHandling.Include pour envoyer id_parent=null si nécessaire
-                string json = JsonConvert.SerializeObject(famille, Formatting.None,
-                                           new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
+                // ... (le reste de votre logique PUT API reste la même) ...
+                string json = JsonConvert.SerializeObject(familleAModifier, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/famille/{familleId}", content); // Utilisez familleId récupéré
 
-                // La logique originale qui gérait l'ajout et la modification est conservée ici
-                // MAIS l'ajout est maintenant géré par btnAjouter_Click
-                if (txtId.Content == null || string.IsNullOrEmpty(txtId.Content.ToString())) // Correction: vérifier si l'ID est null ou vide
+                if (!response.IsSuccessStatusCode)
                 {
-                    // -------- Bloc d'ajout original (maintenant géré par btnAjouter_Click) --------
-                    // // Ajout
-                    // response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/famille", content);
-                    // // Récupérer la famille ajoutée
-                    // var newFamille = JsonConvert.DeserializeObject<Famille>(await response.Content.ReadAsStringAsync());
-                    //
-                    // // Ajouter la famille directement au DataGrid
-                    // if (null != newFamille)
-                    //     familles.Add(newFamille);
-                    //
-                    // MessageBox.Show("Famille ajoutée avec succès !");
-                    // -------- Fin du bloc d'ajout original --------
-                    MessageBox.Show("Pour ajouter une nouvelle famille, veuillez utiliser le bouton 'Nouveau'.");
-
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    try
+                    {
+                        var errorObj = JsonConvert.DeserializeObject<dynamic>(errorContent);
+                        MessageBox.Show($"Erreur lors de la modification : {errorObj?.message ?? errorContent} ({(int)response.StatusCode})");
+                    }
+                    catch
+                    {
+                        MessageBox.Show($"Erreur lors de la modification : {errorContent} ({(int)response.StatusCode})");
+                    }
+                    return;
                 }
-                else
+
+                var updatedFamilleFromApi = JsonConvert.DeserializeObject<Famille>(await response.Content.ReadAsStringAsync());
+                var familleDansListe = familles.FirstOrDefault(f => f.id == familleId);
+                if (familleDansListe != null && updatedFamilleFromApi != null)
                 {
-                    // Mise à jour
-                    int familleId;
-                    if (!int.TryParse(txtId.Content.ToString(), out familleId))
-                    {
-                        MessageBox.Show("ID de famille invalide pour la mise à jour.");
-                        return;
-                    }
-
-                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/famille/{familleId}", content);
-                    response.EnsureSuccessStatusCode(); // Mettre EnsureSuccessStatusCode après la requête PUT
-
-                    // Trouver et modifier la famille dans la liste existante
-                    var updatedFamille = familles.FirstOrDefault(a => a.id == familleId);
-                    if (updatedFamille != null)
-                    {
-                        updatedFamille.nom_famille = txtNomFamille.Text;
-                        updatedFamille.id_parent = idParentUpdate; // Mettre à jour avec la valeur nullable
-                    }
-                    // dgFamilles.Items.Refresh(); // Normalement non nécessaire avec ObservableCollection si Famille notifie les changements, sinon décommenter
-
-                    MessageBox.Show("Famille mise à jour avec succès !");
+                    familleDansListe.nom_famille = updatedFamilleFromApi.nom_famille;
+                    familleDansListe.id_parent = updatedFamilleFromApi.id_parent;
+                    dgFamilles.Items.Refresh();
                 }
-                // response.EnsureSuccessStatusCode(); // Mal placé dans l'original, doit être après chaque requête spécifique (POST/PUT)
+                MessageBox.Show("Famille mise à jour avec succès !");
             }
-            catch (FormatException formatEx) // Pour int.Parse ou int.TryParse
-            {
-                MessageBox.Show($"Erreur de format de nombre: {formatEx.Message}");
-            }
-            catch (HttpRequestException httpEx) // Pour les erreurs API/Réseau
+            catch (HttpRequestException httpEx)
             {
                 MessageBox.Show($"Erreur API/Réseau : {httpEx.Message} ({(int?)httpEx.StatusCode})");
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Erreur de format de nombre pour ID Parent.");
+            }
+            catch (JsonException jsonEx)
+            {
+                MessageBox.Show($"Erreur de format JSON : {jsonEx.Message}");
             }
             catch (Exception ex)
             {
@@ -259,13 +275,13 @@ namespace GestionStockMySneakers.Pages
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Erreur lors de la suppression: " + ex.Message); // Message générique
+                        MessageBox.Show("Erreur lors de la suppression: " + ex.Message); 
                     }
                 }
             }
             else // Si rien n'est sélectionné
             {
-                MessageBox.Show("Veuillez sélectionner une famille à supprimer."); // <--- Modifié: Message
+                MessageBox.Show("Veuillez sélectionner une famille à supprimer."); 
             }
         }
 

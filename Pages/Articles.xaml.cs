@@ -125,7 +125,7 @@ namespace GestionStockMySneakers.Pages
           
         }
 
-  
+
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
             // 1. Validation des champs
@@ -159,7 +159,7 @@ namespace GestionStockMySneakers.Pages
                 description = txtDescription.Text,
                 prix_public = prixPublic,
                 prix_achat = prixAchat,
-                img = string.IsNullOrWhiteSpace(txtImg.Text) ? "default.jpg" : txtImg.Text 
+                img = string.IsNullOrWhiteSpace(txtImg.Text) ? "default.jpg" : txtImg.Text
             };
 
             // 3. Appel API POST
@@ -169,22 +169,38 @@ namespace GestionStockMySneakers.Pages
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/article", content);
-                response.EnsureSuccessStatusCode(); // Lève une exception si le statut n'est pas 2xx
 
-                // 4. Récupérer et ajouter le nouvel article à la liste locale
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var newArticle = JsonConvert.DeserializeObject<Article>(responseBody);
-
-                if (newArticle != null)
+                // Vérifiez si la réponse est un succès
+                if (response.IsSuccessStatusCode)
                 {
-                    articles.Add(newArticle); // Ajoute à l'ObservableCollection (met à jour la grille)
-                    lblArticles.Content = $"Articles ({articles.Count})"; // Met à jour le compteur
-                    MessageBox.Show("Article ajouté avec succès !");
-                    effacer(); // Efface le formulaire (désélectionne la grille) après succès
+                    // 4. Récupérer et ajouter le nouvel article à la liste locale
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var newArticle = JsonConvert.DeserializeObject<Article>(responseBody);
+
+                    if (newArticle != null)
+                    {
+                        articles.Add(newArticle); // Ajoute à l'ObservableCollection (met à jour la grille)
+                        lblArticles.Content = $"Articles ({articles.Count})"; // Met à jour le compteur
+                        MessageBox.Show("Article ajouté avec succès !");
+                        effacer(); // Efface le formulaire (désélectionne la grille) après succès
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur : L'API n'a pas retourné l'article ajouté correctement.");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Erreur : L'API n'a pas retourné l'article ajouté correctement.");
+                    // Gérer les erreurs spécifiques
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    if (response.StatusCode == System.Net.HttpStatusCode.Conflict) // 409
+                    {
+                        MessageBox.Show("Erreur : Un article avec les mêmes attributs existe déjà.");
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Erreur lors de l'ajout : {errorMessage}");
+                    }
                 }
             }
             catch (HttpRequestException httpEx)
@@ -201,6 +217,7 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
+
         // --- Désélectionner si on clique en dehors de la grille ---
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -215,7 +232,7 @@ namespace GestionStockMySneakers.Pages
         }
 
       
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
             // 1. Vérifier si un article est sélectionné (ID non nul)
             if (txtId.Content == null || string.IsNullOrEmpty(txtId.Content.ToString()))
@@ -316,7 +333,7 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                var imagePath = @"C:\\CSharp\\GestionStockMySneakers\\img\\" + imageName;
+                var imagePath = @"C:\\CSharp\\GestionStockMySneakers - Copie (2)\\img\\" + imageName;
 
                 if (File.Exists(imagePath))
                 {
@@ -338,21 +355,20 @@ namespace GestionStockMySneakers.Pages
 
         private void dgArticles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Vérifie si un élément est réellement sélectionné
-            if (dgArticles.SelectedItem is Models.Article articleSelectionne)
+            // Vérifie si un élément est bien sélectionné
+            if (dgArticles.SelectedItem is Models.Article selectedArticle)
             {
-                // Si oui, récupère le nom du fichier image (depuis la colonne 'img')
-                string nomImage = articleSelectionne.img;
-
-                // Appelle VOTRE méthode existante pour afficher l'image
-                AfficherImage(nomImage);
+                // Appelle la méthode pour afficher l'image correspondante
+                AfficherImage(selectedArticle.img);
             }
             else
             {
-                // Si rien n'est sélectionné (ou si on désélectionne), on efface l'image
+                // Aucun article sélectionné (ou désélection), efface l'image
                 ImageArticle.Source = null;
             }
         }
+
+
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
             if (dgArticles.SelectedItem is Article articleSelectionne)
