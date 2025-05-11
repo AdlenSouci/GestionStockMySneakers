@@ -73,46 +73,46 @@ namespace GestionStockMySneakers.Pages
             effacer();
         }
 
-        private async void btnModifier_Click(object sender, RoutedEventArgs e)
-        {
-            // Vérifier que tous les champs sont remplis
-            if (string.IsNullOrEmpty(txtUserId.Text) || string.IsNullOrEmpty(txtArticleId.Text) ||
-                string.IsNullOrEmpty(txtContenu.Text) || string.IsNullOrEmpty(txtNote.Text))
-            {
-                MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
-                return;
-            }
+        //private async void btnModifier_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // Vérifier que tous les champs sont remplis
+        //    if (string.IsNullOrEmpty(txtUserId.Text) || string.IsNullOrEmpty(txtArticleId.Text) ||
+        //        string.IsNullOrEmpty(txtContenu.Text) || string.IsNullOrEmpty(txtNote.Text))
+        //    {
+        //        MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
+        //        return;
+        //    }
 
-            var avisData = new
-            {
-                user_id = txtUserId.Text, 
-                article_id = txtArticleId.Text,
-                contenu = txtContenu.Text,
-                note = int.Parse(txtNote.Text),
-                created_at = DateTime.Now 
-            };
+        //    var avisData = new
+        //    {
+        //        user_id = txtUserId.Text, 
+        //        article_id = txtArticleId.Text,
+        //        contenu = txtContenu.Text,
+        //        note = int.Parse(txtNote.Text),
+        //        created_at = DateTime.Now 
+        //    };
 
-            try
-            {
-                HttpResponseMessage response;
-                string json = JsonConvert.SerializeObject(avisData);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+        //    try
+        //    {
+        //        HttpResponseMessage response;
+        //        string json = JsonConvert.SerializeObject(avisData);
+        //        var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // Ajout
-                response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/avis", content);
-                response.EnsureSuccessStatusCode(); // Vérifiez si la réponse est réussie
+        //        // Ajout
+        //        response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/avis", content);
+        //        response.EnsureSuccessStatusCode(); // Vérifiez si la réponse est réussie
 
-                var newAvis = JsonConvert.DeserializeObject<Models.Avis>(await response.Content.ReadAsStringAsync());
-                if (newAvis != null)
-                    avis.Add(newAvis);
+        //        var newAvis = JsonConvert.DeserializeObject<Models.Avis>(await response.Content.ReadAsStringAsync());
+        //        if (newAvis != null)
+        //            avis.Add(newAvis);
 
-                MessageBox.Show("Avis ajouté avec succès !");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erreur : " + ex.Message);
-            }
-        }
+        //        MessageBox.Show("Avis ajouté avec succès !");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Erreur : " + ex.Message);
+        //    }
+        //}
 
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
@@ -149,9 +149,35 @@ namespace GestionStockMySneakers.Pages
             txtId.Clear(); 
         }
 
-        private void btnEnvoyerReponse_Click(object sender, RoutedEventArgs e)
+        private async void btnEnvoyerReponse_Click(object sender, RoutedEventArgs e)
         {
-            // Logique pour envoyer une réponse à l'avis
+            if (string.IsNullOrEmpty(txtId.Text) || string.IsNullOrWhiteSpace(txtReponse.Text))
+            {
+                MessageBox.Show("Veuillez sélectionner un avis et saisir une réponse.");
+                return;
+            }
+
+            var reponseData = new
+            {
+                reponse = txtReponse.Text
+            };
+
+            try
+            {
+                string json = JsonConvert.SerializeObject(reponseData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + "/avis/" + txtId.Text + "/repondre", content);
+                response.EnsureSuccessStatusCode();
+
+                MessageBox.Show("Réponse envoyée avec succès.");
+                afficher(); // Rafraîchir la liste
+                txtReponse.Text = "";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de l'envoi de la réponse : " + ex.Message);
+            }
         }
         private void btnNettoyer_Click(object sender, RoutedEventArgs e)
         {

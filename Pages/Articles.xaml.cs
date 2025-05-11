@@ -405,5 +405,9 @@ namespace GestionStockMySneakers.Pages
                 MessageBox.Show("Veuillez sélectionner un article à supprimer.");
             }
         }
+        private void btnNettoyer_Click(object sender, RoutedEventArgs e)
+        {
+            effacer();
+        }
     }
 }
