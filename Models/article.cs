@@ -1,6 +1,14 @@
-﻿using System;
+﻿// Votre fichier Models/Article.cs
 
-namespace GestionStockMySneakers.Models
+using System;
+// Ajoutez cette ligne pour utiliser ObservableCollection
+using System.Collections.ObjectModel;
+// Ajoutez cette ligne pour que le compilateur trouve TaillesArticle
+// (Elle est nécessaire si TaillesArticle est défini dans le même namespace
+// mais que le fichier Article.cs ne le "voit" pas directement, ou si TaillesArticle est dans un sous-namespace)
+using GestionStockMySneakers.Models;
+
+namespace GestionStockMySneakers.Models // <- Votre namespace existant
 {
     public class Article
     {
@@ -16,6 +24,11 @@ namespace GestionStockMySneakers.Models
         public decimal prix_public { get; set; }
         public decimal prix_achat { get; set; }
         public string? img { get; set; }
+
+        // AJOUTEZ CETTE PROPRIÉTÉ
+        // Elle utilise ObservableCollection (necessite using System.Collections.ObjectModel;)
+        // et TaillesArticle (necessite using GestionStockMySneakers.Models; si pas dans le même fichier/namespace)
+        public ObservableCollection<TaillesArticle>? tailles { get; set; }
 
     }
 }
