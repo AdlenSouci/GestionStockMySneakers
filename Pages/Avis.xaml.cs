@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
@@ -67,12 +68,111 @@ namespace GestionStockMySneakers.Pages
             }
         }
 
-        private void btnAjouter_Click(object sender, RoutedEventArgs e)
+        private async void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            // Effacer les champs pour ajouter un nouvel avis
-            effacer();
-        }
+            // Logique d'AJOUT d'un nouvel avis
+            // Lire les champs pour l'ajout (User ID, Article ID, Contenu, Note)
+            string userIdText = txtUserId.Text.Trim();
+            string articleIdText = txtArticleId.Text.Trim();
+            string contenu = txtContenu.Text.Trim();
+            string noteText = txtNote.Text.Trim();
 
+            // Valider les champs nécessaires pour l'ajout
+            if (string.IsNullOrWhiteSpace(userIdText) || string.IsNullOrWhiteSpace(articleIdText) ||
+                string.IsNullOrWhiteSpace(contenu) || string.IsNullOrWhiteSpace(noteText))
+            {
+                MessageBox.Show("Veuillez remplir User ID, Article ID, Contenu et Note pour ajouter un avis.");
+                return;
+            }
+
+            // Valider les formats pour l'ajout
+            if (!int.TryParse(userIdText, out int userId))
+            {
+                MessageBox.Show("User ID doit être un nombre entier valide.");
+                txtUserId.Focus(); return;
+            }
+            if (!int.TryParse(articleIdText, out int articleId))
+            {
+                MessageBox.Show("Article ID doit être un nombre entier valide.");
+                txtArticleId.Focus(); return;
+            }
+            if (!int.TryParse(noteText, out int note) || note < 1 || note > 5)
+            {
+                MessageBox.Show("Note doit être un nombre entier entre 1 et 5.");
+                txtNote.Focus(); return;
+            }
+
+
+            // Créer l'objet avis à envoyer à l'API
+            var avisData = new
+            {
+                user_id = userId,
+                article_id = articleId,
+                contenu = contenu,
+                note = note,
+            };
+
+            MessageBoxResult confirmResult = MessageBox.Show("Êtes-vous sûr de vouloir ajouter cet avis ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirmResult == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    string json = JsonConvert.SerializeObject(avisData);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // Appel API pour l'ajout
+                    HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/avis", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        string errorContent = await response.Content.ReadAsStringAsync();
+                        try
+                        {
+                            var errorObj = JsonConvert.DeserializeObject<dynamic>(errorContent);
+                            if (response.StatusCode == HttpStatusCode.Conflict) // 409
+                            {
+                                MessageBox.Show($"Cet utilisateur a déjà laissé un avis pour cet article.");
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Erreur lors de l'ajout : {errorObj?.message ?? errorContent} ({(int)response.StatusCode})");
+                            }
+                        }
+                        catch
+                        {
+                            MessageBox.Show($"Erreur lors de l'ajout : {errorContent} ({(int)response.StatusCode})");
+                        }
+                        return;
+                    }
+
+                    var newAvis = JsonConvert.DeserializeObject<Models.Avis>(await response.Content.ReadAsStringAsync());
+                    if (newAvis != null)
+                    {
+                        avis.Add(newAvis); // Ajouter à la collection locale
+                        lblAvis.Content = $"Avis ({avis.Count})";
+                        MessageBox.Show("Avis ajouté avec succès !");
+                        effacer(); // Nettoyer les champs après succès
+                    }
+                    else
+                    {
+                        MessageBox.Show("Avis ajouté, mais impossible de récupérer les détails depuis l'API.");
+                        afficher(); // Recharger la liste pour synchronisation
+                    }
+                }
+                catch (HttpRequestException httpEx)
+                {
+                    MessageBox.Show($"Erreur réseau ou API lors de l'ajout : {httpEx.Message} ({(int?)httpEx.StatusCode})");
+                }
+                catch (JsonException jsonEx)
+                {
+                    MessageBox.Show($"Erreur de format JSON lors de la réponse API (ajout) : {jsonEx.Message}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur inattendue lors de l'ajout : {ex.Message}");
+                }
+            }
+        }
         //private async void btnModifier_Click(object sender, RoutedEventArgs e)
         //{
         //    // Vérifier que tous les champs sont remplis

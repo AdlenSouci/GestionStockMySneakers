@@ -8,175 +8,181 @@
       Title="Articles"
       MouseDown="Page_MouseDown">
 
-    <Grid Background="AliceBlue" Margin="10">
+    <Grid Background="AliceBlue" Margin="5">
+        <!-- Réduire la marge globale de la page -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
+            <RowDefinition Height="50" />
+            <!-- Réduire la hauteur du titre -->
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Name="lblArticles" Content="Articles" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
+        <Label Grid.Row="0" Name="lblArticles" Content="Articles" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#333"/>
+        <!-- Réduire la taille du titre -->
 
-        <Grid Grid.Row="1" Margin="10">
+        <!-- Grille principale du contenu (PAS de ScrollViewer ici) -->
+        <Grid Grid.Row="1" Margin="5">
+            <!-- Réduire la marge de cette grille -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*" />
-                <!-- La section détails (où sont vos boutons) et la section stock -->
+                <!-- DataGrid Articles : Hauteur fixe encore plus réduite -->
+                <RowDefinition Height="150" />
+                <!-- Section Détails Article et boutons : Hauteur automatique -->
                 <RowDefinition Height="Auto"/>
-                <!-- AJOUT : Nouvelle ligne pour la section de gestion du stock par taille -->
-                <RowDefinition Height="Auto"/>
+                <!-- Section Stock (Unique) : Prend le reste de l'espace, assure une hauteur minimale -->
+                <RowDefinition Height="*" MinHeight="150"/>
+                <!-- Réduire MinHeight -->
             </Grid.RowDefinitions>
 
-            <!-- DataGrid Articles (Votre code existant) -->
-            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgArticles" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1" SelectionChanged="dgArticles_SelectionChanged">
+            <!-- DataGrid Articles -->
+            <DataGrid Grid.Row="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgArticles" IsReadOnly="True" Margin="0,0,0,5" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1" SelectionChanged="dgArticles_SelectionChanged">
                 <DataGrid.Columns>
-                    <!-- Ajoutez la colonne ID si vous voulez la voir -->
-                    <DataGridTextColumn Binding="{Binding id}" Header="ID Article" Width="Auto" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding id_marque}" Header="id_marque" Width="*" Visibility="Collapsed" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding id}" Header="ID" Width="Auto" IsReadOnly="True"/>
+                    <!-- Réduire texte Header si possible -->
                     <DataGridTextColumn Binding="{Binding nom_marque}" Header="Marque" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding id_famille}" Header="id_famille" Width="*" Visibility="Collapsed" IsReadOnly="True"/>
                     <DataGridTextColumn Binding="{Binding nom_famille}" Header="Famille" Width="*" IsReadOnly="True"/>
                     <DataGridTextColumn Binding="{Binding modele}" Header="Modèle" Width="*" IsReadOnly="True"/>
                     <DataGridTextColumn Binding="{Binding description}" Header="Description" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding id_couleur}" Header="id_couleur" Width="*" Visibility="Collapsed" IsReadOnly="True"/>
                     <DataGridTextColumn Binding="{Binding nom_couleur}" Header="Couleur" Width="*" IsReadOnly="True"/>
-                    <!-- Formattez les prix si ce n'est pas déjà fait -->
-                    <DataGridTextColumn Binding="{Binding prix_public, StringFormat=N2}" Header="Prix public" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding prix_achat, StringFormat=N2}" Header="Prix d'achat" Width="*" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding img}" Header="Image" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding prix_public, StringFormat=N2, ConverterCulture=fr-FR}" Header="Prix pub." Width="*" IsReadOnly="True"/>
+                    <!-- Réduire texte Header -->
+                    <DataGridTextColumn Binding="{Binding prix_achat, StringFormat=N2, ConverterCulture=fr-FR}" Header="Prix achat" Width="*" IsReadOnly="True"/>
+                    <!-- Réduire texte Header -->
+                    <!-- Colonne Image peut être enlevée si non essentielle à voir dans la liste -->
+                    <!-- <DataGridTextColumn Binding="{Binding img}" Header="Image" Width="*" IsReadOnly="True"/> -->
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- Spinner (Votre code existant) -->
-            <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
-                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+            <!-- Spinner -->
+            <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="150" Height="15" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                <!-- Réduire marge -->
 
-            <!-- Section Détails Article (Votre code existant) -->
-            <!-- Cette section est maintenant dans Grid.Row="1" du Grid parent Grid.Row="1" -->
-            <!-- Assurez-vous que le DataContext de la page ou d'un parent est lié à l'article sélectionné pour les bindings TwoWay -->
-            <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFF" Padding="10" BorderBrush="#CCC" BorderThickness="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
+                <!-- Section Détails Article et boutons -->
+                <Border Grid.Row="1" Margin="0,5,0,0" Background="#FFF" Padding="8" BorderBrush="#CCC" BorderThickness="1">
+                    <!-- Réduire marge et padding -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <!-- Ajuster proportions si besoin -->
+                            <ColumnDefinition Width="1*" MinWidth="200"/>
+                            <!-- S'assurer que la colonne image n'est pas trop petite -->
+                        </Grid.ColumnDefinitions>
 
-                    <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
-                        <!-- Champs de détails existants (Votre code, j'ai mis Mode=TwoWay pour permettre la modification) -->
-                        <!-- Liez au SelectedItem du DataGrid -->
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="ID :" Width="150" FontWeight="Bold"/>
-                            <Label x:Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgArticles, Mode=OneWay}" Width="270" />
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Marque :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay si vous modifiez la marque via la combo box -->
-                            <ComboBox SelectedValue="{Binding SelectedItem.id_marque, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbMarque" Width="270" DisplayMemberPath="nom_marque" SelectedValuePath="id"  />
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Famille :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <ComboBox SelectedValue="{Binding SelectedItem.id_famille, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbFamille" Width="270" DisplayMemberPath="nom_famille" SelectedValuePath="id"/>
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Modèle :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <TextBox Text="{Binding SelectedItem.modele, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtModele" Width="270" />
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Description :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <TextBox  Text="{Binding SelectedItem.description, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtDescription" Width="270" Height="80" TextWrapping="Wrap"/>
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Couleur :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <ComboBox SelectedValue="{Binding SelectedItem.id_couleur, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbCouleur" Width="270" DisplayMemberPath="nom_couleur" SelectedValuePath="id"/>
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Prix public :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <TextBox Text="{Binding SelectedItem.prix_public, ElementName=dgArticles, Mode=TwoWay, StringFormat=N2, ConverterCulture=fr-FR, UpdateSourceTrigger=PropertyChanged}" x:Name="txtPrixPublic" Width="270" />
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Prix d'achat :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <TextBox Text="{Binding SelectedItem.prix_achat, ElementName=dgArticles, Mode=TwoWay, StringFormat=N2, ConverterCulture=fr-FR, UpdateSourceTrigger=PropertyChanged}" x:Name="txtPrixAchat" Width="270" />
-                        </WrapPanel>
-                        <WrapPanel Margin="0 2 0 2">
-                            <Label Content="Image :" Width="150" FontWeight="Bold"/>
-                            <!-- Changez Mode=OneWay en Mode=TwoWay -->
-                            <TextBox Text="{Binding SelectedItem.img, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtImg" Width="270" />
-                        </WrapPanel>
+                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
+                            <!-- Réduire marge -->
+                            <WrapPanel Margin="0 1">
+                                <!-- Réduire marge -->
+                                <Label Content="ID :" Width="120" FontWeight="Bold"/>
+                                <!-- Réduire largeur label -->
+                                <Label x:Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgArticles, Mode=OneWay}" Width="200" />
+                                <!-- Réduire largeur textbox -->
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Marque :" Width="120" FontWeight="Bold"/>
+                                <ComboBox SelectedValue="{Binding SelectedItem.id_marque, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbMarque" Width="200" DisplayMemberPath="nom_marque" SelectedValuePath="id"  />
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Famille :" Width="120" FontWeight="Bold"/>
+                                <ComboBox SelectedValue="{Binding SelectedItem.id_famille, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbFamille" Width="200" DisplayMemberPath="nom_famille" SelectedValuePath="id"/>
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Modèle :" Width="120" FontWeight="Bold"/>
+                                <TextBox Text="{Binding SelectedItem.modele, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtModele" Width="200" />
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Description :" Width="120" FontWeight="Bold"/>
+                                <TextBox  Text="{Binding SelectedItem.description, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtDescription" Width="200" Height="60" TextWrapping="Wrap"/>
+                                <!-- Réduire hauteur -->
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Couleur :" Width="120" FontWeight="Bold"/>
+                                <ComboBox SelectedValue="{Binding SelectedItem.id_couleur, ElementName=dgArticles, Mode=TwoWay}" x:Name="cmbCouleur" Width="200" DisplayMemberPath="nom_couleur" SelectedValuePath="id"/>
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Prix public :" Width="120" FontWeight="Bold"/>
+                                <TextBox Text="{Binding SelectedItem.prix_public, ElementName=dgArticles, Mode=TwoWay, StringFormat=N2, ConverterCulture=fr-FR, UpdateSourceTrigger=PropertyChanged}" x:Name="txtPrixPublic" Width="200" />
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Prix d'achat :" Width="120" FontWeight="Bold"/>
+                                <TextBox Text="{Binding SelectedItem.prix_achat, ElementName=dgArticles, Mode=TwoWay, StringFormat=N2, ConverterCulture=fr-FR, UpdateSourceTrigger=PropertyChanged}" x:Name="txtPrixAchat" Width="200" />
+                            </WrapPanel>
+                            <WrapPanel Margin="0 1">
+                                <Label Content="Image :" Width="120" FontWeight="Bold"/>
+                                <TextBox Text="{Binding SelectedItem.img, ElementName=dgArticles, Mode=TwoWay}" x:Name="txtImg" Width="200" />
+                            </WrapPanel>
 
-                        <!-- Boutons Actions (Vos boutons existants - Ils sont bien ici) -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
-                            <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="0 0 5 0"/>
-                            <!-- Le bouton Modifier devra être cliqué pour sauvegarder aussi les changements de stock -->
-                            <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Height="30" Width="85" Background="#FFC107" Margin="0 0 5 0"/>
-                            <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="30" Width="90" Background="#F44336"/>
-                            <Button Name="btnNettoyer" Content="Nettoyer" Click="btnNettoyer_Click" Height="30" Width="80" Background="#2196F3" Margin="5 0 5 0"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0">
+                                <!-- Réduire marge -->
+                                <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="25" Width="70" Background="#4CAF50" Margin="0 0 3 0"/>
+                                <!-- Réduire taille boutons -->
+                                <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Height="25" Width="70" Background="#FFC107" Margin="0 0 3 0"/>
+                                <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="25" Width="75" Background="#F44336"/>
+                                <Button Name="btnNettoyer" Content="Nettoyer" Click="btnNettoyer_Click" Height="25" Width="70" Background="#2196F3" Margin="3 0 3 0"/>
+                            </StackPanel>
+
                         </StackPanel>
 
-                    </StackPanel>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,5,10,5">
+                            <!-- Réduire marge -->
+                            <Image x:Name="ImageArticle" Width="200" Height="150" Stretch="Uniform" />
+                            <!-- Réduire taille image -->
+                        </StackPanel>
 
-                    <!-- Affichage Image (Votre code existant) -->
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,10,20,10">
-                        <Image x:Name="ImageArticle" Width="250" Height="180" Stretch="Uniform" />
-                    </StackPanel>
+                    </Grid>
+                </Border>
 
-                </Grid>
-            </Border>
+                <!-- Section Stock (Unique) -->
+                <!-- Prend tout l'espace vertical restant, assure une hauteur minimale -->
+                <Border x:Name="StockManagementBorder" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,0" Background="#FFF" Padding="8" BorderBrush="#CCC" BorderThickness="1">
+                    <!-- Réduire marge et padding -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-            <!-- AJOUT : Section Gestion Stock par Taille -->
-            <!-- Cette section est dans Grid.Row="2" du Grid parent Grid.Row="1" -->
-            <!-- Nommez ce Border pour pouvoir le contrôler en C# (visibilité) -->
-            <Border x:Name="StockManagementBorder" Grid.Row="2" Margin="0,10,0,0" Background="#FFF" Padding="10" BorderBrush="#CCC" BorderThickness="1" Visibility="Collapsed">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0 0 8 0">
+                            <!-- Réduire marge -->
+                            <Label Name="lblStockSectionTitle" Content="Stock par Taille" FontWeight="Bold" HorizontalAlignment="Center"/>
 
-                    <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0 0 10 0">
-                        <Label Content="Stock par Taille" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        <!-- AJOUT : DataGrid pour afficher et éditer les tailles/stocks -->
-                        <!-- ItemsSource est lié à la collection 'tailles' de l'article sélectionné -->
-                        <DataGrid x:Name="dgTailles"
-                                  AutoGenerateColumns="False"
-                                  IsReadOnly="False"         
-                                  CanUserAddRows="False"
-                                  Margin="0,5,0,0"
-                                  ItemsSource="{Binding SelectedItem.tailles, ElementName=dgArticles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
-                            <DataGrid.Columns>
-                                <!-- ID de l'entrée stock masqué (utile pour l'API update/delete) -->
-                                <DataGridTextColumn Binding="{Binding id}" Header="ID Entrée Stock" Visibility="Collapsed" IsReadOnly="True"/>
-                                <!-- Colonne Taille : l'utilisateur peut l'éditer localement -->
-                                <DataGridTextColumn Binding="{Binding taille, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Taille" Width="*" />
-                                <!-- Colonne Stock : l'utilisateur peut l'éditer localement -->
-                                <DataGridTextColumn Binding="{Binding stock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Stock" Width="*" />
-                                <!-- AJOUT : Colonne avec un bouton pour supprimer une taille/stock -->
-                                <DataGridTemplateColumn Header="Suppr.">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!-- Le Tag contient l'objet TaillesArticle pour savoir lequel supprimer au clic -->
-                                            <Button Content="X" Click="btnSupprimerTaille_Click" Tag="{Binding}" Margin="2" Height="20" Width="20" Padding="0" Background="#F44336" Foreground="White" FontWeight="Bold" ToolTip="Supprimer cette entrée de stock"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
+                            <!-- ScrollViewer ajouté autour du DataGrid Tailles -->
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <DataGrid x:Name="dgTailles"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="False"
+                                      CanUserAddRows="False"
+                                      Margin="0,3,0,0" ItemsSource="{Binding}" >
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding id}" Header="ID Entrée Stock" Visibility="Collapsed" IsReadOnly="True"/>
+                                        <DataGridTextColumn Binding="{Binding taille, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Taille" Width="*" />
+                                        <DataGridTextColumn Binding="{Binding stock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Stock" Width="*" />
+                                        <DataGridTemplateColumn Header="Suppr.">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="X" Click="btnSupprimerTaille_Click" Tag="{Binding}" Margin="1" Height="18" Width="18" Padding="0" Background="#F44336" Foreground="White" FontWeight="Bold" ToolTip="Supprimer cette entrée de stock"/>
+                                                    <!-- Réduire taille bouton -->
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
 
-                    <!-- AJOUT : Section pour ajouter une Nouvelle Taille -->
-                    <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Margin="10,25,0,0">
-                        <Label Content="Nouvelle Taille:"/>
-                        <TextBox x:Name="txtNewTaille" Width="100" Margin="0,5"/>
-                        <Label Content="Stock Initial:"/>
-                        <TextBox x:Name="txtNewStock" Width="100" Margin="0,5"/>
+                        </StackPanel>
 
-                        <Button x:Name="btnAjouterTaille" Content="Ajouter Taille" Click="btnAjouterTaille_Click" Margin="0,10,0,0" Background="#4CAF50" Height="30" Width="100"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
+                        <!-- Section pour ajouter une Nouvelle Taille (Utilisée dans les deux modes) -->
+                        <!-- Ajuster marge pour réduire l'espace -->
+                        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Margin="8,15,0,0">
+                            <!-- Réduire marge -->
+                            <Label Content="Ajouter Taille:"/>
+                            <TextBox x:Name="txtNewTaille" Width="80" Margin="0,3"/>
+                            <!-- Réduire largeur et marge -->
+                            <Label Content="Stock:"/>
+                            <TextBox x:Name="txtNewStock" Width="80" Margin="0,3"/>
+                            <!-- Réduire largeur et marge -->
+                            <Button x:Name="btnAjouterTaille" Content="Ajouter" Click="btnAjouterTaille_Click" Margin="0,8,0,0" Background="#4CAF50" Height="25" Width="80"/>
+                            <!-- Réduire taille et marge -->
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
         </Grid>
     </Grid>

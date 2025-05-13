@@ -19,12 +19,17 @@ namespace GestionStockMySneakers.Pages
     public partial class Articles : Page
     {
         private ObservableCollection<Models.Article> articles = new ObservableCollection<Article>();
+        private ObservableCollection<TaillesArticle> currentEditableTailles; // Collection actuellement liée au DataGrid dgTailles
 
         public Articles()
         {
             InitializeComponent();
             this.DataContext = this;
             dgArticles.ItemsSource = articles;
+
+            // Initialiser la collection editable pour le mode "Nouveau" au démarrage
+            currentEditableTailles = new ObservableCollection<TaillesArticle>();
+            dgTailles.ItemsSource = currentEditableTailles; // Lie le DataGrid à la collection
 
             afficher();
             LoadMarques();
@@ -107,8 +112,7 @@ namespace GestionStockMySneakers.Pages
         private void effacer()
         {
             dgArticles.SelectedItem = null;
-            txtNewTaille.Clear();
-            txtNewStock.Clear();
+            // Le reste des champs et le DataGrid stock sont gérés par dgArticles_SelectionChanged quand SelectedItem devient null
         }
 
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
@@ -125,6 +129,23 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
+            // Lire la collection de tailles/stock depuis la collection actuellement liée au DataGrid
+            var taillesAAjouter = dgTailles.ItemsSource as ObservableCollection<TaillesArticle>;
+            if (taillesAAjouter == null || taillesAAjouter.Count == 0)
+            {
+                MessageBox.Show("Pour ajouter un nouvel article, veuillez spécifier au moins une taille et un stock dans le tableau 'Stock par Taille' en utilisant les champs et le bouton 'Ajouter Taille'.");
+                return;
+            }
+
+            foreach (var tailleEntry in taillesAAjouter)
+            {
+                if (tailleEntry.taille <= 0 || tailleEntry.stock < 0)
+                {
+                    MessageBox.Show($"Stock invalide pour taille {tailleEntry.taille}: Taille > 0, Stock >= 0 requis.");
+                    return;
+                }
+            }
+
             var articleAAjouter = new
             {
                 id_famille = ((Models.Famille)cmbFamille.SelectedItem).id,
@@ -135,7 +156,7 @@ namespace GestionStockMySneakers.Pages
                 prix_public = prixPublic,
                 prix_achat = prixAchat,
                 img = string.IsNullOrWhiteSpace(txtImg.Text) ? "default.jpg" : txtImg.Text,
-                tailles = new List<TaillesArticle>()
+                tailles = taillesAAjouter.ToList()
             };
 
             try
@@ -152,9 +173,10 @@ namespace GestionStockMySneakers.Pages
                     {
                         if (newArticle.tailles == null) newArticle.tailles = new ObservableCollection<TaillesArticle>();
                         else if (!(newArticle.tailles is ObservableCollection<TaillesArticle>)) newArticle.tailles = new ObservableCollection<TaillesArticle>(newArticle.tailles);
+
                         articles.Add(newArticle);
                         lblArticles.Content = $"Articles ({articles.Count})";
-                        MessageBox.Show("Article ajouté. Sélectionnez-le pour gérer stock.");
+                        MessageBox.Show("Article ajouté avec succès ! Vous pouvez maintenant le sélectionner pour ajouter d'autres tailles ou modifier le stock.");
                         effacer();
                     }
                 }
@@ -162,6 +184,11 @@ namespace GestionStockMySneakers.Pages
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
                     MessageBox.Show($"Erreur : {errorMessage}");
+                }
+                else if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Erreur validation : {errorMessage}");
                 }
                 else
                 {
@@ -311,11 +338,7 @@ namespace GestionStockMySneakers.Pages
 
         private void btnAjouterTaille_Click(object sender, RoutedEventArgs e)
         {
-            if (!(dgArticles.SelectedItem is Models.Article selectedArticle))
-            {
-                MessageBox.Show("Sélectionnez article pour ajouter stock.");
-                return;
-            }
+            // Ce bouton ajoute une entrée de stock aux champs de texte à la collection actuellement liée au DataGrid
             if (string.IsNullOrWhiteSpace(txtNewTaille.Text) || string.IsNullOrWhiteSpace(txtNewStock.Text))
             {
                 MessageBox.Show("Entrez taille et stock.");
@@ -331,17 +354,34 @@ namespace GestionStockMySneakers.Pages
                 MessageBox.Show("Stock invalide (>= 0).");
                 txtNewStock.Focus(); return;
             }
-            if (selectedArticle.tailles != null && selectedArticle.tailles.Any(t => t.taille == newTaille))
+
+            var currentTaillesCollection = dgTailles.ItemsSource as ObservableCollection<TaillesArticle>;
+            if (currentTaillesCollection == null)
+            {
+                MessageBox.Show("Erreur interne: Collection de stock non disponible.");
+                return;
+            }
+
+            if (currentTaillesCollection.Any(t => t.taille == newTaille))
             {
                 MessageBox.Show($"Taille {newTaille} existe déjà. Modifiez dans tableau.");
                 return;
             }
 
-            if (selectedArticle.tailles == null) selectedArticle.tailles = new ObservableCollection<TaillesArticle>();
-            selectedArticle.tailles.Add(new TaillesArticle { taille = newTaille, stock = newStock, id = 0, article_id = selectedArticle.id });
+            int articleId = (dgArticles.SelectedItem as Article)?.id ?? 0;
+            currentTaillesCollection.Add(new TaillesArticle { taille = newTaille, stock = newStock, id = 0, article_id = articleId });
+
             txtNewTaille.Clear();
             txtNewStock.Clear();
-            MessageBox.Show("Taille ajoutée localement. Cliquez 'Modifier' pour sauvegarder.");
+
+            if (dgArticles.SelectedItem == null)
+            {
+                MessageBox.Show("Taille ajoutée au stock initial.");
+            }
+            else
+            {
+                MessageBox.Show("Taille ajoutée localement. Cliquez 'Modifier' pour sauvegarder.");
+            }
         }
 
         private void btnSupprimerTaille_Click(object sender, RoutedEventArgs e)
@@ -349,14 +389,22 @@ namespace GestionStockMySneakers.Pages
             var button = sender as Button;
             if (button?.Tag is TaillesArticle tailleToDelete)
             {
-                if (!(dgArticles.SelectedItem is Models.Article selectedArticle) || selectedArticle.tailles == null) return;
+                var currentTaillesCollection = dgTailles.ItemsSource as ObservableCollection<TaillesArticle>;
+                if (currentTaillesCollection == null) return;
 
                 MessageBoxResult result = MessageBox.Show($"Supprimer stock taille {tailleToDelete.taille} ?", "Confirmation", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    if (selectedArticle.tailles.Remove(tailleToDelete))
+                    if (currentTaillesCollection.Remove(tailleToDelete))
                     {
-                        MessageBox.Show("Stock supprimé localement. Cliquez 'Modifier' pour sauvegarder.");
+                        if (dgArticles.SelectedItem == null)
+                        {
+                            MessageBox.Show("Stock initial supprimé.");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Stock supprimé localement. Cliquez 'Modifier' pour sauvegarder.");
+                        }
                     }
                 }
             }
@@ -372,19 +420,40 @@ namespace GestionStockMySneakers.Pages
         {
             if (dgArticles.SelectedItem is Models.Article selectedArticle)
             {
+                // Article sélectionné (mode Modification)
                 AfficherImage(selectedArticle.img);
+
                 if (selectedArticle.tailles == null) selectedArticle.tailles = new ObservableCollection<TaillesArticle>();
                 else if (!(selectedArticle.tailles is ObservableCollection<TaillesArticle>)) selectedArticle.tailles = new ObservableCollection<TaillesArticle>(selectedArticle.tailles);
 
-                if (StockManagementBorder != null) StockManagementBorder.Visibility = Visibility.Visible;
+                // Lier le DataGrid dgTailles à la collection de l'article sélectionné
+                currentEditableTailles = selectedArticle.tailles;
+                dgTailles.ItemsSource = currentEditableTailles;
+
+                // Changer le titre de la section stock
+                lblStockSectionTitle.Content = "Stock par Taille (Article Sélectionné)";
+
+                // Nettoyer les champs d'ajout de taille/stock
+                txtNewTaille.Clear();
+                txtNewStock.Clear();
+
             }
             else
             {
+                // Aucun article sélectionné (mode Nouveau)
                 ImageArticle.Source = null;
-                if (StockManagementBorder != null) StockManagementBorder.Visibility = Visibility.Collapsed;
+
+                // Créer une nouvelle collection temporaire pour le stock initial et la lier au DataGrid
+                currentEditableTailles = new ObservableCollection<TaillesArticle>();
+                dgTailles.ItemsSource = currentEditableTailles;
+
+                // Changer le titre de la section stock
+                lblStockSectionTitle.Content = "Stock Initial (Nouvel Article)";
+
+                // Nettoyer les champs d'ajout de taille/stock
+                txtNewTaille.Clear();
+                txtNewStock.Clear();
             }
-            txtNewTaille.Clear();
-            txtNewStock.Clear();
         }
 
         private void AfficherImage(string imageName)
