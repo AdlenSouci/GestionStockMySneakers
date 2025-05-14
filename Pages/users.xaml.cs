@@ -129,7 +129,7 @@ namespace GestionStockMySneakers.Pages
 
         }
 
-        private async void btnEnregistrer_Click(object sender, RoutedEventArgs e)
+        private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(txtNom.Text) || string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Password))
             {
@@ -214,5 +214,10 @@ namespace GestionStockMySneakers.Pages
                 }
             }
         }
+        private void btnNettoyer_Click(object sender, RoutedEventArgs e)
+        {
+            effacer();
+        }
+
     }
 }

@@ -1,12 +1,11 @@
 ﻿<Page x:Class="GestionStockMySneakers.Pages.Familles"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:GestionStockMySneakers.Pages"
       mc:Ignorable="d"
-      Title="Familles"
-       MouseDown="Page_MouseDown" >
+      Title="Familles">
 
     <Grid Background="AliceBlue" Margin="10">
         <Grid.RowDefinitions>
@@ -23,20 +22,17 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <!--DataGrid-->
-            <DataGrid Grid.Column="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgFamilles" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1">
+            <DataGrid Grid.Column="0" SelectionMode="Single" AutoGenerateColumns="False" x:Name="dgFamilles" IsReadOnly="True" Margin="0,0,0,10" Background="#FFF" Foreground="#333" AlternatingRowBackground="#F0F0F0" BorderBrush="#CCC" BorderThickness="1" SelectionChanged="dgFamilles_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding id}" Header="Id" Width="1*" />
                     <DataGridTextColumn Binding="{Binding nom_famille}" Header="Famille" Width="4*" />
-                    <DataGridTextColumn Binding="{Binding id_parent}" Header="Id Parent" Width="2*"/>
+                    <DataGridTextColumn Binding="{Binding id_parent}" Header="Id Parent" Width="2*" Visibility="Collapsed"/>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <!-- Spinner -->
             <ProgressBar Name="pbLoading" IsIndeterminate="True" Width="200" Height="20"
-                 Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
-            
-            <!--Detail-->
+                         Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0"/>
+
             <Grid Grid.Column="1" Margin="5 0 15 0">
                 <Grid.RowDefinitions >
                     <RowDefinition Height="30"/>
@@ -50,25 +46,21 @@
                     <Label Name="txtId" Content="{Binding SelectedItem.id, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
-                
-
-                <!-- Nom de la famille -->
                 <WrapPanel Grid.Row="1" Margin="0 2 0 2">
                     <Label Content="Nom de la famille :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
-                    <TextBox Name="txtNomFamille" Text="{Binding SelectedItem.nom_famille, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                    <TextBox Name="txtNomFamille" Text="{Binding SelectedItem.nom_famille, ElementName=dgFamilles, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
-                
 
-                
-                <WrapPanel Grid.Row="2" Margin="0 2 0 2">
+                <WrapPanel Grid.Row="2" Margin="0 2 0 2" Visibility="Collapsed">
                     <Label Content="ID Parent :" FontWeight="Bold" Width="150" HorizontalAlignment="Left"/>
-                    <Label Name="txtIdParent" Content="{Binding SelectedItem.id_parent, ElementName=dgFamilles, Mode=OneWay}" VerticalContentAlignment="Center" Width="270" />
+                    <TextBox Name="txtIdParent" Text="{Binding SelectedItem.id_parent, ElementName=dgFamilles, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" VerticalContentAlignment="Center" Width="270" />
                 </WrapPanel>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0">
-                    <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="150 0 5 0"/>
-                    <Button Name="btnEnregistrer" Content="Enregistrer" Click="btnEnregistrer_Click" Height="30" Width="85" Background="#FFC107" Margin="5 0 5 0"/>
-                    <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="30" Width="90" Background="#F44336"/>
+                    <Button Name="btnAjouter" Content="Nouveau" Click="btnAjouter_Click" Height="30" Width="80" Background="#4CAF50" Margin="5 0 5 0"/>
+                    <Button Name="btnModifier" Content="Modifier" Click="btnModifier_Click" Height="30" Width="85" Background="#FFC107" Margin="5 0 5 0"/>
+                    <Button Name="btnSupprimer" Content="Supprimer" Click ="btnSupprimer_Click" Height="30" Width="90" Background="#F44336" Margin="5 0 5 0"/>
+                    <Button Name="btnNettoyer" Content="Nettoyer" Click="btnNettoyer_Click" Height="30" Width="80" Background="#2196F3" Margin="5 0 5 0"/>
                 </StackPanel>
 
             </Grid>

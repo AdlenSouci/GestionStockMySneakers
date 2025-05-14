@@ -7,7 +7,7 @@
         Title="Gestion Stock MySneakers"
         Height="900"
         Width="1300"
-        WindowStartupLocation="CenterScreen" 
+        WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize"
         MouseDown="Window_MouseDown">
 
@@ -18,41 +18,33 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-
-
-
-
-        <!--// Menu Panel //-->
+        <!-- Menu Panel -->
         <StackPanel Grid.Column="0"
                     Background="#F8EEB7"
                     Width="230"
                     Orientation="Vertical"
                     HorizontalAlignment="Left">
 
-            <!--// Channel Name //-->
-
+            <!-- Channel Name -->
             <Grid Height="50"
                   VerticalAlignment="Top"
                   Margin="0,30,0,0">
-
-                <Border 
+                <Border
                         Height="26"
                         CornerRadius="3,0,0,3"
                         Width="6"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left" Margin="224,0,0,0" />
-
                 <TextBlock Text="GestionStockMySneakers"
                            Foreground="Gray"
                            FontFamily="Fonts/#Orbitron Medium"
                            FontSize="15"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center" />
-
             </Grid>
 
-            <!--// Main Menu //-->
-
+            <!-- Main Menu -->
+            <!-- Hauteur fixe du menu pour qu'il ne pousse pas trop le reste -->
             <Menu Height="450"
                   Background="Transparent"
                   Margin="0,40,0,0">
@@ -63,7 +55,7 @@
                     </ItemsPanelTemplate>
                 </Menu.ItemsPanel>
 
-                <!--// Main Menu - Home //-->
+                <!-- Main Menu - Home -->
                 <MenuItem Header="Home"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Accueil" >
                     <MenuItem.Icon>
@@ -72,34 +64,29 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <!--// Main Menu - CRUD //-->
+                <!-- Main Menu - CRUD -->
                 <MenuItem Header="CRUD" Template="{StaticResource Menu_SubMenu_Template}" RenderTransformOrigin="0.27,0.56">
                     <MenuItem.Icon>
                         <Image Source="Assets/img_crud.png" Stretch="None" />
                     </MenuItem.Icon>
-
                     <MenuItem Header="Articles"
                         Template="{StaticResource Item_Template}"   Click="MenuItem_Click_Articles" >
                     </MenuItem>
-
                     <MenuItem Header="Familles"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Familles">
                     </MenuItem>
-
                     <MenuItem Header="Marques"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Marques">
                     </MenuItem>
-
                     <MenuItem Header="Couleurs"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Couleurs">
                     </MenuItem>
                     <MenuItem Header="Users"
                         Template="{StaticResource Item_Template}" Click="MenuItem_Click_Users">
                     </MenuItem>
-
                 </MenuItem>
 
-                <MenuItem Header="Commandes" 
+                <MenuItem Header="Commandes"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Commandes">
                     <MenuItem.Icon>
                         <Image Source="Assets/img_history.png"
@@ -107,7 +94,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <MenuItem Header="Annonces" 
+                <MenuItem Header="Annonces"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Annonces">
                     <MenuItem.Icon>
                         <Image Source="Assets/img_history.png"
@@ -123,7 +110,6 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-
                 <MenuItem Header="Paramètres"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Parametres" >
                     <MenuItem.Icon>
@@ -132,7 +118,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <!--// Main Menu - About //-->
+                <!-- Main Menu - About -->
                 <MenuItem Header="A propos"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_APropos" >
                     <MenuItem.Icon>
@@ -141,7 +127,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <!--// Main Menu - Exit //-->
+                <!-- Main Menu - Exit -->
                 <MenuItem Header="Exit"
                           Template="{StaticResource Menu_Template}" Click="MenuItem_Click_Quitter">
                     <MenuItem.Icon>
@@ -150,22 +136,30 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </Menu>
-
         </StackPanel>
 
-
+        <!-- Contenu principal (Frame + TextBlock) -->
         <Grid Grid.Column="1" >
-            <Frame Grid.Row="0" x:Name="MainFrame" NavigationUIVisibility="Hidden" Width="auto" Height="auto" Margin="0,0,0,0" />
-            <TextBlock  Grid.Row="1" Text="GestionStockMySneakers"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Foreground="Gray"
-            FontFamily="Fonts/#Orbitron Medium"
-            FontSize="12"
-            Height="21" 
-            Width="180"
-            />
+            <Grid.RowDefinitions>
+                <!-- Laisse le Frame prendre tout l'espace vertical restant -->
+                <RowDefinition Height="*" />
+                <!-- Le TextBlock prendra juste sa hauteur automatique -->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Le Frame doit occuper la première ligne -->
+            <!-- Retirer les Width/Height/Margin fixes ou auto pour qu'il s'adapte au Grid.Row="0" -->
+            <Frame Grid.Row="0" x:Name="MainFrame" NavigationUIVisibility="Hidden" />
+
+            <!-- Le TextBlock doit occuper la deuxième ligne -->
+            <!-- Retirer les Height/Width fixes pour qu'il prenne la place de son contenu -->
+            <TextBlock Grid.Row="1" Text="GestionStockMySneakers"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Bottom"
+                       Foreground="Gray"
+                       FontFamily="Fonts/#Orbitron Medium"
+                       FontSize="12"
+                       Margin="0,0,5,5" />
         </Grid>
     </Grid>
-
 </Window>
