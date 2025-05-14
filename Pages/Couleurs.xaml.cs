@@ -61,10 +61,9 @@ namespace GestionStockMySneakers.Pages
         private void effacer()
         {
             dgCouleurs.SelectedItem = null;
-            // Effacer les champs de détails spécifiques aux couleurs
-            // txtId est un Label, son contenu est effacé par binding
+            
             txtNomCouleur.Clear();
-            // txtIdParent n'existe pas pour les couleurs
+            
         }
 
         private void btnNettoyer_Click(object sender, RoutedEventArgs e)
@@ -75,7 +74,7 @@ namespace GestionStockMySneakers.Pages
 
         private void btnAjouter_Click(object sender, RoutedEventArgs e)
         {
-            // En mode "Ajouter", on nettoie simplement les champs pour la saisie d'une nouvelle couleur.
+           
             // La logique d'ajout réelle est déclenchée par le bouton "Modifier" si l'ID est vide.
             effacer();
         }
