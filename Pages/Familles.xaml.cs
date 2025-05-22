@@ -1,4 +1,5 @@
 ﻿using GestionStockMySneakers.Models;
+using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
@@ -74,6 +75,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     string json = JsonConvert.SerializeObject(familleAAjouter);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    string token = Settings.Default.UserToken;
+
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                     HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/famille", content);
                     response.EnsureSuccessStatusCode();
