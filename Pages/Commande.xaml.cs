@@ -117,6 +117,13 @@ namespace GestionStockMySneakers.Pages
                     try
                     {
                         string url = $"{ApiClient.apiUrl}/commandes/{selectedCommande.id_commande}";
+
+                        string token = Settings.Default.UserToken;
+
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(url);
 
                         if (response.IsSuccessStatusCode)
