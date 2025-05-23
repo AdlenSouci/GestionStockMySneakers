@@ -78,7 +78,7 @@ Pour utiliser cette application, vous avez besoin de :
  **Important :** Pour vous connecter depuis l'écran de connexion de l'application, vous devez obligatoirement utiliser **l'identifiant `admin`** créé automatiquement par le **seeder `SeederAdmin`** dans le **projet Laravel (client léger)**.
 
 - Cet identifiant `admin` est inséré dans la base de données lors de l'exécution du seeder Laravel.
-- Si vous ne parvenez pas à vous connecter, vérifiez que ce seeder a bien été exécuté (via `php artisan db:seed --class=SeederAdmin`) et que l'utilisateur `admin` est bien présent dans la base de données cible (locale ou distante).
+- Si vous ne parvenez pas à vous connecter, vérifiez que ce seeder a bien été exécuté (via `php artisan db:seed --class=SeederAdmin`) et que l'utilisateur `admin` est bien présent dans la base de données cible.
 - Sans cet utilisateur `admin`, l'accès à l'application de gestion sera bloqué.
 
 ---
