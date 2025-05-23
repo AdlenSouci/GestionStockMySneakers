@@ -63,7 +63,7 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
-            var familleAAjouter = new
+            Famille familleAAjouter = new()
             {
                 nom_famille = txtNomFamille.Text.Trim()
             };
@@ -76,8 +76,8 @@ namespace GestionStockMySneakers.Pages
                     string json = JsonConvert.SerializeObject(familleAAjouter);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                    //Gestion du token
                     string token = Settings.Default.UserToken;
-
                     if (string.IsNullOrEmpty(token))
                         throw new Exception("Token non disponible. Veuillez vous reconnecter.");
                     ApiClient.Client.DefaultRequestHeaders.Authorization =
@@ -155,7 +155,7 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
-            var familleAModifier = new
+            Famille familleAModifier = new()
             {
                 nom_famille = txtNomFamille.Text.Trim(),
                 id_parent = idParentUpdate
@@ -169,8 +169,8 @@ namespace GestionStockMySneakers.Pages
                     string json = JsonConvert.SerializeObject(familleAModifier, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                    //Gestion du token
                     string token = Settings.Default.UserToken;
-
                     if (string.IsNullOrEmpty(token))
                         throw new Exception("Token non disponible. Veuillez vous reconnecter.");
                     ApiClient.Client.DefaultRequestHeaders.Authorization =
@@ -231,12 +231,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        //Gestion du token
                         string token = Settings.Default.UserToken;
-
                         if (string.IsNullOrEmpty(token))
                             throw new Exception("Token non disponible. Veuillez vous reconnecter.");
                         ApiClient.Client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/famille/{familleASupprimer.id}");
                         response.EnsureSuccessStatusCode();
 
