@@ -30,13 +30,21 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
+
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/avis");
                 response.EnsureSuccessStatusCode();
+
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 // Désérialiser en List<Models.Avis> d'abord
-                var listAvis = JsonConvert.DeserializeObject<List<Models.Avis>>(responseBody);
-                avis = new ObservableCollection<Models.Avis>(listAvis ?? new List<Models.Avis>());
+
+                //----------------- CETTE LIGNE POSE PROBLEME ---------------------
+                //var listAvis = JsonConvert.DeserializeObject<List<Models.Avis>>(responseBody);
+                
+                avis = JsonConvert.DeserializeObject<ObservableCollection<Models.Avis>>(responseBody) ?? new ObservableCollection<Models.Avis>();
+
+
+                //avis = new ObservableCollection<Models.Avis>(listAvis ?? new List<Models.Avis>());
 
                 dgAvis.ItemsSource = avis;
                 lblAvis.Content = $"Avis ({avis.Count})"; // Afficher le nombre d'avis
