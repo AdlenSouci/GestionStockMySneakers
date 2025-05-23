@@ -7,7 +7,6 @@ using System.Net.Http; // Utilisé pour envoyer des requêtes HTTP
 using System.Text; // Utilisé pour encoder du texte
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace GestionStockMySneakers.Pages
 {
@@ -61,7 +60,7 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
-            var marqueAAjouter = new
+            Marque marqueAAjouter = new()
             {
                 nom_marque = txtNomMarque.Text.Trim()
             };
@@ -74,6 +73,13 @@ namespace GestionStockMySneakers.Pages
                 MessageBoxResult confirmResult = MessageBox.Show("Êtes-vous sûr de vouloir ajouter cette marque ?", "Confirmation", MessageBoxButton.YesNo);
                 if (confirmResult == MessageBoxResult.Yes)
                 {
+                    //Gestion du token
+                    string token = Settings.Default.UserToken;
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/marque", content);
                     response.EnsureSuccessStatusCode();
 
@@ -115,7 +121,7 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
-            var marque = new
+            Marque marque = new()
             {
                 nom_marque = txtNomMarque.Text,
             };
@@ -136,6 +142,13 @@ namespace GestionStockMySneakers.Pages
                     MessageBoxResult result = MessageBox.Show("Êtes-vous sûr de vouloir modifier cette marque ?", "Confirmation", MessageBoxButton.YesNo);
                     if (result == MessageBoxResult.Yes)
                     {
+                        //Gestion du token
+                        string token = Settings.Default.UserToken;
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/marque/{marqueId}", content);
                         response.EnsureSuccessStatusCode();
 
@@ -178,6 +191,14 @@ namespace GestionStockMySneakers.Pages
             {
                 try
                 {
+                    //Gestion du token
+                    string token = Settings.Default.UserToken;
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+
                     HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/marque/{marqueASupprimer.id}");
                     response.EnsureSuccessStatusCode();
 
