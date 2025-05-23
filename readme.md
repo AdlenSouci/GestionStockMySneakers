@@ -73,6 +73,16 @@ Pour utiliser cette application, vous avez besoin de :
 
 *   Par défaut, l'application est généralement configurée pour tenter une connexion locale au démarrage.
 
+## ⚠️ Connexion à l'application
+
+ **Important :** Pour vous connecter depuis l'écran de connexion de l'application, vous devez obligatoirement utiliser **l'identifiant `admin`** créé automatiquement par le **seeder `SeederAdmin`** dans le **projet Laravel (client léger)**.
+
+- Cet identifiant `admin` est inséré dans la base de données lors de l'exécution du seeder Laravel.
+- Si vous ne parvenez pas à vous connecter, vérifiez que ce seeder a bien été exécuté (via `php artisan db:seed --class=SeederAdmin`) et que l'utilisateur `admin` est bien présent dans la base de données cible (locale ou distante).
+- Sans cet utilisateur `admin`, l'accès à l'application de gestion sera bloqué.
+
+---
+
 ## Utilisation
 
 *   Naviguez entre les différentes sections (Articles, Familles, Marques, Commandes, etc.) via le menu principal ou les éventuels onglets pour voir et gérer les données.

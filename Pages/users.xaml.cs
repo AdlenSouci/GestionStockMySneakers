@@ -94,6 +94,13 @@ namespace GestionStockMySneakers.Pages
                 if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
                 {
                     // Ajout
+
+                    string token = Settings.Default.UserToken;
+
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
 
                     var newUser = JsonConvert.DeserializeObject<GestionStockMySneakers.Models.Users>(await response.Content.ReadAsStringAsync());
@@ -155,6 +162,14 @@ namespace GestionStockMySneakers.Pages
                 if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
                 {
                     // Ajout
+
+                    string token = Settings.Default.UserToken;
+
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
 
                     var newUser = JsonConvert.DeserializeObject<GestionStockMySneakers.Models.Users>(await response.Content.ReadAsStringAsync());
@@ -201,6 +216,12 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        string token = Settings.Default.UserToken;
+
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/users/{userSelectionne.user_id}");
                         response.EnsureSuccessStatusCode();
 

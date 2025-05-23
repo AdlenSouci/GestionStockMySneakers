@@ -248,6 +248,13 @@ namespace GestionStockMySneakers.Pages
                 string jsonCommande = JsonConvert.SerializeObject(nouvelleCommande, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 StringContent content = new StringContent(jsonCommande, Encoding.UTF8, "application/json");
 
+                string token = Settings.Default.UserToken;
+
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                ApiClient.Client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                 HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/commandes", content);
 
                 if (response.IsSuccessStatusCode)

@@ -120,6 +120,13 @@ namespace GestionStockMySneakers.Pages
                     string json = JsonConvert.SerializeObject(avisData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                    string token = Settings.Default.UserToken;
+
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     // Appel API pour l'ajout
                     HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/avis", content);
 
@@ -226,6 +233,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+
+                        string token = Settings.Default.UserToken;
+
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/avis/{avisSelectionne.id}");
                         response.EnsureSuccessStatusCode(); // Vérifiez si la réponse est réussie
 
@@ -266,6 +280,13 @@ namespace GestionStockMySneakers.Pages
             {
                 string json = JsonConvert.SerializeObject(reponseData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string token = Settings.Default.UserToken;
+
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                ApiClient.Client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 HttpResponseMessage response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + "/avis/" + txtId.Text + "/repondre", content);
                 response.EnsureSuccessStatusCode();

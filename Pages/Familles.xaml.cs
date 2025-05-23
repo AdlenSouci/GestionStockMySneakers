@@ -168,6 +168,14 @@ namespace GestionStockMySneakers.Pages
                 {
                     string json = JsonConvert.SerializeObject(familleAModifier, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Include });
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    string token = Settings.Default.UserToken;
+
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     HttpResponseMessage response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/famille/{familleSelectionnee.id}", content);
 
                     if (!response.IsSuccessStatusCode)
@@ -223,6 +231,12 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        string token = Settings.Default.UserToken;
+
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/famille/{familleASupprimer.id}");
                         response.EnsureSuccessStatusCode();
 

@@ -163,6 +163,14 @@ namespace GestionStockMySneakers.Pages
             {
                 string json = JsonConvert.SerializeObject(articleAAjouter);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string token = Settings.Default.UserToken;
+
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                ApiClient.Client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                 HttpResponseMessage response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/article", content);
 
                 if (response.IsSuccessStatusCode)
@@ -311,6 +319,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+
+                        string token = Settings.Default.UserToken;
+
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/article/" + articleSelectionne.id);
                         if (response.IsSuccessStatusCode)
                         {
@@ -460,10 +475,39 @@ namespace GestionStockMySneakers.Pages
         {
             try
             {
-                var imagePath = Path.Combine(@"C:\CSharp\GestionStockMySneakers - Copie (2)\img\", imageName ?? "");
-                if (!string.IsNullOrEmpty(imageName) && File.Exists(imagePath))
+                if (string.IsNullOrWhiteSpace(imageName))
                 {
-                    using (var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                    ImageArticle.Source = null;
+                    return;
+                }
+
+                // 1️⃣ CHEMIN LOCAL
+                string localPath = Path.Combine(@"C:\CSharp\GestionStockMySneakers - Copie (2)\img\", imageName);
+                if (File.Exists(localPath))
+                {
+                    // 📁 Affichage depuis disque dur local
+                    using (var stream = new FileStream(localPath, FileMode.Open, FileAccess.Read))
+                    {
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = stream;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+                        ImageArticle.Source = bitmap;
+                    }
+                    return;
+                }
+
+                // 2️⃣ FICHIER NON TROUVÉ EN LOCAL → On tente FTP
+                string tempPath = Path.GetTempFileName(); // fichier temporaire
+                FTP ftpClient = new FTP("ftp://ftp.kera6497.odns.fr/public/img/", "my-sneakers@my-sneakers-shop.fr", "CeY41yHa9H($");
+
+
+                bool success = ftpClient.Download(imageName, tempPath);
+                if (success && File.Exists(tempPath))
+                {
+                    using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
                     {
                         var bitmap = new BitmapImage();
                         bitmap.BeginInit();
@@ -474,10 +518,17 @@ namespace GestionStockMySneakers.Pages
                         ImageArticle.Source = bitmap;
                     }
                 }
-                else { ImageArticle.Source = null; }
+                else
+                {
+                    ImageArticle.Source = null;
+                }
             }
-            catch { ImageArticle.Source = null; }
+            catch
+            {
+                ImageArticle.Source = null;
+            }
         }
+
 
         private void Page_MouseDown(object sender, MouseButtonEventArgs e)
         {
