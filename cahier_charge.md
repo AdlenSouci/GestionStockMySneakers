@@ -22,7 +22,8 @@
 - CRUD des marques et familles de sneakers.
 
 ### 4.3 Gestion des Commandes
-- Ajout (même si l'intérêt d'ajouter des commandes depuis une application lourde est limité, il est possible de tester cette fonctionnalité).
+- Ajout (même si l'intérêt d'ajouter des commandes depuis une application lourde est util uniquement pour du teste de fonctionnalié, il est possible de tester cette fonctionnalité).
+- etape  :  ajouter un article de la base de donnée ensuite ajouter une commande.
 - Suivi des commandes des clients.
 
 ### 4.4 Gestion du Stock
