@@ -91,7 +91,7 @@ namespace GestionStockMySneakers.Pages
             }
 
             // Créer l'objet à envoyer à l'API
-            var couleurData = new
+            Couleur couleurData = new()
             {
                 nom_couleur = nomCouleur,
             };
@@ -109,6 +109,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        //Gestion du token
+                        string token = Settings.Default.UserToken;
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/couleur", content);
 
                         if (!response.IsSuccessStatusCode)
@@ -135,7 +142,7 @@ namespace GestionStockMySneakers.Pages
                         }
 
                         // Si l'ajout a réussi
-                        var newCouleur = JsonConvert.DeserializeObject<Couleur>(await response.Content.ReadAsStringAsync());
+                        Couleur newCouleur = JsonConvert.DeserializeObject<Couleur>(await response.Content.ReadAsStringAsync());
 
                         if (newCouleur != null)
                         {
@@ -188,6 +195,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        //Gestion du token
+                        string token = Settings.Default.UserToken;
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/couleur/{couleurId}", content);
 
                         if (!response.IsSuccessStatusCode)
@@ -257,6 +271,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        //Gestion du token
+                        string token = Settings.Default.UserToken;
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/couleur/{couleurSelectionnee.id}");
 
                         if (!response.IsSuccessStatusCode)
