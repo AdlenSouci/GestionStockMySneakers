@@ -28,7 +28,7 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
-                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/users");
+                HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/user");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -101,7 +101,7 @@ namespace GestionStockMySneakers.Pages
                         throw new Exception("Token non disponible. Veuillez vous reconnecter.");
                     ApiClient.Client.DefaultRequestHeaders.Authorization =
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
+                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/user", content);
 
                     var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
 
@@ -113,7 +113,7 @@ namespace GestionStockMySneakers.Pages
                 else
                 {
                     int userId = int.Parse(txtId.Content.ToString());
-                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/users/{userId}", content);
+                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/user/{userId}", content);
 
                     var updatedUser = users.FirstOrDefault(u => u.user_id == userId);
                     if (updatedUser != null)
