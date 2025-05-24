@@ -24,7 +24,13 @@ namespace GestionStockMySneakers.Models // <- Votre namespace existant
         public decimal prix_public { get; set; }
         public decimal prix_achat { get; set; }
         public string? img { get; set; }
-
+        public string nom_article
+        {
+            get
+            {
+                return $"{nom_marque} {modele}";
+            }
+        }
         // AJOUTEZ CETTE PROPRIÉTÉ
         // Elle utilise ObservableCollection (necessite using System.Collections.ObjectModel;)
         // et TaillesArticle (necessite using GestionStockMySneakers.Models; si pas dans le même fichier/namespace)

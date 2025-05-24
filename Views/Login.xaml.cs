@@ -37,7 +37,7 @@ namespace GestionStockMySneakers.Views
             {
                 Settings.Default.UserToken = token;
                 Settings.Default.Save();
-                MessageBox.Show(Settings.Default.UserToken);
+                //MessageBox.Show(Settings.Default.UserToken);
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();

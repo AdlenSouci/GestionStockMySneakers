@@ -12,7 +12,7 @@ namespace GestionStockMySneakers.Pages
 {
     public partial class Users : Page
     {
-        private ObservableCollection<GestionStockMySneakers.Models.Users> users = new ObservableCollection<GestionStockMySneakers.Models.Users>();
+        private ObservableCollection<User> users = new ObservableCollection<User>();
 
         public Users()
         {
@@ -33,7 +33,7 @@ namespace GestionStockMySneakers.Pages
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 // Désérialisation
-                users = JsonConvert.DeserializeObject<ObservableCollection<GestionStockMySneakers.Models.Users>>(responseBody) ?? new ObservableCollection<GestionStockMySneakers.Models.Users>();
+                users = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseBody) ?? new ObservableCollection<User>();
 
                 // Vérification des données désérialisées
                 if (users != null && users.Count > 0)
@@ -103,7 +103,7 @@ namespace GestionStockMySneakers.Pages
                         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
 
-                    var newUser = JsonConvert.DeserializeObject<GestionStockMySneakers.Models.Users>(await response.Content.ReadAsStringAsync());
+                    var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
 
                     if (newUser != null)
                         users.Add(newUser);
@@ -172,7 +172,7 @@ namespace GestionStockMySneakers.Pages
 
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
 
-                    var newUser = JsonConvert.DeserializeObject<GestionStockMySneakers.Models.Users>(await response.Content.ReadAsStringAsync());
+                    var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
 
                     if (newUser != null)
                         users.Add(newUser);
@@ -206,7 +206,7 @@ namespace GestionStockMySneakers.Pages
 
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
-            if (dgUsers.SelectedItem is GestionStockMySneakers.Models.Users userSelectionne)
+            if (dgUsers.SelectedItem is User userSelectionne)
             {
                 MessageBoxResult result = MessageBox.Show(
                     "Voulez-vous vraiment supprimer cet utilisateur ?",

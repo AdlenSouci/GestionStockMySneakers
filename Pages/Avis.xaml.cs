@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -13,11 +12,13 @@ using System.Windows.Input;
 
 namespace GestionStockMySneakers.Pages
 {
-    public partial class Avis : Page
+    public partial class PageAvis : Page
     {
-        private ObservableCollection<Models.Avis> avis = new ObservableCollection<Models.Avis>();
+        private ObservableCollection<Avis> avis = new ObservableCollection<Avis>();
+        private List<User> users = new List<User>();
+        private List<Article> articles = new List<Article>();
 
-        public Avis()
+        public PageAvis()
         {
             InitializeComponent();
             afficher();
@@ -30,23 +31,30 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
-
+                // Récupération des avis
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/avis");
                 response.EnsureSuccessStatusCode();
-
                 string responseBody = await response.Content.ReadAsStringAsync();
+                avis = JsonConvert.DeserializeObject<ObservableCollection<Avis>>(responseBody) ?? new ObservableCollection<Avis>();
 
-                // Désérialiser en List<Models.Avis> d'abord
+                // Récupération des users
+                response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/user");
+                response.EnsureSuccessStatusCode();
+                responseBody = await response.Content.ReadAsStringAsync();
+                users = JsonConvert.DeserializeObject<List<Models.User>>(responseBody) ?? new List<User>();
 
-                //----------------- CETTE LIGNE POSE PROBLEME ---------------------
-                //var listAvis = JsonConvert.DeserializeObject<List<Models.Avis>>(responseBody);
-                
-                avis = JsonConvert.DeserializeObject<ObservableCollection<Models.Avis>>(responseBody) ?? new ObservableCollection<Models.Avis>();
+                // Récupération des articles
+                response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/article");
+                response.EnsureSuccessStatusCode();
+                responseBody = await response.Content.ReadAsStringAsync();
+                articles = JsonConvert.DeserializeObject<List<Article>>(responseBody) ?? new List<Article>();
 
-
-                //avis = new ObservableCollection<Models.Avis>(listAvis ?? new List<Models.Avis>());
 
                 dgAvis.ItemsSource = avis;
+
+                cboUserId.ItemsSource = users;
+                cboArticleId.ItemsSource = articles;
+
                 lblAvis.Content = $"Avis ({avis.Count})"; // Afficher le nombre d'avis
             }
             catch (HttpRequestException httpEx)
@@ -80,8 +88,10 @@ namespace GestionStockMySneakers.Pages
         {
             // Logique d'AJOUT d'un nouvel avis
             // Lire les champs pour l'ajout (User ID, Article ID, Contenu, Note)
-            string userIdText = txtUserId.Text.Trim();
-            string articleIdText = txtArticleId.Text.Trim();
+            //string userIdText = txtUserId.Text.Trim();
+            //string articleIdText = txtArticleId.Text.Trim();
+            string userIdText = cboUserId.SelectedValue.ToString();
+            string articleIdText = cboArticleId.SelectedValue.ToString();
             string contenu = txtContenu.Text.Trim();
             string noteText = txtNote.Text.Trim();
 
@@ -94,16 +104,16 @@ namespace GestionStockMySneakers.Pages
             }
 
             // Valider les formats pour l'ajout
-            if (!int.TryParse(userIdText, out int userId))
-            {
-                MessageBox.Show("User ID doit être un nombre entier valide.");
-                txtUserId.Focus(); return;
-            }
-            if (!int.TryParse(articleIdText, out int articleId))
-            {
-                MessageBox.Show("Article ID doit être un nombre entier valide.");
-                txtArticleId.Focus(); return;
-            }
+            //if (!int.TryParse(userIdText, out int userId))
+            //{
+            //    MessageBox.Show("User ID doit être un nombre entier valide.");
+            //    txtUserId.Focus(); return;
+            //}
+            //if (!int.TryParse(articleIdText, out int articleId))
+            //{
+            //    MessageBox.Show("Article ID doit être un nombre entier valide.");
+            //    txtArticleId.Focus(); return;
+            //}
             if (!int.TryParse(noteText, out int note) || note < 1 || note > 5)
             {
                 MessageBox.Show("Note doit être un nombre entier entre 1 et 5.");
@@ -114,8 +124,8 @@ namespace GestionStockMySneakers.Pages
             // Créer l'objet avis à envoyer à l'API
             var avisData = new
             {
-                user_id = userId,
-                article_id = articleId,
+                user_id = cboUserId.SelectedValue,
+                article_id = cboArticleId.SelectedValue,
                 contenu = contenu,
                 note = note,
             };
@@ -161,6 +171,7 @@ namespace GestionStockMySneakers.Pages
                     }
 
                     var newAvis = JsonConvert.DeserializeObject<Models.Avis>(await response.Content.ReadAsStringAsync());
+                    
                     if (newAvis != null)
                     {
                         avis.Add(newAvis); // Ajouter à la collection locale
@@ -252,6 +263,7 @@ namespace GestionStockMySneakers.Pages
                         response.EnsureSuccessStatusCode(); // Vérifiez si la réponse est réussie
 
                         avis.Remove(avisSelectionne);
+                        effacer();
                         MessageBox.Show("Avis supprimé avec succès !");
                     }
                     catch (Exception ex)
@@ -264,11 +276,14 @@ namespace GestionStockMySneakers.Pages
 
         private void effacer()
         {
+            cboUserId.SelectedIndex = -1;
+            cboArticleId.SelectedIndex = -1;
             txtUserId.Clear();
             txtArticleId.Clear();
             txtContenu.Clear();
             txtNote.Clear();
-            txtId.Clear(); 
+            txtCreatedAt.Clear();
+            txtId.Text = string.Empty;
         }
 
         private async void btnEnvoyerReponse_Click(object sender, RoutedEventArgs e)
@@ -313,6 +328,17 @@ namespace GestionStockMySneakers.Pages
             effacer();
         }
 
+        private void dgAvis_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedAvis = dgAvis.SelectedItem as Models.Avis;
 
+            
+            if (selectedAvis != null)
+            {
+                // Met à jour le ComboBox avec l'user_id de l'avis sélectionné
+                cboUserId.SelectedValue = selectedAvis.user_id;
+                cboArticleId.SelectedValue = selectedAvis.article_id;
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace GestionStockMySneakers.Models
 {
-    public class Users
+    public class User
     {
 
         [JsonProperty("id")]
