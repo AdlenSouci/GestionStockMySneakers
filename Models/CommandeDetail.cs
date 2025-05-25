@@ -17,7 +17,7 @@ namespace GestionStockMySneakers.Models
         public decimal prix_ht { get; set; }
         public decimal prix_ttc { get; set; }
         public decimal montant_tva { get; set; }
-        public decimal remise { get; set; }
+        //public decimal remise { get; set; }
 
         [JsonIgnore]
         public DateTime created_at { get; set; }

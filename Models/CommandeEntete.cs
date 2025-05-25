@@ -14,7 +14,7 @@ namespace GestionStockMySneakers.Models
         public decimal total_ht { get; set; }
         public decimal total_ttc { get; set; }
         public decimal total_tva { get; set; }
-        public decimal total_remise { get; set; }
+        //public decimal total_remise { get; set; }
 
         [JsonIgnore]
         public DateTime created_at { get; set; }

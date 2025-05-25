@@ -73,7 +73,6 @@ namespace GestionStockMySneakers.Pages
                 txtTotalHT.Text = selectedCommande.total_ht.ToString("N2", CultureInfo.InvariantCulture);
                 txtTotalTTC.Text = selectedCommande.total_ttc.ToString("N2", CultureInfo.InvariantCulture);
                 txtTotalTVA.Text = selectedCommande.total_tva.ToString("N2", CultureInfo.InvariantCulture);
-                txtTotalRemise.Text = selectedCommande.total_remise.ToString("N2", CultureInfo.InvariantCulture);
 
                 detailsTemporaires.Clear();
                 ViderChampsDetail();
@@ -82,15 +81,6 @@ namespace GestionStockMySneakers.Pages
                 btnAjouter.IsEnabled = false;
                 btnEffacerFormulaire.IsEnabled = true;
                 dgCommandes.IsEnabled = true;
-
-                // Optionnel: Charger les détails de la commande sélectionnée ici
-                // if (selectedCommande.details != null)
-                // {
-                //     foreach (var detail in selectedCommande.details)
-                //     {
-                //         detailsTemporaires.Add(detail);
-                //     }
-                // }
             }
             else
             {
@@ -117,13 +107,14 @@ namespace GestionStockMySneakers.Pages
                     try
                     {
                         string url = $"{ApiClient.apiUrl}/commandes/{selectedCommande.id_commande}";
-
                         string token = Settings.Default.UserToken;
 
                         if (string.IsNullOrEmpty(token))
                             throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+
                         ApiClient.Client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(url);
 
                         if (response.IsSuccessStatusCode)
@@ -136,39 +127,55 @@ namespace GestionStockMySneakers.Pages
                         {
                             string errorContent = await response.Content.ReadAsStringAsync();
                             MessageBox.Show($"Erreur lors de la suppression côté serveur : {response.StatusCode}\n{errorContent}", "Erreur API", MessageBoxButton.OK, MessageBoxImage.Error);
-                            btnSupprimerCommande.IsEnabled = true;
-                            btnAjouter.IsEnabled = false;
-                            btnEffacerFormulaire.IsEnabled = true;
-                            dgCommandes.IsEnabled = true;
                         }
                     }
-                    catch (HttpRequestException httpEx) { MessageBox.Show("Erreur connexion API suppression: " + httpEx.Message, "Erreur Réseau"); btnSupprimerCommande.IsEnabled = true; btnAjouter.IsEnabled = false; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
-                    catch (Exception ex) { MessageBox.Show("Erreur inattendue suppression: " + ex.Message, "Erreur"); btnSupprimerCommande.IsEnabled = true; btnAjouter.IsEnabled = false; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+                    catch (HttpRequestException httpEx) { MessageBox.Show("Erreur connexion API suppression: " + httpEx.Message, "Erreur Réseau"); }
+                    catch (Exception ex) { MessageBox.Show("Erreur inattendue suppression: " + ex.Message, "Erreur"); }
                     finally
                     {
                         pbLoading.Visibility = Visibility.Collapsed;
+                        btnSupprimerCommande.IsEnabled = true;
+                        btnAjouter.IsEnabled = true;
+                        btnEffacerFormulaire.IsEnabled = true;
+                        dgCommandes.IsEnabled = true;
                     }
                 }
             }
-            else { MessageBox.Show("Sélectionnez une commande avant de supprimer.", "Sélection requise", MessageBoxButton.OK, MessageBoxImage.Warning); }
+            else
+            {
+                MessageBox.Show("Sélectionnez une commande avant de supprimer.", "Sélection requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void btnAjouterDetail_Click(object sender, RoutedEventArgs e)
         {
-            if (!int.TryParse(txtDetailIdArticle.Text, out int idArticle) || idArticle <= 0) { MessageBox.Show("ID Article invalide."); return; }
-            if (string.IsNullOrWhiteSpace(txtDetailTaille.Text)) { MessageBox.Show("Taille requise."); return; }
-            if (!int.TryParse(txtDetailQuantite.Text, out int quantite) || quantite <= 0) { MessageBox.Show("Quantité invalide."); return; }
-            if (!decimal.TryParse(txtDetailPrixHT.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal prixHT) || prixHT < 0 ||
-                !decimal.TryParse(txtDetailMontantTVA.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal montantTVA) || montantTVA < 0 ||
-                !decimal.TryParse(txtDetailRemise.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal remise) || remise < 0)
+            if (!int.TryParse(txtDetailIdArticle.Text, out int idArticle) || idArticle <= 0)
             {
-                MessageBox.Show("Valeurs numériques (Prix HT, Montant TVA, Remise) invalides ou négatives. Utilisez '.' pour les décimales.", "Erreur Format", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("ID Article invalide.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtDetailTaille.Text))
+            {
+                MessageBox.Show("Taille requise.");
+                return;
+            }
+
+            if (!int.TryParse(txtDetailQuantite.Text, out int quantite) || quantite <= 0)
+            {
+                MessageBox.Show("Quantité invalide.");
+                return;
+            }
+
+            if (!decimal.TryParse(txtDetailPrixHT.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal prixHT) || prixHT < 0 ||
+                !decimal.TryParse(txtDetailMontantTVA.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal montantTVA) || montantTVA < 0)
+            {
+                MessageBox.Show("Valeurs numériques (Prix HT, Montant TVA) invalides ou négatives. Utilisez '.' pour les décimales.", "Erreur Format", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             decimal prixTTC = prixHT + montantTVA;
             tbDetailPrixTTCCalcule.Text = prixTTC.ToString("N2", CultureInfo.InvariantCulture);
-
 
             CommandeDetail nouveauDetail = new CommandeDetail
             {
@@ -177,14 +184,11 @@ namespace GestionStockMySneakers.Pages
                 quantite = quantite,
                 prix_ht = prixHT,
                 prix_ttc = prixTTC,
-                montant_tva = montantTVA,
-                remise = remise
+                montant_tva = montantTVA
             };
 
             detailsTemporaires.Add(nouveauDetail);
-
             CalculerEtAfficherTotaux();
-
             ViderChampsDetail();
         }
 
@@ -195,7 +199,10 @@ namespace GestionStockMySneakers.Pages
                 detailsTemporaires.Remove(selectedDetail);
                 CalculerEtAfficherTotaux();
             }
-            else { MessageBox.Show("Sélectionnez un article dans la liste des détails à supprimer.", "Sélection Requise", MessageBoxButton.OK, MessageBoxImage.Warning); }
+            else
+            {
+                MessageBox.Show("Sélectionnez un article dans la liste des détails à supprimer.", "Sélection Requise", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void CalculerEtAfficherTotaux()
@@ -203,12 +210,10 @@ namespace GestionStockMySneakers.Pages
             decimal totalHT = detailsTemporaires.Sum(d => d.prix_ht * d.quantite);
             decimal totalTTC = detailsTemporaires.Sum(d => d.prix_ttc * d.quantite);
             decimal totalTVA = detailsTemporaires.Sum(d => d.montant_tva * d.quantite);
-            decimal totalRemise = detailsTemporaires.Sum(d => d.remise * d.quantite);
 
             txtTotalHT.Text = totalHT.ToString("N2", CultureInfo.InvariantCulture);
             txtTotalTTC.Text = totalTTC.ToString("N2", CultureInfo.InvariantCulture);
             txtTotalTVA.Text = totalTVA.ToString("N2", CultureInfo.InvariantCulture);
-            txtTotalRemise.Text = totalRemise.ToString("N2", CultureInfo.InvariantCulture);
         }
 
         private async void btnAjouter_Click(object sender, RoutedEventArgs e)
@@ -224,17 +229,19 @@ namespace GestionStockMySneakers.Pages
                 if (!int.TryParse(txtIdUser.Text, out int idUser) || idUser <= 0)
                 {
                     MessageBox.Show("ID Utilisateur invalide.");
-                    pbLoading.Visibility = Visibility.Collapsed; btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; return;
+                    return;
                 }
+
                 if (string.IsNullOrWhiteSpace(txtName.Text))
                 {
                     MessageBox.Show("Nom de l'utilisateur requis.");
-                    pbLoading.Visibility = Visibility.Collapsed; btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; return;
+                    return;
                 }
+
                 if (detailsTemporaires.Count == 0)
                 {
                     MessageBox.Show("Commande vide. Ajoutez des articles.");
-                    pbLoading.Visibility = Visibility.Collapsed; btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; return;
+                    return;
                 }
 
                 int idNumCommande = (int)(DateTime.Now.Ticks % int.MaxValue);
@@ -248,7 +255,6 @@ namespace GestionStockMySneakers.Pages
                     total_ht = decimal.Parse(txtTotalHT.Text, CultureInfo.InvariantCulture),
                     total_ttc = decimal.Parse(txtTotalTTC.Text, CultureInfo.InvariantCulture),
                     total_tva = decimal.Parse(txtTotalTVA.Text, CultureInfo.InvariantCulture),
-                    total_remise = decimal.Parse(txtTotalRemise.Text, CultureInfo.InvariantCulture),
                     details = new List<CommandeDetail>(detailsTemporaires)
                 };
 
@@ -259,6 +265,7 @@ namespace GestionStockMySneakers.Pages
 
                 if (string.IsNullOrEmpty(token))
                     throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+
                 ApiClient.Client.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -274,17 +281,18 @@ namespace GestionStockMySneakers.Pages
                 {
                     string errorContent = await response.Content.ReadAsStringAsync();
                     MessageBox.Show($"Erreur ajout serveur : {response.StatusCode}\n{errorContent}", "Erreur API");
-                    btnAjouter.IsEnabled = true;
-                    btnEffacerFormulaire.IsEnabled = true;
-                    dgCommandes.IsEnabled = true;
                 }
             }
-            catch (FormatException formatEx) { MessageBox.Show("Erreur format totaux: " + formatEx.Message); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
-            catch (HttpRequestException httpEx) { MessageBox.Show("Erreur connexion API ajout: " + httpEx.Message, "Erreur Réseau"); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
-            catch (Exception ex) { MessageBox.Show("Erreur inattendue ajout: " + ex.Message, "Erreur"); btnAjouter.IsEnabled = true; btnEffacerFormulaire.IsEnabled = true; dgCommandes.IsEnabled = true; }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur inattendue ajout: " + ex.Message, "Erreur");
+            }
             finally
             {
                 pbLoading.Visibility = Visibility.Collapsed;
+                btnAjouter.IsEnabled = true;
+                btnEffacerFormulaire.IsEnabled = true;
+                dgCommandes.IsEnabled = true;
             }
         }
 
@@ -295,7 +303,6 @@ namespace GestionStockMySneakers.Pages
             txtDetailQuantite.Clear();
             txtDetailPrixHT.Clear();
             txtDetailMontantTVA.Clear();
-            txtDetailRemise.Clear();
             tbDetailPrixTTCCalcule.Text = "--.--";
             txtDetailIdArticle.Focus();
         }
@@ -309,7 +316,6 @@ namespace GestionStockMySneakers.Pages
             txtTotalHT.Text = "0.00";
             txtTotalTTC.Text = "0.00";
             txtTotalTVA.Text = "0.00";
-            txtTotalRemise.Text = "0.00";
 
             detailsTemporaires.Clear();
             ViderChampsDetail();
