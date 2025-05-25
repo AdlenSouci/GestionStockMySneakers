@@ -31,6 +31,8 @@ namespace GestionStockMySneakers.Pages
 
             try
             {
+
+
                 HttpResponseMessage response = await ApiClient.Client.GetAsync(ApiClient.apiUrl + "/annonce");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -80,7 +82,7 @@ namespace GestionStockMySneakers.Pages
                 return;
             }
 
-            var annonce = new
+            Annonce annonce = new()
             {
                 h1 = txtH1.Text,
                 h3 = txtH3.Text,
@@ -95,8 +97,17 @@ namespace GestionStockMySneakers.Pages
                 string json = JsonConvert.SerializeObject(annonce);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                // Nouvelle annonce
                 if (null == txtId.Content)
                 {
+
+                    // Gestion token
+                    string token = Settings.Default.UserToken;
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     // Ajout
                     response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/annonce", content);
                     // Récupérer l'annonce ajoutée
@@ -109,10 +120,19 @@ namespace GestionStockMySneakers.Pages
 
                     MessageBox.Show("Annonce ajoutée avec succès !");
                 }
+                // Ancienne annonce
                 else
                 {
                     // Mise à jour
                     int annonceId = int.Parse(txtId.Content.ToString());
+
+                    // Gestion token
+                    string token = Settings.Default.UserToken;
+                    if (string.IsNullOrEmpty(token))
+                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                    ApiClient.Client.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                     response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/annonce/{annonceId}", content);
 
                     // Trouver et modifier l'annonce dans la liste existante
@@ -150,6 +170,13 @@ namespace GestionStockMySneakers.Pages
                 {
                     try
                     {
+                        // Gestion token
+                        string token = Settings.Default.UserToken;
+                        if (string.IsNullOrEmpty(token))
+                            throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                        ApiClient.Client.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
                         HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + "/annonce/" + annonceSelectionnee.id);
                         response.EnsureSuccessStatusCode();
 

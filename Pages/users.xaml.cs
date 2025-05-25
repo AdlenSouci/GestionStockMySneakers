@@ -82,7 +82,10 @@ namespace GestionStockMySneakers.Pages
                 email = txtEmail.Text,
                 adresse_livraison = txtAdresse.Text,
                 password = txtPassword.Password,
-                is_admin = false
+                is_admin = chkAdmin.IsChecked,
+                telephone = txtTelephone.Text,
+                ville = txtVille.Text,
+                code_postal = txtCodePostal.Text,
             };
 
             try
@@ -91,43 +94,28 @@ namespace GestionStockMySneakers.Pages
                 string json = JsonConvert.SerializeObject(user);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
-                {
-                    // Ajout
+                // Ajout
 
-                    string token = Settings.Default.UserToken;
 
-                    if (string.IsNullOrEmpty(token))
-                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
-                    ApiClient.Client.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/user", content);
-
-                    var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-
-                    if (newUser != null)
-                        users.Add(newUser);
-
-                    MessageBox.Show("Utilisateur ajouté avec succès !");
-                }
-                else
-                {
-                    int userId = int.Parse(txtId.Content.ToString());
-                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/user/{userId}", content);
-
-                    var updatedUser = users.FirstOrDefault(u => u.user_id == userId);
-                    if (updatedUser != null)
-                    {
-                        updatedUser.name = txtNom.Text;
-                        updatedUser.email = txtEmail.Text;
-                        updatedUser.adresse_livraison = txtAdresse.Text;
-                        // Note: Ne pas mettre à jour le mot de passe ici pour des raisons de sécurité
-                    }
-                    dgUsers.Items.Refresh();
-
-                    MessageBox.Show("Utilisateur mis à jour avec succès !");
-                }
+                // Gestion du token
+                string token = Settings.Default.UserToken;
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                ApiClient.Client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/user", content);
                 response.EnsureSuccessStatusCode();
+
+                var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
+
+                if (newUser != null)
+                    users.Add(newUser);
+
+                effacer();
+
+                MessageBox.Show("Utilisateur ajouté avec succès !");
+
+
             }
             catch (Exception ex)
             {
@@ -135,23 +123,27 @@ namespace GestionStockMySneakers.Pages
             }
 
         }
-
         private async void btnModifier_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtNom.Text) || string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Password))
+            if (string.IsNullOrEmpty(txtNom.Text) || string.IsNullOrEmpty(txtEmail.Text) )
             {
                 MessageBox.Show("Veuillez remplir tous les champs obligatoires.");
                 return;
             }
 
-            var user = new
+            User user = new()
             {
+                user_id=(int)txtId.Content,
                 name = txtNom.Text,
                 email = txtEmail.Text,
-                adresse_livraison = txtAdresse.Text,
-                password = txtPassword.Password,
-                is_admin = false
+                adresse_livraison = txtAdresse.Text,                
+                is_admin = (bool)chkAdmin.IsChecked,
+                telephone = txtTelephone.Text,
+                ville = txtVille.Text,
+                code_postal = txtCodePostal.Text,
             };
+            if (!string.IsNullOrWhiteSpace(txtPassword.Password))
+                user.password = txtPassword.Password;
 
             try
             {
@@ -159,51 +151,40 @@ namespace GestionStockMySneakers.Pages
                 string json = JsonConvert.SerializeObject(user);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                if (string.IsNullOrWhiteSpace(txtId.Content?.ToString()))
-                {
-                    // Ajout
+                int userId = int.Parse(txtId.Content.ToString());
 
-                    string token = Settings.Default.UserToken;
+                // Gestion du token
+                string token = Settings.Default.UserToken;
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token non disponible. Veuillez vous reconnecter.");
+                ApiClient.Client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                    if (string.IsNullOrEmpty(token))
-                        throw new Exception("Token non disponible. Veuillez vous reconnecter.");
-                    ApiClient.Client.DefaultRequestHeaders.Authorization =
-                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-                    response = await ApiClient.Client.PostAsync(ApiClient.apiUrl + "/users", content);
-
-                    var newUser = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-
-                    if (newUser != null)
-                        users.Add(newUser);
-
-                    MessageBox.Show("Utilisateur ajouté avec succès !");
-                }
-                else
-                {
-                    int userId = int.Parse(txtId.Content.ToString());
-                    response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/users/{userId}", content);
-
-                    var updatedUser = users.FirstOrDefault(u => u.user_id == userId);
-                    if (updatedUser != null)
-                    {
-                        updatedUser.name = txtNom.Text;
-                        updatedUser.email = txtEmail.Text;
-                        updatedUser.adresse_livraison = txtAdresse.Text;
-                        // Note: Ne pas mettre à jour le mot de passe ici pour des raisons de sécurité
-                    }
-                    dgUsers.Items.Refresh();
-
-                    MessageBox.Show("Utilisateur mis à jour avec succès !");
-                }
+                response = await ApiClient.Client.PutAsync(ApiClient.apiUrl + $"/user/{userId}", content);
                 response.EnsureSuccessStatusCode();
+
+                var updatedUser = users.FirstOrDefault(u => u.user_id == userId);
+                if (updatedUser != null)
+                {
+                    updatedUser.name = txtNom.Text;
+                    updatedUser.email = txtEmail.Text;
+                    updatedUser.adresse_livraison = txtAdresse.Text;
+                    updatedUser.code_postal = txtCodePostal.Text;
+                    updatedUser.ville = txtVille.Text;
+                    updatedUser.is_admin = chkAdmin.IsChecked ?? false;
+                    // Note: Ne pas mettre à jour le mot de passe ici pour des raisons de sécurité
+                    txtPassword.Password = string.Empty;
+                }
+                dgUsers.Items.Refresh();
+                effacer();
+                MessageBox.Show("Utilisateur mis à jour avec succès !");
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Erreur : " + ex.Message);
             }
         }
-
         private async void btnSupprimer_Click(object sender, RoutedEventArgs e)
         {
             if (dgUsers.SelectedItem is User userSelectionne)
@@ -222,7 +203,7 @@ namespace GestionStockMySneakers.Pages
                             throw new Exception("Token non disponible. Veuillez vous reconnecter.");
                         ApiClient.Client.DefaultRequestHeaders.Authorization =
                             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                        HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/users/{userSelectionne.user_id}");
+                        HttpResponseMessage response = await ApiClient.Client.DeleteAsync(ApiClient.apiUrl + $"/user/{userSelectionne.user_id}");
                         response.EnsureSuccessStatusCode();
 
                         // Supprimer l'utilisateur de la liste locale
