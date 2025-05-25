@@ -36,7 +36,7 @@
                         <DataGridTextColumn Binding="{Binding total_ht, StringFormat={}{0:N2}}" Header="Total HT" Width="*" />
                         <DataGridTextColumn Binding="{Binding total_ttc, StringFormat={}{0:N2}}" Header="Total TTC" Width="*" />
                         <DataGridTextColumn Binding="{Binding total_tva, StringFormat={}{0:N2}}" Header="Total TVA" Width="*" />
-                        <DataGridTextColumn Binding="{Binding total_remise, StringFormat={}{0:N2}}" Header="Total Remise" Width="*" />
+                        <!--<DataGridTextColumn Binding="{Binding total_remise, StringFormat={}{0:N2}}" Header="Total Remise" Width="*" />-->
                         <DataGridTextColumn Binding="{Binding created_at, StringFormat='dd/MM/yy HH:mm'}" Header="Créé le" Width="120"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -77,8 +77,8 @@
                                 <WrapPanel Margin="0 2 0 2">
                                     <Label Content="Total TVA :" Width="120" FontWeight="SemiBold"/>
                                     <TextBox x:Name="txtTotalTVA" Width="150" IsReadOnly="True" Background="#EEE"/>
-                                    <Label Content="Total Remise :" Width="100" FontWeight="SemiBold" Margin="20,0,0,0"/>
-                                    <TextBox x:Name="txtTotalRemise" Width="130" IsReadOnly="True" Background="#EEE"/>
+                                    <!--<Label Content="Total Remise :" Width="100" FontWeight="SemiBold" Margin="20,0,0,0"/>
+                                    <TextBox x:Name="txtTotalRemise" Width="130" IsReadOnly="True" Background="#EEE"/>-->
                                 </WrapPanel>
                             </StackPanel>
                         </GroupBox>
