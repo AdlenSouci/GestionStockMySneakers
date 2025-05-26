@@ -112,8 +112,8 @@
                                             <Label Content="Montant TVA Unit.:" Width="130" Margin="10 0 0 0" VerticalAlignment="Center"/>
                                             <TextBox x:Name="txtDetailMontantTVA" Width="100" VerticalAlignment="Center"/>
 
-                                            <Label Content="Remise Unit.:" Width="90" Margin="10 0 0 0" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="txtDetailRemise" Width="80" VerticalAlignment="Center"/>
+                                            <!--<Label Content="Remise Unit.:" Width="90" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                                            <TextBox x:Name="txtDetailRemise" Width="80" VerticalAlignment="Center"/>-->
                                         </WrapPanel>
 
                                         <WrapPanel Margin="2">
@@ -134,7 +134,7 @@
                                         <DataGridTextColumn Binding="{Binding prix_ht, StringFormat={}{0:N2}}" Header="Prix HT U." Width="*"/>
                                         <DataGridTextColumn Binding="{Binding prix_ttc, StringFormat={}{0:N2}}" Header="Prix TTC U." Width="*"/>
                                         <DataGridTextColumn Binding="{Binding montant_tva, StringFormat={}{0:N2}}" Header="TVA U." Width="*"/>
-                                        <DataGridTextColumn Binding="{Binding remise, StringFormat={}{0:N2}}" Header="Remise U." Width="*"/>
+                                        <!--<DataGridTextColumn Binding="{Binding remise, StringFormat={}{0:N2}}" Header="Remise U." Width="*"/>-->
                                     </DataGrid.Columns>
                                 </DataGrid>
 

@@ -16,11 +16,14 @@ namespace GestionStockMySneakers.Models
         public decimal total_tva { get; set; }
         //public decimal total_remise { get; set; }
 
-        [JsonIgnore]
+        
+
+        [JsonProperty("created_at")]
         public DateTime created_at { get; set; }
 
-        [JsonIgnore]
+        [JsonProperty("updated_at")]
         public DateTime updated_at { get; set; }
+
 
         public List<CommandeDetail> details { get; set; }
     }
