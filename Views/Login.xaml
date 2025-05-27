@@ -50,7 +50,7 @@
                 Padding="20">
             <StackPanel>
                 <TextBlock Text="E-mail :" FontWeight="SemiBold" />
-                <TextBox x:Name="txtEmail" Text="admin@example.com" Height="25" VerticalContentAlignment="Center" Margin="0,5,0,15" />
+                <TextBox x:Name="txtEmail"  Height="25" VerticalContentAlignment="Center" Margin="0,5,0,15" />
 
                 <TextBlock Text="Mot de passe :" FontWeight="SemiBold" />
                 <Grid Margin="0,5,0,15">
@@ -62,7 +62,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- PasswordBox -->
-                    <PasswordBox Name="txtPassword" Password="44-SS_qq" Grid.Column="0" Height="25" VerticalContentAlignment="Center" PasswordChar="●"/>
+                    <PasswordBox Name="txtPassword"  Grid.Column="0" Height="25" VerticalContentAlignment="Center" PasswordChar="●"/>
                     <!-- TextBox pour afficher le texte en clair -->
                     <TextBox Name="txtPasswordVisible" Grid.Column="0" Height="25" VerticalContentAlignment="Center" Visibility="Collapsed"/>
 
